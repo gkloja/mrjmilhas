@@ -867,6 +867,54 @@
   } catch(e){}
 })();
 </script>
+
+<!-- OneSignal — Marujo's Milhas (app próprio) -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function (OneSignal) {
+    await OneSignal.init({
+      appId: "94ae04f7-0f0d-4c9c-88f8-51f628ef71b9",
+      notifyButton: { enable: false },
+      allowLocalhostAsSecureOrigin: true
+    });
+    window.__mmOneSignalReady = true;
+    // Se já houver sessão Google, vincula o e-mail
+    try {
+      if (typeof mmCurrentUser === "function") {
+        const u = mmCurrentUser();
+        if (u && u.email) await window.mmOneSignalLogin(u.email);
+      }
+    } catch (_) {}
+  });
+
+  window.mmOneSignalLogin = async function (email) {
+    const id = String(email || "").trim().toLowerCase();
+    if (!id) return;
+    try {
+      await new Promise((resolve) => {
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function (OneSignal) {
+          try {
+            await OneSignal.login(id);
+            // Pede permissão de push (só se ainda não estiver inscrito)
+            const perm = await OneSignal.Notifications.permissionNative;
+            if (perm !== "granted") {
+              await OneSignal.Notifications.requestPermission();
+            }
+            console.log("[Milhas OneSignal] login", id, "permission=", await OneSignal.Notifications.permissionNative);
+          } catch (e) {
+            console.warn("[Milhas OneSignal] login falhou", e);
+          }
+          resolve();
+        });
+      });
+    } catch (e) {
+      console.warn("[Milhas OneSignal]", e);
+    }
+  };
+</script>
+
 </head>
 <body>
 
@@ -3614,6 +3662,10 @@ function mmApplyGoogleUser(user) {
   if (typeof mmSetSession === "function") mmSetSession(email);
   if (typeof mmRenderHeader === "function") mmRenderHeader();
   mmSyncUserToBackend(profile);
+  // Vincula push OneSignal a este e-mail (notificações só para esta pessoa)
+  if (typeof window.mmOneSignalLogin === "function") {
+    window.mmOneSignalLogin(email).catch(function () {});
+  }
 }
 
 window.mmGoogleSignIn = async function () {
@@ -3652,6 +3704,374 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
