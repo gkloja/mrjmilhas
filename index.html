@@ -18,28 +18,19 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Marujo's Milhas">
 <meta property="og:title" content="Marujo's Milhas — Passagens em milhas, sempre pelo menor preço">
-<meta property="og:description" content="Comparamos LATAM, GOL, Azul e TAP em milhas e tarifa normal. Você paga em real, parcela em até 12x e economiza até 50%.">
+<meta property="og:description" content="Comparamos LATAM, GOL, Azul e TAP em milhas e tarifa normal. Você paga em real, paga em PIX e economiza até 50%.">
 <meta property="og:image" content="https://dl.dropboxusercontent.com/scl/fi/qseevce34se66s867pqcv/1785431732563_tmp.jpg?rlkey=rabna4gdxhawdqgdgg6r4w6hx&dl=0">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Marujo's Milhas — Passagens em milhas, sempre pelo menor preço">
 <meta name="twitter:description" content="Economize até 50% em passagens aéreas comparando LATAM, GOL, Azul e TAP. Pague em real, sem precisar ter milhas.">
 
-<!-- Dados estruturados para busca (rich results) -->
-<script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
-  (function () {
-      var script = document.createElement("script");
-      script.async = 1;
-      script.src = 'https://emrldtp.com/NTU2ODk0.js?t=556894';
-      document.head.appendChild(script);
-  })();
-</script>
-<script type="application/ld+json">
+<!-- Dados estruturados para busca (rich results) --><script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "TravelAgency",
   "name": "Marujo's Milhas",
-  "description": "Agência de viagens online e humanizada, especializada em passagens aéreas emitidas com milhas, com preço fixo em real e parcelamento em até 12x.",
+  "description": "Agência de viagens online e humanizada, especializada em passagens aéreas emitidas com milhas, com preço fixo em real e pagamento via PIX.",
   "priceRange": "$$",
   "areaServed": "BR",
   "telephone": "+55 21 96702-6563",
@@ -64,9 +55,9 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    { "@type": "Question", "name": "Preciso ter milhas para comprar?", "acceptedAnswer": { "@type": "Answer", "text": "Não. A Marujo's usa milhas intermediadas para emitir sua passagem. Você paga em real (PIX ou cartão) e recebe o bilhete das companhias normalmente." } },
+    { "@type": "Question", "name": "Preciso ter milhas para comprar?", "acceptedAnswer": { "@type": "Answer", "text": "Não. A Marujo's usa milhas intermediadas para emitir sua passagem. Você paga em PIX e recebe o bilhete das companhias normalmente." } },
     { "@type": "Question", "name": "As passagens são das companhias oficiais?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. Emitimos com Gol, Latam e Azul. Localizador e check-in funcionam nos canais oficiais." } },
-    { "@type": "Question", "name": "Posso parcelar?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. PIX à vista ou cartão em até 12x, conforme condições no atendimento." } },
+    { "@type": "Question", "name": "Como pago?", "acceptedAnswer": { "@type": "Answer", "text": "Pagamento exclusivo via PIX. Rápido, seguro e sem taxas extras." } },
     { "@type": "Question", "name": "Os preços mudam?", "acceptedAnswer": { "@type": "Answer", "text": "Ofertas em milhas são dinâmicas. Após escolher, nossa equipe confirma e emite rápido para garantir o valor." } }
   ]
 }
@@ -193,6 +184,7 @@
   .field-icon-wrap{position:relative;}
   .field-icon-wrap svg.fi-ico{position:absolute;left:11px;top:50%;transform:translateY(-3px);width:15px;height:15px;color:var(--brass-dark);pointer-events:none;z-index:1;}
   .field-icon-wrap input{padding-left:32px !important;}
+  .field-icon-wrap .date-trigger{padding-left:32px !important;}
   .picker-btn svg.fi-ico{width:15px;height:15px;color:var(--brass-dark);flex-shrink:0;margin-right:1px;}
 
   .search-trust-strip{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:center;padding:16px 2px 2px;border-top:1px dashed var(--card-line);margin-top:16px;}
@@ -221,7 +213,17 @@
   .ticket-divider{border-left:2px dashed var(--card-line);}
   .ticket-left{padding:22px 26px;display:flex;flex-direction:column;gap:12px;}
   .ticket-right{padding:20px 26px;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:210px;}
-  .airline-chip{width:30px;height:30px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+  .airline-chip{width:34px;height:34px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;overflow:hidden;background:#fff;border:1px solid var(--card-line);flex-shrink:0;}
+  .airline-chip img{width:100%;height:100%;object-fit:contain;display:block;padding:3px;}
+  .airline-chip.fallback{color:#fff;border:none;}
+  .fc-air{display:flex;align-items:center;gap:8px;}
+  .fc-air-logo{width:28px;height:28px;border-radius:6px;object-fit:contain;background:#fff;border:1px solid var(--card-line);padding:2px;flex-shrink:0;}
+  .flash-jump-btn{display:inline-flex;align-items:center;gap:8px;margin-top:18px;background:rgba(217,162,59,0.15);border:1px solid rgba(217,162,59,0.45);color:var(--brass-soft);border-radius:999px;padding:10px 18px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;transition:background .15s, transform .12s;}
+  .flash-jump-btn:hover{background:rgba(217,162,59,0.28);color:#fff;}
+  .flash-jump-btn:active{transform:scale(.97);}
+  .flash-jump-btn .fj-pulse{width:8px;height:8px;border-radius:50%;background:#2ecc71;box-shadow:0 0 0 0 rgba(46,204,113,.6);animation:fj-pulse 1.6s ease-out infinite;}
+  @keyframes fj-pulse{0%{box-shadow:0 0 0 0 rgba(46,204,113,.55);}70%{box-shadow:0 0 0 10px rgba(46,204,113,0);}100%{box-shadow:0 0 0 0 rgba(46,204,113,0);}}
+  @media (prefers-reduced-motion: reduce){ .flash-jump-btn .fj-pulse{animation:none;} }
   .best-badge{position:absolute;top:-16px;left:20px;background:var(--brass);color:var(--navy);font-size:10.5px;font-weight:800;padding:7px 13px;border-radius:999px;letter-spacing:.4px;box-shadow:0 4px 12px rgba(0,0,0,0.18);transform:rotate(-3deg);border:1.5px dashed rgba(14,25,48,0.35);}
   .strike{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--red);text-decoration:line-through;}
   .final-price{font-family:'Bricolage Grotesque',sans-serif;font-size:27px;font-weight:700;color:var(--ink);line-height:1;}
@@ -238,8 +240,7 @@
   h2.section-title{font-family:'Bricolage Grotesque',sans-serif;font-size:33px;font-weight:700;margin-top:10px;margin-bottom:34px;letter-spacing:-.3px;}
 
   .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
-  .about-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:44px;align-items:center;}
-  .about-text p{color:var(--slate);font-size:15.5px;line-height:1.75;margin:0 0 16px;}
+  .about-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:44px;align-items:center;}  .about-text p{color:var(--slate);font-size:15.5px;line-height:1.75;margin:0 0 16px;}
   .about-quote{background:linear-gradient(160deg,var(--navy-2),var(--navy));border-radius:20px;padding:34px 30px;position:relative;overflow:hidden;box-shadow:0 24px 50px rgba(9,15,30,0.28);}
   .about-quote::before{content:"✦";position:absolute;top:-10px;right:14px;font-size:80px;color:rgba(217,162,59,0.14);}
   .about-quote .aq-mark{color:var(--brass);font-family:'Bricolage Grotesque',sans-serif;font-size:38px;line-height:1;display:block;margin-bottom:6px;}
@@ -248,6 +249,104 @@
   .about-ig{display:inline-flex;align-items:center;gap:8px;margin-top:20px;color:var(--brass-soft);text-decoration:none;font-size:13.5px;font-weight:700;position:relative;z-index:1;}
   .about-ig svg{width:16px;height:16px;}
   @media (max-width:820px){ .about-grid{grid-template-columns:1fr;gap:28px;} }
+
+  /* ---------- ofertas relâmpago (com foto do destino) ---------- */
+  .flash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .flash-card{background:#fff;border:1px solid var(--card-line);border-radius:14px;padding:0;position:relative;overflow:hidden;transition:transform .18s ease, box-shadow .18s ease;text-decoration:none;color:inherit;display:flex;flex-direction:column;}
+  .flash-card:hover{transform:translateY(-3px);box-shadow:0 16px 30px rgba(9,15,30,0.12);border-color:var(--brass);}
+  .flash-card .fc-photo{height:110px;background:linear-gradient(135deg,var(--navy-2),var(--navy-3));background-size:cover;background-position:center;position:relative;}
+  .flash-card .fc-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(14,25,48,0.55));}
+  .flash-card .fc-discount{position:absolute;top:10px;left:10px;background:var(--brass);color:var(--navy);font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;z-index:1;letter-spacing:.3px;}
+  .flash-card .fc-body{padding:14px 16px 16px;display:flex;flex-direction:column;flex:1;}
+  .flash-card .fc-air{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.8px;color:var(--slate-soft);text-transform:uppercase;margin-bottom:4px;}
+  .flash-card .fc-route{display:flex;align-items:baseline;gap:6px;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16px;color:var(--ink);margin-bottom:2px;}
+  .flash-card .fc-route .fc-arrow{color:var(--brass-dark);font-size:13px;}
+  .flash-card .fc-date{font-size:12px;color:var(--slate);margin-bottom:10px;}
+  .flash-card .fc-price-row{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px dashed var(--card-line);margin-top:auto;}
+  .flash-card .fc-price{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;color:var(--green);}
+  .flash-card .fc-price small{font-size:11px;font-weight:600;color:var(--slate);}
+  .flash-card .fc-cta{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--blue);text-transform:uppercase;display:flex;align-items:center;gap:3px;}
+  .flash-skel{height:220px;border-radius:14px;background:linear-gradient(100deg,var(--paper-2) 30%, var(--paper) 50%, var(--paper-2) 70%);background-size:200% 100%;animation:flash-shimmer 1.4s infinite;}
+  @keyframes flash-shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+  .flash-disclaimer{font-size:11.5px;color:var(--slate-soft);margin-top:16px;text-align:center;}
+  #ofertas-relampago.flash-empty{display:none;}
+  @media (max-width:900px){ .flash-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .flash-grid{grid-template-columns:1fr;} }
+
+  /* ---------- calendário de preços (só cores, modal fixo) ---------- */
+  .date-field{position:relative;}
+  .date-field input[type="date"]{position:absolute;opacity:0;pointer-events:none;width:0;height:0;}
+  .date-trigger{
+    width:100%;border:1px solid var(--card-line);border-radius:10px;padding:10px 12px 10px 32px;
+    font-size:14px;color:var(--ink);background:var(--paper);cursor:pointer;font-family:inherit;
+    text-align:left;display:flex;align-items:center;justify-content:space-between;gap:6px;
+  }
+  .date-trigger:hover,.date-trigger:focus{outline:3px solid var(--brass-soft);outline-offset:1px;border-color:var(--brass);}
+  .date-trigger .dt-main{font-weight:600;}
+  .date-trigger .dt-hint{font-size:11px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-weight:700;white-space:nowrap;}
+  .date-trigger .dt-hint.empty{color:var(--slate-soft);font-weight:500;}
+
+  /* overlay + painel fixos — não sobem/descem com o scroll */
+  .price-cal-overlay{
+    display:none;position:fixed;inset:0;z-index:120;
+    background:rgba(9,15,30,0.45);backdrop-filter:blur(2px);
+    align-items:center;justify-content:center;padding:16px;
+    overscroll-behavior:contain;
+  }
+  .price-cal-overlay.open{display:flex;}
+  .price-cal{
+    position:relative;width:100%;max-width:340px;
+    background:#fff;border:1px solid var(--card-line);border-radius:16px;
+    box-shadow:0 24px 56px rgba(9,15,30,0.28);padding:14px 14px 12px;font-family:inherit;
+  }
+  .pc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;padding-right:36px;}
+  .pc-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;color:var(--ink);text-transform:capitalize;flex:1;min-width:0;}
+  .pc-nav{display:flex;gap:6px;flex-shrink:0;}
+  .pc-nav button{
+    width:34px;height:34px;border-radius:8px;border:1px solid var(--card-line);background:var(--paper);
+    cursor:pointer;font-size:18px;color:var(--ink);line-height:1;
+  }
+  .pc-nav button:hover{border-color:var(--brass);background:var(--brass-soft);}
+  .pc-legend{display:flex;gap:12px;font-size:10.5px;color:var(--slate);margin-bottom:8px;flex-wrap:wrap;}
+  .pc-legend span{display:inline-flex;align-items:center;gap:4px;}
+  .pc-legend i{width:10px;height:10px;border-radius:3px;display:inline-block;}
+  .pc-legend .lg{background:#D4F0E0;}
+  .pc-legend .lm{background:#FFF3D6;}
+  .pc-legend .lh{background:#F8D9D4;}
+  .pc-week{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;}
+  .pc-week span{text-align:center;font-size:10px;font-weight:700;color:var(--slate-soft);text-transform:uppercase;padding:2px 0;}
+  .pc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .pc-day{
+    aspect-ratio:1;border:none;border-radius:10px;background:#F3F0E6;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    padding:0;font-family:inherit;min-height:38px;
+  }
+  .pc-day:disabled{opacity:.28;cursor:default;background:transparent;}
+  .pc-day .dn{font-size:13px;font-weight:700;color:var(--ink);line-height:1;}
+  .pc-day.low{background:#D4F0E0;}
+  .pc-day.mid{background:#FFF3D6;}
+  .pc-day.high{background:#F8D9D4;}
+  .pc-day.selected{outline:2.5px solid var(--brass);outline-offset:-1px;}
+  .pc-day.today .dn{color:var(--blue);}
+  .pc-day:not(:disabled):hover{box-shadow:inset 0 0 0 1.5px var(--brass);}
+  .pc-foot{margin-top:10px;font-size:11px;color:var(--slate);text-align:center;}
+  .pc-close{
+    position:absolute;top:8px;right:8px;width:32px;height:32px;border:none;background:var(--paper);
+    border:1px solid var(--card-line);font-size:18px;color:var(--slate);cursor:pointer;line-height:1;
+    border-radius:8px;z-index:2;display:flex;align-items:center;justify-content:center;
+  }
+  .pc-close:hover{background:var(--brass-soft);color:var(--ink);border-color:var(--brass);}
+
+  /* badge de insight de preço nos resultados */
+  .price-insight-banner{display:none;background:var(--navy);border-radius:12px;padding:12px 16px;margin-bottom:14px;align-items:center;gap:12px;flex-wrap:wrap;}
+  .price-insight-banner.show{display:flex;}
+  .price-insight-banner .pib-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .price-insight-banner .pib-dot.baixo{background:#2ecc71;}
+  .price-insight-banner .pib-dot.tipico{background:var(--brass);}
+  .price-insight-banner .pib-dot.alto{background:#e74c3c;}
+  .price-insight-banner .pib-text{color:#EAF0FE;font-size:13.5px;font-weight:600;flex:1;}
+  .price-insight-banner .pib-text span{color:var(--brass-soft);}
+  .price-insight-banner .pib-range{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#93AAD1;}
 
   .how-card{background:#fff;border:1px solid var(--card-line);border-radius:16px;padding:24px;position:relative;}
   .how-card .step-mono{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--brass-dark);letter-spacing:1.4px;margin-bottom:12px;}
@@ -355,20 +454,31 @@
   .picker-city{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .picker-code{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--slate);flex-shrink:0;}
 
-  .airport-overlay{position:fixed;inset:0;background:rgba(9,15,30,0.6);backdrop-filter:blur(2px);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0;overscroll-behavior:contain;}
+  .airport-overlay{
+    position:fixed;inset:0;background:rgba(9,15,30,0.55);backdrop-filter:blur(3px);
+    z-index:130;display:none;align-items:flex-end;justify-content:center;
+    padding:0;overscroll-behavior:contain;
+  }
   .airport-overlay.show{display:flex;}
-  .airport-sheet{position:relative;background:#fff;width:100%;max-width:480px;height:min(82vh, 560px);max-height:82vh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;box-shadow:0 -12px 40px rgba(9,15,30,0.4);animation:sheet-up .22s ease;overflow:hidden;}
-  @keyframes sheet-up{from{transform:translateY(24px);opacity:.4;}to{transform:translateY(0);opacity:1;}}
-  .airport-sheet-grip{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:36px;height:4px;border-radius:99px;background:var(--card-line);z-index:1;}
-  .airport-sheet-head{display:flex;align-items:center;gap:8px;padding:22px 14px 10px;border-bottom:1px solid var(--card-line);flex-shrink:0;background:#fff;}
+  .airport-sheet{
+    position:relative;background:#fff;width:100%;max-width:440px;
+    height:min(78vh, 580px);max-height:78vh;
+    border-radius:20px 20px 0 0;display:flex;flex-direction:column;
+    box-shadow:0 -16px 48px rgba(9,15,30,0.35);
+    animation:sheet-up .22s ease;overflow:hidden;
+  }
+  @keyframes sheet-up{from{transform:translateY(28px);opacity:.5;}to{transform:translateY(0);opacity:1;}}
+  .airport-sheet-grip{width:40px;height:4px;border-radius:99px;background:var(--card-line);margin:10px auto 0;flex-shrink:0;}
+  .airport-sheet-head{display:flex;align-items:center;gap:8px;padding:12px 14px 12px;border-bottom:1px solid var(--card-line);flex-shrink:0;background:#fff;}
   #airport-search{flex:1;border:1px solid var(--card-line);border-radius:10px;padding:11px 12px;font-size:15px;background:var(--paper);outline:none;min-width:0;font-family:inherit;}
-  #airport-search:focus{outline:3px solid var(--brass-soft);outline-offset:1px;}
-  .airport-close{background:var(--paper);border:1px solid var(--card-line);border-radius:10px;width:38px;height:38px;flex-shrink:0;cursor:pointer;font-size:15px;color:var(--slate);}
-  .airport-list{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:6px 6px 24px;scroll-padding-bottom:24px;}
-  .airport-group-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1px;color:var(--brass-dark);padding:12px 12px 4px;text-transform:uppercase;position:sticky;top:0;background:#fff;z-index:1;}
-  .airport-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  #airport-search:focus{outline:3px solid var(--brass-soft);outline-offset:1px;border-color:var(--brass);}
+  .airport-close{background:var(--paper);border:1px solid var(--card-line);border-radius:10px;width:40px;height:40px;flex-shrink:0;cursor:pointer;font-size:16px;color:var(--slate);}
+  .airport-list{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:4px 8px calc(20px + env(safe-area-inset-bottom));}
+  .airport-group-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1px;color:var(--brass-dark);padding:14px 10px 6px;text-transform:uppercase;position:sticky;top:0;background:#fff;z-index:2;}
+  .airport-row{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
   .airport-row:hover, .airport-row.active{background:var(--paper);}
-  .airport-row-code{width:44px;height:32px;border-radius:8px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;flex-shrink:0;}
+  .airport-row-code{width:48px;height:34px;border-radius:8px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;}
+  .airport-row-code.metro{background:var(--brass);color:var(--navy);}
   .airport-row-text{min-width:0;flex:1;}
   .airport-row-city{font-size:14.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .airport-row-name{font-size:12px;color:var(--slate);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -483,13 +593,24 @@
   .account-dropdown button.logout svg{color:var(--red);}
   .account-wrap{position:relative;}
 
+  .auth-google{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+    background:#fff;border:1px solid var(--card-line);border-radius:10px;padding:12px 14px;
+    font-size:14.5px;font-weight:700;color:#3c4043;cursor:pointer;font-family:inherit;
+    margin-bottom:14px;transition:background .12s,border-color .12s,box-shadow .12s;
+  }
+  .auth-google:hover{background:#f8f9fa;border-color:#dadce0;box-shadow:0 1px 3px rgba(60,64,67,.15);}
+  .auth-google:disabled{opacity:.6;cursor:wait;}
+  .auth-google img{width:18px;height:18px;flex-shrink:0;}
+  .auth-divider{display:flex;align-items:center;gap:12px;margin:4px 0 14px;color:var(--slate-soft);font-size:12px;font-weight:600;}
+  .auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--card-line);}
   .auth-overlay{position:fixed;inset:0;background:rgba(9,15,30,0.6);backdrop-filter:blur(2px);z-index:110;display:none;align-items:center;justify-content:center;padding:20px;overscroll-behavior:contain;}
   .auth-overlay.show{display:flex;}
   .auth-modal{background:#fff;width:100%;max-width:420px;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(9,15,30,0.4);animation:sheet-up .22s ease;max-height:90vh;display:flex;flex-direction:column;}
   .auth-modal-head{background:var(--navy);padding:20px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
   .auth-modal-head .amh-title{color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;}
   .auth-close{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:14px;flex-shrink:0;}
-  .auth-tabs{display:flex;gap:4px;padding:16px 22px 0;flex-shrink:0;}
+  .auth-tabs{display:none !important;display:flex;gap:4px;padding:16px 22px 0;flex-shrink:0;}
   .auth-tab{flex:1;background:var(--paper);border:none;padding:10px 0;border-radius:10px;font-size:13.5px;font-weight:700;color:var(--slate);cursor:pointer;font-family:inherit;}
   .auth-tab.active{background:var(--navy);color:#fff;}
   .auth-body{padding:20px 22px 24px;overflow-y:auto;}
@@ -606,7 +727,7 @@
 </head>
 <body>
 
-<div class="ticker-bar">
+<div class="ticker-bar" id="ticker-bar" role="link" tabindex="0" title="Ver ofertas relâmpago" style="cursor:pointer;">
   <div class="ticker-track" id="ticker-track"></div>
 </div>
 
@@ -626,8 +747,8 @@
     <img class="logo-img" src="https://dl.dropboxusercontent.com/scl/fi/qseevce34se66s867pqcv/1785431732563_tmp.jpg?rlkey=rabna4gdxhawdqgdgg6r4w6hx&dl=0" alt="Marujo's Milhas — Agência de Viagens">
     <nav>
       <span class="nav-links" style="display:flex;gap:22px;flex-wrap:wrap;">
-        <a href="#destinos">Destinos</a>
-        <a href="#como-funciona">Como funciona</a>
+        <a href="#ofertas-relampago">Ofertas</a>
+    <a href="#como-funciona">Como funciona</a>
         <a href="#depoimentos">Depoimentos</a>
         <a href="#quem-somos">Quem somos</a>
         <a href="#faq">Dúvidas</a>
@@ -665,7 +786,7 @@
 <div class="mobile-menu" id="mobile-menu">
   <div class="mobile-menu-panel">
     <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Fechar menu">✕</button>
-    <a href="#destinos">Destinos</a>
+    <a href="#ofertas-relampago">Ofertas</a>
     <a href="#como-funciona">Como funciona</a>
     <a href="#depoimentos">Depoimentos</a>
     <a href="#quem-somos">Quem somos</a>
@@ -677,38 +798,26 @@
 
 <!-- Modal de login / cadastro -->
 <div class="auth-overlay" id="auth-overlay">
-  <div class="auth-modal" role="dialog" aria-modal="true" aria-label="Entrar ou criar conta">
+  <div class="auth-modal" role="dialog" aria-modal="true" aria-label="Entrar com Google">
     <div class="auth-modal-head">
-      <span class="amh-title display">Área do passageiro</span>
+      <span class="amh-title display">Entre para continuar</span>
       <button class="auth-close" id="auth-close" type="button" aria-label="Fechar">✕</button>
-    </div>
-    <div class="auth-tabs">
-      <button type="button" class="auth-tab active" data-auth-tab="login">Entrar</button>
-      <button type="button" class="auth-tab" data-auth-tab="signup">Criar conta</button>
     </div>
     <div class="auth-body">
       <div class="auth-perks">
-        <span>✈️ Acompanhe suas cotações e viagens em um só lugar</span>
-        <span>⚡ Próxima compra mais rápida, com seus dados salvos</span>
-        <span>🎁 Acesso ao programa de indicação</span>
+        <span>🔒 Ofertas e compras só para quem está logado</span>
+        <span>✈️ Suas cotações e viagens ficam salvas</span>
+        <span>⚡ Entrada rápida e segura com Google</span>
       </div>
       <div class="auth-error" id="auth-error"></div>
-
-      <form id="login-form">
-        <div class="auth-field"><label>E-mail</label><input type="email" id="login-email" placeholder="voce@email.com" required autocomplete="email"></div>
-        <div class="auth-field"><label>Senha</label><input type="password" id="login-password" placeholder="Sua senha" required autocomplete="current-password"></div>
-        <button type="submit" class="auth-submit">Entrar</button>
-        <div class="auth-note">Ainda não tem conta? <a href="#" id="go-signup" style="color:var(--blue);font-weight:600;text-decoration:none;">Criar conta grátis</a></div>
-      </form>
-
-      <form id="signup-form" style="display:none;">
-        <div class="auth-field"><label>Nome completo</label><input type="text" id="signup-name" placeholder="Como podemos te chamar" required autocomplete="name"></div>
-        <div class="auth-field"><label>E-mail</label><input type="email" id="signup-email" placeholder="voce@email.com" required autocomplete="email"></div>
-        <div class="auth-field"><label>WhatsApp</label><input type="tel" id="signup-phone" placeholder="(00) 00000-0000" autocomplete="tel"></div>
-        <div class="auth-field"><label>Senha</label><input type="password" id="signup-password" placeholder="Crie uma senha" required autocomplete="new-password"></div>
-        <button type="submit" class="auth-submit">Criar minha conta</button>
-        <div class="auth-note">Já tem conta? <a href="#" id="go-login" style="color:var(--blue);font-weight:600;text-decoration:none;">Entrar</a></div>
-      </form>
+      <p style="font-size:14px;color:var(--slate);line-height:1.5;margin:0 0 16px;text-align:center;">
+        Use sua conta Google para buscar ofertas e emitir passagens.
+      </p>
+      <button type="button" class="auth-google" id="auth-google-btn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="18" height="18">
+        Continuar com Google
+      </button>
+      <p class="auth-note" style="text-align:center;margin-top:14px;">Ao entrar, você concorda em usar a conta só para cotações e compras na Marujo's Milhas.</p>
     </div>
   </div>
 </div>
@@ -756,7 +865,7 @@
 
 <div class="mobile-cta-bar" id="mobile-cta-bar">
   <div class="info">
-    <div class="route" id="mcb-route">São Paulo → Rio de Janeiro</div>
+    <div class="route" id="mcb-route">Manaus → Rio de Janeiro</div>
     <div class="sub">Toque para buscar as melhores ofertas</div>
   </div>
   <button id="mcb-btn">🔍 Buscar</button>
@@ -781,14 +890,19 @@
       <div class="hero-inner">
         <div class="eyebrow"><span>✦ MILHAS DE VERDADE, PREÇO DE VERDADE</span></div>
         <h1 class="display">Passagens aéreas com até <em>50% de economia</em></h1>
-        <p>Comparamos LATAM, GOL, Azul e TAP em milhas e em tarifa normal. Você paga em real, parcela em até 12x e embarca sem precisar ter uma milha sequer.</p>
-        <div class="hero-social">
+        <p>Comparamos LATAM, GOL, Azul e TAP em milhas e em tarifa normal. Você paga em real via PIX e embarca sem precisar ter uma milha sequer.</p>
+        <a class="hero-social" href="https://www.google.com/search?q=avalia%C3%A7%C3%B5es+sobre+marujo%27s+milhas+manaus" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
           <div class="avatars-mini">
             <span style="background:#3972DB;">PV</span><span style="background:#D9A23B;color:#0E1930;">AM</span><span style="background:#1E8F5F;">MB</span>
           </div>
           <span class="stars-mini">★★★★★</span>
-          <span class="htxt"><b>5.0</b> · +50 avaliações no Google</span>
-        </div>
+          <span class="htxt"><b>5.0</b> · +50 avaliações no Google →</span>
+        </a>
+        <a class="flash-jump-btn" href="#ofertas-relampago">
+          <span class="fj-pulse" aria-hidden="true"></span>
+          Ver ofertas relâmpago
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </a>
       </div>
       <div class="hero-photo">
         <div class="hp-glow"></div>
@@ -797,7 +911,7 @@
           <div class="hp-shade"></div>
           <div class="hp-stamp">✈ EMBARQUE LIBERADO</div>
           <div class="hp-caption">
-            <span class="hp-route">GRU → GIG · MALA PRONTA</span>
+            <span class="hp-route">MAO → GIG · MALA PRONTA</span>
             <span class="hp-line">O destino dos seus sonhos começa aqui</span>
           </div>
           <div class="hp-tap"><span>Buscar passagem</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
@@ -816,16 +930,16 @@
       <div class="bp-perforation"><i class="bp-notch left"></i><i class="bp-notch right"></i></div>
       <div class="search-card-body">
         <div class="route-preview" id="route-preview">
-          <span class="rp-code" id="rp-origin">GRU</span>
+          <span class="rp-code" id="rp-origin">MAO</span>
           <div class="rp-line"><svg class="rp-plane" viewBox="0 0 24 24" fill="currentColor"><path d="M2 16 22 8l-7 14-2-7-7-2z"/></svg></div>
-          <span class="rp-code" id="rp-destination">GIG</span>
+          <span class="rp-code" id="rp-destination">RIO</span>
         </div>
         <div class="route-meta" aria-hidden="true">
           <span>CLASSE ECONÔMICA</span><span class="rm-dot">·</span><span>GRUPO 1</span><span class="rm-dot">·</span><span>BAGAGEM DESPACHADA INCLUSA</span>
         </div>
         <div class="search-services-row">
           <div class="search-service"><div class="ssi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.3 19.1 12l-9.6-6.5-1.3.9 4.4 6.9-4.2.2-2-1.6-1 .7 2 3.1 3.7.8 4.9-.6.6 3.9 1.2.5z"/></svg></div><span>Passagens</span></div>
-          <div class="search-service"><div class="ssi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div><span>12x sem juros</span></div>
+          <div class="search-service"><div class="ssi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div><span>Pagamento via PIX</span></div>
           <div class="search-service"><div class="ssi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z"/><path d="m9 12 2 2 4-4"/></svg></div><span>Compra segura</span></div>
           <div class="search-service"><div class="ssi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11a9 9 0 0 1 18 0"/><path d="M21 12v5a2 2 0 0 1-2 2h-1v-7Zm-18 0h3v7H5a2 2 0 0 1-2-2Z"/></svg></div><span>Suporte humano</span></div>
         </div>
@@ -838,8 +952,8 @@
             <label>Origem</label>
             <button type="button" class="picker-btn" id="f-origin-btn" data-field="origin">
               <svg class="fi-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.3 19.1 12l-9.6-6.5-1.3.9 4.4 6.9-4.2.2-2-1.6-1 .7 2 3.1 3.7.8 4.9-.6.6 3.9 1.2.5z"/></svg>
-              <span class="picker-city" id="f-origin-city">São Paulo</span>
-              <span class="picker-code" id="f-origin-code">GRU</span>
+              <span class="picker-city" id="f-origin-city">Manaus</span>
+              <span class="picker-code" id="f-origin-code">MAO</span>
             </button>
           </div>
           <button class="swap-btn" id="swap-btn" aria-label="Inverter origem e destino">⇄</button>
@@ -848,23 +962,31 @@
             <button type="button" class="picker-btn" id="f-destination-btn" data-field="destination">
               <svg class="fi-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-7.4 7-12.5A7 7 0 0 0 5 9.5C5 14.6 12 22 12 22Z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
               <span class="picker-city" id="f-destination-city">Rio de Janeiro</span>
-              <span class="picker-code" id="f-destination-code">GIG</span>
+              <span class="picker-code" id="f-destination-code">RIO</span>
             </button>
           </div>
-          <div class="field">
+          <div class="field date-field" id="depart-field">
             <label>Ida</label>
             <div class="field-icon-wrap">
               <svg class="fi-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-              <input id="f-depart" type="date" value="2026-09-14">
+              <input id="f-depart" type="date" value="2026-09-14" tabindex="-1" aria-hidden="true">
+              <button type="button" class="date-trigger" id="f-depart-btn" data-for="f-depart" aria-haspopup="dialog">
+                <span class="dt-main" id="f-depart-label">14 set 2026</span>
+                <span class="dt-hint empty" id="f-depart-hint">ver preços</span>
+              </button>
             </div>
-          </div>
-          <div class="field">
+                      </div>
+          <div class="field date-field" id="return-field">
             <label>Volta</label>
             <div class="field-icon-wrap">
               <svg class="fi-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-              <input id="f-return" type="date" value="2026-09-28">
+              <input id="f-return" type="date" value="2026-09-28" tabindex="-1" aria-hidden="true">
+              <button type="button" class="date-trigger" id="f-return-btn" data-for="f-return" aria-haspopup="dialog">
+                <span class="dt-main" id="f-return-label">28 set 2026</span>
+                <span class="dt-hint empty" id="f-return-hint">ver preços</span>
+              </button>
             </div>
-          </div>
+                      </div>
           <div class="field">
             <label>Passageiros</label>
             <select id="f-pax">
@@ -876,12 +998,12 @@
         <div class="search-trust-strip">
           <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>As melhores companhias</div>
           <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>Preços que cabem no bolso</div>
-          <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>Parcele em até 12x</div>
+          <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>Pagamento via PIX</div>
           <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>Atendimento especializado</div>
         </div>
         <div class="bp-barcode-row" aria-hidden="true">
           <div class="bp-barcode"></div>
-          <span class="bp-barcode-code">MJ7X9K-GRU-GIG</span>
+          <span class="bp-barcode-code">MJ7X9K-MAO-GIG</span>
         </div>
       </div>
     </div>
@@ -905,6 +1027,11 @@
     <button type="button" class="filter-chip" data-filter="latam">Latam</button>
     <button type="button" class="filter-chip" data-filter="azul">Azul</button>
   </div>
+  <div class="price-insight-banner" id="price-insight-banner" role="status">
+    <span class="pib-dot" id="pib-dot"></span>
+    <div class="pib-text" id="pib-text"></div>
+    <div class="pib-range" id="pib-range"></div>
+  </div>
   <div id="tickets-container"></div>
 </section>
 
@@ -918,18 +1045,19 @@
   </div>
 </section>
 
-<section class="dest-section reveal" id="destinos">
-  <div class="wrap">
-    <div class="eyebrow-line on-dark"><span class="dash"></span>DESTINOS EM ALTA</div>
-    <h2 class="section-title display" style="color:#fff;">Pra onde o vento leva você</h2>
-    <div class="grid-3" id="destinos-grid"></div>
+<section class="block reveal" id="ofertas-relampago">
+  <div class="eyebrow-line"><span class="dash"></span> ATUALIZADO AGORA</div>
+  <h2 class="section-title display">Ofertas relâmpago saindo de <span id="flash-origin-label">Manaus</span> <span style="font-size:14px;font-weight:600;color:var(--slate);font-family:Figtree,sans-serif;">· menor preço primeiro</span></h2>
+  <div class="flash-grid" id="flash-grid">
+    <div class="flash-skel"></div><div class="flash-skel"></div><div class="flash-skel"></div><div class="flash-skel"></div>
   </div>
+  <p class="flash-disclaimer">Preços de referência, sujeitos a alteração e disponibilidade. Ao clicar em "Ver oferta" você é levado ao site parceiro pra concluir a compra.</p>
 </section>
 
 <section class="security-strip reveal">
   <div class="security-row">
     <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z"/><path d="m9 12 2 2 4-4"/></svg>Compra 100% segura</div>
-    <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>PIX ou cartão em até 12x</div>
+    <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>Pagamento exclusivo via PIX</div>
     <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Emissão pelas companhias oficiais</div>
     <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Atendimento humano, sem robô</div>
   </div>
@@ -938,11 +1066,12 @@
 <section class="block reveal" id="depoimentos">
   <div class="eyebrow-line"><span class="dash"></span>QUEM VIAJOU, APROVOU</div>
   <h2 class="section-title display" style="margin-bottom:8px;">O que os passageiros dizem</h2>
-  <p class="testi-note">Avaliações reais de clientes, direto do Google.</p>
+  <p class="testi-note">Avaliações reais de clientes, direto do Google. <a href="https://www.google.com/search?q=avalia%C3%A7%C3%B5es+sobre+marujo%27s+milhas+manaus" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700;text-decoration:none;">Ver no Google →</a></p>
   <div class="testi-agg" id="testi-agg"></div>
   <div class="grid-3" id="testi-grid"></div>
   <div style="text-align:center;margin-top:28px;">
     <button id="testi-more-btn" class="sort-btn" style="border-color:var(--navy);color:var(--navy);padding:10px 22px;">Ver mais depoimentos</button>
+    <a href="https://www.google.com/search?q=avalia%C3%A7%C3%B5es+sobre+marujo%27s+milhas+manaus" target="_blank" rel="noopener" class="sort-btn" style="border-color:var(--brass);color:var(--navy);padding:10px 22px;text-decoration:none;margin-left:8px;display:inline-block;">Ver no Google →</a>
   </div>
 </section>
 
@@ -977,7 +1106,7 @@
       <summary>Preciso ter milhas para comprar?
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </summary>
-      <p>Não. A Marujo's usa milhas intermediadas para emitir sua passagem. Você paga em real (PIX ou cartão) e recebe o bilhete das companhias normalmente.</p>
+      <p>Não. A Marujo's usa milhas intermediadas para emitir sua passagem. Você paga em PIX e recebe o bilhete das companhias normalmente.</p>
     </details>
     <details class="faq-item">
       <summary>As passagens são das companhias oficiais?
@@ -986,10 +1115,10 @@
       <p>Sim. Emitimos com Gol, Latam e Azul. Localizador e check-in funcionam nos canais oficiais.</p>
     </details>
     <details class="faq-item">
-      <summary>Posso parcelar?
+      <summary>Como pago?
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </summary>
-      <p>Sim. PIX à vista ou cartão em até 12x, conforme condições no atendimento.</p>
+      <p>Pagamento exclusivo via PIX. Rápido, seguro e sem taxas extras. Após escolher o voo, nossa equipe envia o QR Code no WhatsApp.</p>
     </details>
     <details class="faq-item">
       <summary>Os preços mudam?
@@ -1031,8 +1160,7 @@
       <div>
         <h4>Navegue</h4>
         <div class="flinks">
-          <a href="#destinos">Destinos</a>
-          <a href="#como-funciona">Como funciona</a>
+            <a href="#como-funciona">Como funciona</a>
           <a href="#depoimentos">Depoimentos</a>
           <a href="#faq">Perguntas frequentes</a>
         </div>
@@ -1057,12 +1185,16 @@
       <div class="copy">© 2026 Marujo's Milhas — todos os direitos reservados</div>
       <div class="badges">
         <span>✓ Emissão pelas companhias oficiais</span>
-        <span>✓ Pagamento via PIX ou cartão</span>
+        <span>✓ Pagamento exclusivo via PIX</span>
       </div>
     </div>
   </div>
 </footer>
 
+
+<div class="price-cal-overlay" id="price-cal-overlay" aria-hidden="true">
+  <div class="price-cal" id="price-cal-panel" role="dialog" aria-label="Escolher data"></div>
+</div>
 <script>
 const AIRLINES = [
   { name: "LATAM", code: "LA", multiplier: 27, color: "#7A2331" },
@@ -1105,6 +1237,57 @@ const TESTIMONIALS = [
 
 const AVATAR_COLORS = ["#3972DB", "#D9A23B", "#0E1930", "#C1432D", "#1E8F5F", "#7A4FC4", "#D8792A", "#2B8FA8"];
 function currency(v){ return v.toLocaleString("pt-BR", { style:"currency", currency:"BRL" }); }
+// Desconto comercial Marujo's sobre a tarifa de mercado (você vende com esse preço)
+const MARUJO_DISCOUNT = 0.0887; // 8,87%
+
+// Logos oficiais das companhias (mesmos do Google Flights)
+const AIRLINE_LOGOS = {
+  LA: "https://www.gstatic.com/flights/airline_logos/70px/LA.png",
+  JJ: "https://www.gstatic.com/flights/airline_logos/70px/LA.png",
+  LATAM: "https://www.gstatic.com/flights/airline_logos/70px/LA.png",
+  G3: "https://www.gstatic.com/flights/airline_logos/70px/G3.png",
+  GOL: "https://www.gstatic.com/flights/airline_logos/70px/G3.png",
+  AD: "https://www.gstatic.com/flights/airline_logos/70px/AD.png",
+  AZUL: "https://www.gstatic.com/flights/airline_logos/70px/AD.png",
+  TP: "https://www.gstatic.com/flights/airline_logos/70px/TP.png",
+  TAP: "https://www.gstatic.com/flights/airline_logos/70px/TP.png",
+  AA: "https://www.gstatic.com/flights/airline_logos/70px/AA.png",
+  UA: "https://www.gstatic.com/flights/airline_logos/70px/UA.png",
+  DL: "https://www.gstatic.com/flights/airline_logos/70px/DL.png",
+  CM: "https://www.gstatic.com/flights/airline_logos/70px/CM.png",
+  AV: "https://www.gstatic.com/flights/airline_logos/70px/AV.png",
+  EK: "https://www.gstatic.com/flights/airline_logos/70px/EK.png",
+  QR: "https://www.gstatic.com/flights/airline_logos/70px/QR.png",
+  AF: "https://www.gstatic.com/flights/airline_logos/70px/AF.png",
+  IB: "https://www.gstatic.com/flights/airline_logos/70px/IB.png",
+  BA: "https://www.gstatic.com/flights/airline_logos/70px/BA.png",
+  KL: "https://www.gstatic.com/flights/airline_logos/70px/KL.png",
+};
+function airlineLogoUrl(codeOrName){
+  if (!codeOrName) return null;
+  const k = String(codeOrName).trim().toUpperCase();
+  if (AIRLINE_LOGOS[k]) return AIRLINE_LOGOS[k];
+  // tenta só as 2 primeiras letras do código IATA
+  const two = k.replace(/[^A-Z0-9]/g,"").slice(0,2);
+  if (AIRLINE_LOGOS[two]) return AIRLINE_LOGOS[two];
+  // fallback genérico Google Flights
+  if (two.length === 2) return `https://www.gstatic.com/flights/airline_logos/70px/${two}.png`;
+  return null;
+}
+function airlineChipHtml(airline){
+  const code = (airline && (airline.code || airline.slug)) || "";
+  const name = (airline && airline.name) || code || "";
+  const logo = airlineLogoUrl(code) || airlineLogoUrl(name);
+  if (logo) {
+    return `<div class="airline-chip" title="${name}"><img src="${logo}" alt="${name}" loading="lazy" onerror="this.parentNode.classList.add('fallback');this.parentNode.style.background='${(airline&&airline.color)||"#0E1930"}';this.parentNode.textContent='${(code||"?").slice(0,2)}';"></div>`;
+  }
+  return `<div class="airline-chip fallback" style="background:${(airline&&airline.color)||"#0E1930"}">${(code||"?").slice(0,2)}</div>`;
+}
+
+function precoMarujo(valorMercado){
+  const v = Number(valorMercado) || 0;
+  return Math.round(v * (1 - MARUJO_DISCOUNT));
+}
 function initials(name){ return (name||"?").split(" ").map(n=>n[0]).slice(0,2).join("").toUpperCase(); }
 
 function makeFlight(seed, origin, destination){
@@ -1132,23 +1315,37 @@ function makeFlight(seed, origin, destination){
 function renderLeg(leg, label){
   if(!leg) return "";
   const stopsTxt = leg.stops === 0 ? "Direto" : (leg.stops + " parada" + (leg.stops>1?"s":""));
-  return `<div class="leg-row">
-    <div class="leg-label">${label}</div>
-    <div class="mono" style="font-size:17px;font-weight:600;">${leg.dep}</div>
-    <div style="flex:1;text-align:center;min-width:0;">
+  const oCode = leg.originCode || "";
+  const dCode = leg.destCode || "";
+  const oCity = leg.originCity || "";
+  const dCity = leg.destCity || "";
+  return `<div class="leg-row" style="align-items:flex-start;">
+    <div class="leg-label" style="padding-top:4px;">${label}</div>
+    <div style="min-width:56px;">
+      <div class="mono" style="font-size:17px;font-weight:600;">${leg.dep}</div>
+      <div style="font-size:11px;color:#5B6478;margin-top:2px;"><b class="mono" style="color:var(--ink);">${oCode}</b>${oCity ? " · " + oCity.split(" /")[0] : ""}</div>
+    </div>
+    <div style="flex:1;text-align:center;min-width:0;padding-top:2px;">
       <div style="font-size:10.5px;color:#8A98A6;margin-bottom:2px;">⏱ ${leg.duration} · ${stopsTxt}</div>
       <div style="border-top:1.5px dashed #D8D0BA;"></div>
-      <div style="font-size:10px;color:#B7C4DC;margin-top:2px;">${leg.originCode || ""} → ${leg.destCode || ""}</div>
+      <div class="mono" style="font-size:11px;font-weight:700;color:var(--navy-3);margin-top:3px;">${oCode} → ${dCode}</div>
     </div>
-    <div class="mono" style="font-size:17px;font-weight:600;">${leg.arr}</div>
+    <div style="min-width:56px;text-align:right;">
+      <div class="mono" style="font-size:17px;font-weight:600;">${leg.arr}</div>
+      <div style="font-size:11px;color:#5B6478;margin-top:2px;">${dCity ? dCity.split(" /")[0] + " · " : ""}<b class="mono" style="color:var(--ink);">${dCode}</b></div>
+    </div>
   </div>`;
 }
 
 function renderTicket(r, isCheapest){
   const hasMarket = r.marketValue && r.marketValue > r.ourValue;
   const pct = hasMarket ? Math.round((r.savings / r.marketValue) * 100) : 0;
-  const originCity = (r.origin || "").split(" (")[0];
-  const destCity = (r.destination || "").split(" (")[0];
+  const depCode = r.depAirport || (r.outbound && r.outbound.originCode) || selectedAirport.origin.code;
+  const arrCode = r.arrAirport || (r.outbound && r.outbound.destCode) || selectedAirport.destination.code;
+  const originCity = r.originCity || (r.origin || "").split(" (")[0];
+  const destCity = r.destCity || (r.destination || "").split(" (")[0];
+  const originLabel = originCity + ' · <b class="mono" style="font-weight:700;color:var(--ink);">' + depCode + '</b>';
+  const destLabel = destCity + ' · <b class="mono" style="font-weight:700;color:var(--ink);">' + arrCode + '</b>';
   const typePill = r.offerType === "miles"
     ? '<span class="type-pill miles">✦ Em milhas</span>'
     : (r.offerType === "revenue" ? '<span class="type-pill revenue">Tarifa</span>' : "");
@@ -1159,17 +1356,24 @@ function renderTicket(r, isCheapest){
     legsHtml = renderLeg(r.outbound, "IDA") + renderLeg(r.inbound, "VOLTA");
   } else {
     legsHtml = `<div style="display:flex;align-items:center;gap:16px;">
-        <div><div class="mono" style="font-size:20px;font-weight:600;">${r.dep}</div><div style="font-size:12px;color:#8A98A6;">${originCity}</div></div>
-        <div style="flex:1;text-align:center;">
+        <div>
+          <div class="mono" style="font-size:20px;font-weight:600;">${r.dep}</div>
+          <div style="font-size:12px;color:#8A98A6;line-height:1.35;">${originLabel}</div>
+        </div>
+        <div style="flex:1;text-align:center;min-width:0;">
           <div style="font-size:11px;color:#8A98A6;margin-bottom:2px;">⏱ ${r.duration}</div>
           <div style="border-top:1.5px dashed #D8D0BA;"></div>
+          <div class="mono" style="font-size:11px;color:var(--navy-3);font-weight:700;margin-top:3px;letter-spacing:.3px;">${depCode} → ${arrCode}</div>
         </div>
-        <div><div class="mono" style="font-size:20px;font-weight:600;">${r.arr}</div><div style="font-size:12px;color:#8A98A6;">${destCity}</div></div>
+        <div style="text-align:right;">
+          <div class="mono" style="font-size:20px;font-weight:600;">${r.arr}</div>
+          <div style="font-size:12px;color:#8A98A6;line-height:1.35;">${destLabel}</div>
+        </div>
       </div>`;
   }
   const feeTxt = r.fees ? `<div class="fee-line">Taxas inclusas: ${currency(r.fees)}</div>` : "";
   const waText = encodeURIComponent(
-    `Olá! Quero emitir essa passagem:\\n${originCity} → ${destCity}\\n${r.airline.name} · ${currency(r.ourValue)}\\n${r.dep || ""} / ${r.arr || ""}\\nRef: ${r.locator}`
+    `Olá! Quero emitir essa passagem:\n${originCity} (${depCode}) → ${destCity} (${arrCode})\n${r.airline.name} · ${currency(r.ourValue)}\n${r.dep || ""} / ${r.arr || ""}\nRef: ${r.locator}`
   );
   const selectHref = `https://wa.me/5521967026563?text=${waText}`;
   return `
@@ -1177,7 +1381,7 @@ function renderTicket(r, isCheapest){
     ${isCheapest ? '<div class="best-badge">MELHOR PREÇO</div>' : ''}
     <div class="ticket-left">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-        <div class="airline-chip" style="background:${r.airline.color}">${r.airline.code}</div>
+        ${airlineChipHtml(r.airline)}
         <div style="font-size:13.5px;font-weight:700;">${r.airline.name}</div>
         ${typePill}
         <div class="mono" style="font-size:11.5px;color:#8A98A6;margin-left:auto;">${r.stops === 0 ? "Voo direto" : r.stops + " parada" + (r.stops>1?"s":"")}</div>
@@ -1185,6 +1389,7 @@ function renderTicket(r, isCheapest){
       ${legsHtml}
       <div class="ticket-meta">
         <span class="mono" style="font-size:10px;color:#B7C4DC;letter-spacing:1.5px;">REF ${r.locator}</span>
+        <span class="mono" style="font-size:11px;font-weight:700;color:var(--navy-3);background:var(--paper);border:1px solid var(--card-line);border-radius:6px;padding:2px 8px;">${depCode} → ${arrCode}</span>
         <span style="font-size:11.5px;color:#8A98A6;">${bagTxt}</span>
       </div>
     </div>
@@ -1196,12 +1401,13 @@ function renderTicket(r, isCheapest){
       <div class="final-price display">${currency(r.ourValue)}</div>
       ${feeTxt}
       ${hasMarket && pct > 0 ? `<div class="save-line">✓ ${pct}% mais barato</div>` : (r.offerType === "miles" ? '<div class="save-line">✓ Preço em milhas</div>' : '')}
-      <div style="font-size:12px;color:#1E8F5F;font-weight:600;margin-top:4px">PIX ${currency(Math.round(r.ourValue*0.95))}</div>
-      <div style="font-size:11.5px;color:#5C7185">ou 12x de ${currency(Math.ceil(r.ourValue/12))}</div>
-      <a class="select-btn" href="${selectHref}" target="_blank" rel="noopener" style="text-decoration:none;text-align:center;" data-route="${originCity} → ${destCity}" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-locator="${r.locator}">Selecionar →</a>
+      <div style="font-size:12px;color:#1E8F5F;font-weight:600;margin-top:4px">PIX ${currency(r.ourValue)}</div>
+      <div style="font-size:11.5px;color:#5C7185">Pagamento via PIX · −8,87%</div>
+      <a class="select-btn" href="${selectHref}" target="_blank" rel="noopener" style="text-decoration:none;text-align:center;" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-locator="${r.locator}">Selecionar →</a>
     </div>
   </div>`;
 }
+
 
 let currentResults = [];
 let currentSort = "price";
@@ -1217,13 +1423,16 @@ function fmtHora(iso){
 // ✈️ Seletor de aeroportos (autocomplete estilo app)
 // =========================================================
 const AIRPORTS = [
+  { code:"RIO", city:"Rio de Janeiro", name:"Todos os aeroportos", country:"Brasil", pop:1, metro:true, airports:["GIG","SDU"] },
+  { code:"SAO", city:"São Paulo", name:"Todos os aeroportos", country:"Brasil", pop:1, metro:true, airports:["GRU","CGH","VCP"] },
+  { code:"BHZ", city:"Belo Horizonte", name:"Todos os aeroportos", country:"Brasil", pop:1, metro:true, airports:["CNF","PLU"] },
   { code:"GRU", city:"São Paulo", name:"Guarulhos", country:"Brasil", pop:1 },
   { code:"CGH", city:"São Paulo", name:"Congonhas", country:"Brasil", pop:1 },
-  { code:"VCP", city:"Campinas", name:"Viracopos", country:"Brasil" },
-  { code:"GIG", city:"Rio de Janeiro", name:"Galeão", country:"Brasil", pop:1 },
-  { code:"SDU", city:"Rio de Janeiro", name:"Santos Dumont", country:"Brasil" },
-  { code:"BSB", city:"Brasília", name:"Brasília", country:"Brasil", pop:1 },
-  { code:"CNF", city:"Belo Horizonte", name:"Confins", country:"Brasil", pop:1 },
+  { code:"VCP", city:"Campinas / São Paulo", name:"Viracopos", country:"Brasil", pop:1 },
+  { code:"GIG", city:"Rio de Janeiro", name:"Galeão / Tom Jobim", country:"Brasil", pop:1 },
+  { code:"SDU", city:"Rio de Janeiro", name:"Santos Dumont", country:"Brasil", pop:1 },
+  { code:"BSB", city:"Brasília", name:"Presidente Juscelino Kubitschek", country:"Brasil", pop:1 },
+  { code:"CNF", city:"Belo Horizonte", name:"Confins / Tancredo Neves", country:"Brasil", pop:1 },
   { code:"PLU", city:"Belo Horizonte", name:"Pampulha", country:"Brasil" },
   { code:"SSA", city:"Salvador", name:"Salvador", country:"Brasil", pop:1 },
   { code:"REC", city:"Recife", name:"Recife/Guararapes", country:"Brasil", pop:1 },
@@ -1274,8 +1483,8 @@ const AIRPORTS = [
 const AIRPORT_BY_CODE = Object.fromEntries(AIRPORTS.map(a => [a.code, a]));
 
 const selectedAirport = {
-  origin: AIRPORT_BY_CODE["GRU"],
-  destination: AIRPORT_BY_CODE["GIG"],
+  origin: AIRPORT_BY_CODE["MAO"],
+  destination: AIRPORT_BY_CODE["RIO"] || AIRPORT_BY_CODE["GIG"],
 };
 let activePickerField = null;
 
@@ -1290,11 +1499,15 @@ function updatePickerButton(field){
 }
 
 function airportRowHtml(a){
+  const codeCls = a.metro ? "airport-row-code metro" : "airport-row-code";
+  const nameLine = a.metro
+    ? `Todos os aeroportos · ${(a.airports || []).join(", ")}`
+    : `${a.name} · ${a.country}`;
   return `<div class="airport-row" data-code="${a.code}" role="button" tabindex="0">
-    <div class="airport-row-code">${a.code}</div>
+    <div class="${codeCls}">${a.code}</div>
     <div class="airport-row-text">
       <div class="airport-row-city">${a.city}</div>
-      <div class="airport-row-name">${a.name} · ${a.country}</div>
+      <div class="airport-row-name">${nameLine}</div>
     </div>
   </div>`;
 }
@@ -1302,26 +1515,60 @@ function airportRowHtml(a){
 function renderAirportList(query){
   const listEl = document.getElementById("airport-list");
   const q = normalizeText(query);
-  let results;
-  if (!q) {
-    results = AIRPORTS.filter(a => a.pop);
-    listEl.innerHTML = '<div class="airport-group-label">Destinos populares</div>' + results.map(airportRowHtml).join("");
-  } else {
-    results = AIRPORTS.filter(a =>
-      normalizeText(a.code) === q ||
-      normalizeText(a.code).startsWith(q) ||
-      normalizeText(a.city).includes(q) ||
-      normalizeText(a.name).includes(q) ||
-      normalizeText(a.country).includes(q)
-    );
-    if (results.length === 0) {
-      listEl.innerHTML = '<div class="airport-empty">Nenhum aeroporto encontrado pra "' + query.replace(/[<>&"]/g,"") + '" 🧭</div>';
-    } else {
-      listEl.innerHTML = '<div class="airport-group-label">' + results.length + ' resultado' + (results.length>1?'s':'') + '</div>' + results.map(airportRowHtml).join("");
-    }
-  }
-  // Mantém o topo da lista sempre visível (evita "sumir" quando restam poucos itens)
   listEl.scrollTop = 0;
+
+  if (!q) {
+    const metros = AIRPORTS.filter(a => a.metro && a.pop);
+    const pops = AIRPORTS.filter(a => a.pop && !a.metro);
+    let html = '<div class="airport-group-label">Cidades (todos os aeroportos)</div>';
+    html += metros.map(airportRowHtml).join("");
+    html += '<div class="airport-group-label">Aeroportos populares</div>';
+    html += pops.map(airportRowHtml).join("");
+    listEl.innerHTML = html;
+    return;
+  }
+
+  const matches = AIRPORTS.filter(a =>
+    normalizeText(a.code) === q ||
+    normalizeText(a.code).startsWith(q) ||
+    normalizeText(a.city).includes(q) ||
+    normalizeText(a.name).includes(q) ||
+    normalizeText(a.country).includes(q) ||
+    (a.airports && a.airports.some(c => normalizeText(c).startsWith(q)))
+  );
+
+  if (!matches.length) {
+    listEl.innerHTML = '<div class="airport-empty">Nenhum aeroporto encontrado pra "' +
+      query.replace(/[<>&"]/g,"") + '"</div>';
+    return;
+  }
+
+  const byCity = {};
+  matches.forEach(a => {
+    const key = a.city;
+    if (!byCity[key]) byCity[key] = [];
+    byCity[key].push(a);
+  });
+  Object.keys(byCity).forEach(city => {
+    const metro = AIRPORTS.find(a => a.metro && a.city === city);
+    if (metro && !byCity[city].some(x => x.code === metro.code)) {
+      byCity[city].unshift(metro);
+    }
+  });
+
+  let html = "";
+  Object.keys(byCity).sort((a, b) => {
+    const na = normalizeText(a).startsWith(q) ? 0 : 1;
+    const nb = normalizeText(b).startsWith(q) ? 0 : 1;
+    if (na !== nb) return na - nb;
+    return a.localeCompare(b, "pt-BR");
+  }).forEach(city => {
+    const list = byCity[city];
+    list.sort((a, b) => (b.metro ? 1 : 0) - (a.metro ? 1 : 0));
+    html += `<div class="airport-group-label">${city}</div>`;
+    html += list.map(airportRowHtml).join("");
+  });
+  listEl.innerHTML = html;
 }
 
 function openAirportPicker(field){
@@ -1389,8 +1636,10 @@ function mapOferta(o){
   const airlineSlug = (o.airline || o.carrier || "").toLowerCase();
   const airline = AIRLINE_BY_SLUG[airlineSlug] || AIRLINES[0];
   const offerType = (o.type || o.offerType || "miles").toLowerCase();
-  const total = Math.round(Number(o.totalPrice) || 0);
-  const market = o.marketPrice != null ? Math.round(Number(o.marketPrice)) : null;
+  const bruto = Math.round(Number(o.totalPrice) || 0);
+  // Se o backend já mandou marketPrice, usa; senão a tarifa bruta vira o "de" e nosso preço leva o desconto
+  const market = o.marketPrice != null ? Math.round(Number(o.marketPrice)) : (bruto > 0 ? bruto : null);
+  const total = o.discountApplied ? bruto : precoMarujo(bruto);
   const fees = o.fees != null ? Math.round(Number(o.fees)) : null;
 
   // Formato MaxMilhas combo (outbound/inbound) OU formato plano do backend
@@ -1442,8 +1691,12 @@ function mapOferta(o){
     dep,
     arr,
     depTs,
-    origin: `${depAp.city} (${depAp.code})`,
-    destination: `${arrAp.city} (${arrAp.code})`,
+    origin: `${depAp.city} (${depAirport})`,
+    destination: `${arrAp.city} (${arrAirport})`,
+    depAirport: depAirport,
+    arrAirport: arrAirport,
+    originCity: depAp.city || selectedAirport.origin.city,
+    destCity: arrAp.city || selectedAirport.destination.city,
     outbound,
     inbound,
     locator: String(o.offerId || o.id || "MARUJO").replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase() || "MARUJO",
@@ -1451,6 +1704,7 @@ function mapOferta(o){
 }
 
 async function runSearch(){
+  if (!mmRequireLogin("Entre com Google para buscar e ver as ofertas.")) return;
   const origin = selectedAirport.origin.code;
   const destination = selectedAirport.destination.code;
   const departureDate = document.getElementById("f-depart").value;
@@ -1465,6 +1719,8 @@ async function runSearch(){
   document.getElementById("route-label").textContent = selectedAirport.origin.city + " → " + selectedAirport.destination.city;
   document.getElementById("route-count").textContent = "Procurando as melhores ofertas...";
   document.getElementById("tickets-container").innerHTML = Array.from({length:4}).map(() => '<div class="ticket-skel"></div>').join("");
+  const pib = document.getElementById("price-insight-banner");
+  if (pib) pib.classList.remove("show");
   document.getElementById("results-section").classList.add("show");
   document.getElementById("results-section").scrollIntoView({behavior:"smooth", block:"start"});
 
@@ -1485,16 +1741,14 @@ async function runSearch(){
     });
     const dados = await resposta.json();
 
-    // Aceita tanto o formato do backend ({sucesso, passagens}) quanto o payload bruto MaxMilhas ({data:{offers}} / {offers})
+    // Formato vem sempre do nosso próprio backend agora: { sucesso, passagens }
     let lista = null;
     if (Array.isArray(dados.passagens)) lista = dados.passagens;
-    else if (Array.isArray(dados.offers)) lista = dados.offers;
-    else if (dados.data && Array.isArray(dados.data.offers)) lista = dados.data.offers;
-    else if (dados.data && Array.isArray(dados.data.passagens)) lista = dados.data.passagens;
 
     if (dados.sucesso === false && !lista) {
-      alert(dados.erro || "Não foi possível buscar passagens agora. Tente novamente.");
-      document.getElementById("tickets-container").innerHTML = "";
+      const msg = dados.erro || "Não encontramos voos nessa rota agora. Tente outro aeroporto ou data.";
+      document.getElementById("route-count").textContent = msg;
+      document.getElementById("tickets-container").innerHTML = `<div class="airport-empty" style="padding:32px;">${msg}<br><br><button type="button" class="btn-amber" onclick="document.getElementById('search-card').scrollIntoView({behavior:'smooth'})">Ajustar busca</button></div>`;
       return;
     }
     if (!lista || lista.length === 0) {
@@ -1507,6 +1761,8 @@ async function runSearch(){
     currentFilter = "all";
     document.querySelectorAll(".filter-chip").forEach(b => b.classList.toggle("active", b.dataset.filter === "all"));
     applySortAndRender();
+    // Insight de preço (1 crédito / 6h — cache no backend; falha silenciosa)
+    carregarPriceInsights(origin, destination, departureDate, returnDate || null);
   } catch (e) {
     console.error("Erro na busca de passagens:", e);
     document.getElementById("route-count").textContent = "Erro na busca";
@@ -1585,20 +1841,423 @@ document.querySelectorAll(".filter-chip").forEach(btn => {
   });
 });
 
-// destinations
-document.getElementById("destinos-grid").innerHTML = DESTINATIONS.map(d => `
-  <div class="dest-card">
-    <div class="tag-hole" aria-hidden="true"></div>
-    <div style="font-size:18px;">✈️</div>
-    <div class="city display">${d.city}</div>
-    <div class="country">${d.country}</div>
-    <div class="note">${d.note.toUpperCase()}</div>
-  </div>`).join("");
+// Ticker do topo: começa com placeholders e é preenchido com as ofertas relâmpago reais
+function atualizarTickerOfertas(ofertas) {
+  const track = document.getElementById("ticker-track");
+  if (!track) return;
+  let items = [];
+  if (ofertas && ofertas.length) {
+    items = ofertas.slice(0, 10).map(o => {
+      const dest = (o.destinoCidade || o.destino || "destino").toUpperCase();
+      const origem = (o.origem || selectedAirport.origin.code || "MAO").toUpperCase();
+      const preco = fmtPrecoOferta(o.preco, o.moeda || "brl");
+      const air = o.companhia || o.companhiaCodigo || "";
+      return `<span>⚡ ${origem} → <b>${dest}</b> · ${preco}${air ? " · " + air : ""}</span>`;
+    });
+  } else {
+    items = [
+      '<span>⚡ <b>Ofertas relâmpago</b> · confira preços do dia</span>',
+      '<span>Pagamento via <b>PIX</b></span>',
+      '<span>Economia de até <b>50%</b></span>',
+    ];
+  }
+  items.push('<span>Toque em <b>Ofertas</b> e garanta o menor preço</span>');
+  const html = items.join("");
+  track.innerHTML = html + html; // duplicado p/ loop contínuo
+}
+atualizarTickerOfertas([]); // placeholder até carregar as ofertas
+(function(){
+  const bar = document.getElementById("ticker-bar");
+  if (!bar) return;
+  const go = () => document.getElementById("ofertas-relampago")?.scrollIntoView({behavior:"smooth", block:"start"});
+  bar.addEventListener("click", go);
+  bar.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+})();
 
-// departures-board ticker, built from the real routes above
-const tickerItems = DESTINATIONS.map(d => `<span>GRU → <b>${d.city.toUpperCase()}</b> · ${d.note}</span>`);
-const tickerHtml = tickerItems.concat(['<span><b>Parcelamento em até 12x</b></span>', '<span>Economia de até <b>50%</b> com milhas</span>']).join("");
-document.getElementById("ticker-track").innerHTML = tickerHtml + tickerHtml; // duplicado p/ loop contínuo
+// ---------- ofertas relâmpago + dias baratos (SerpApi deals com cache no backend) ----------
+const API_PROXY = "https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009/proxy?url=";
+const API_BASE = "http://br2.bronxyshost.com:4009";
+
+function fmtPrecoOferta(valor, moeda) {
+  const codigo = String(moeda || "brl").toUpperCase();
+  try {
+    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: codigo }).format(valor);
+  } catch (e) {
+    return `${codigo} ${valor}`;
+  }
+}
+function fmtDataOferta(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + (iso.length === 10 ? "T12:00:00" : ""));
+  if (isNaN(d)) return "";
+  return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
+}
+function fmtDataCurta(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + (iso.length === 10 ? "T12:00:00" : ""));
+  if (isNaN(d)) return "";
+  return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", weekday: "short" });
+}
+
+function renderFlashCard(o) {
+  const photoStyle = o.thumbnail
+    ? `background-image:url('${String(o.thumbnail).replace(/'/g, "%27")}')`
+    : "";
+  const discount = o.descontoPct > 0
+    ? `<span class="fc-discount">−${o.descontoPct}%</span>`
+    : "";
+  const air = o.companhia || o.companhiaCodigo || "";
+  const logo = airlineLogoUrl(o.companhiaCodigo) || airlineLogoUrl(o.companhia);
+  return `
+    <a class="flash-card" href="${o.linkCompra || '#search-card'}" target="${o.linkCompra ? '_blank' : '_self'}" rel="noopener">
+      <div class="fc-photo" style="${photoStyle}">${discount}</div>
+      <div class="fc-body">
+        <div class="fc-air">${logo ? `<img class="fc-air-logo" src="${logo}" alt="${air}" loading="lazy" onerror="this.style.display='none'">` : ""}<span>${air || "Companhia"}</span></div>
+        <div class="fc-route">${o.origem || ""} <span class="fc-arrow">→</span> ${o.destinoCidade || o.destino || ""}</div>
+        <div class="fc-date">${o.dataIda ? "Embarque em " + fmtDataOferta(o.dataIda) : (o.pais || "")}</div>
+        <div class="fc-price-row">
+          <div class="fc-price">${o.precoOriginal ? `<span style="font-size:12px;color:var(--red);text-decoration:line-through;display:block;font-family:'IBM Plex Mono',monospace;font-weight:600;">${fmtPrecoOferta(o.precoOriginal, o.moeda)}</span>` : ""}${fmtPrecoOferta(o.preco, o.moeda)} <small>ida · −8,87%</small></div>
+          <div class="fc-cta">Ver oferta →</div>
+        </div>
+      </div>
+    </a>`;
+}
+
+async function carregarOfertasRelampago(origemCode, origemCidade) {
+  const secao = document.getElementById("ofertas-relampago");
+  const grid = document.getElementById("flash-grid");
+  const label = document.getElementById("flash-origin-label");
+  if (!secao || !grid) return;
+  if (label && origemCidade) label.textContent = origemCidade;
+  secao.classList.remove("flash-empty");
+  grid.innerHTML = Array.from({ length: 4 }).map(() => '<div class="flash-skel"></div>').join("");
+
+  try {
+    const url = `${API_PROXY}${encodeURIComponent(API_BASE + "/api/ofertas-especiais?origin=" + encodeURIComponent(origemCode) + "&currency=brl")}`;
+    const resposta = await fetch(url);
+    const dados = await resposta.json();
+    if (!dados.sucesso || !dados.ofertas || !dados.ofertas.length) {
+      secao.classList.add("flash-empty");
+      return;
+    }
+    const ofertasComDesconto = dados.ofertas
+      .slice()
+      .sort((a, b) => (Number(a.preco) || 0) - (Number(b.preco) || 0)) // menor preço primeiro
+      .slice(0, 8)
+      .map(o => {
+      const bruto = Math.round(Number(o.preco) || 0);
+      if (o.discountApplied || !bruto) return o;
+      return { ...o, precoOriginal: bruto, preco: precoMarujo(bruto), discountApplied: true };
+    });
+    grid.innerHTML = ofertasComDesconto.map(renderFlashCard).join("");
+    atualizarTickerOfertas(ofertasComDesconto);
+  } catch (e) {
+    console.warn("Ofertas relâmpago indisponíveis:", e);
+    secao.classList.add("flash-empty");
+  }
+}
+
+// =========================================================
+// Calendário de preços — só cores, modal fixo, todos os dias
+// =========================================================
+let priceByDate = {}; // { "YYYY-MM-DD": { preco, ... } }
+let cheapDaysAbort = null;
+let calView = { year: 0, month: 0 };
+let openCalId = null; // "f-depart" | "f-return"
+
+function fmtDataLabel(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso + "T12:00:00");
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
+}
+function syncDateTriggers() {
+  const dep = document.getElementById("f-depart");
+  const ret = document.getElementById("f-return");
+  const depLabel = document.getElementById("f-depart-label");
+  const retLabel = document.getElementById("f-return-label");
+  const depHint = document.getElementById("f-depart-hint");
+  const retHint = document.getElementById("f-return-hint");
+  if (dep && depLabel) depLabel.textContent = fmtDataLabel(dep.value);
+  if (ret && retLabel) retLabel.textContent = fmtDataLabel(ret.value);
+  // hint só mostra "melhor preço" genérico / ver preços — sem número no botão se preferir só cor no cal
+  if (depHint) {
+    depHint.textContent = Object.keys(priceByDate).length ? "cores = preços" : "ver preços";
+    depHint.classList.toggle("empty", !Object.keys(priceByDate).length);
+  }
+  if (retHint) {
+    retHint.textContent = Object.keys(priceByDate).length ? "cores = preços" : "ver preços";
+    retHint.classList.toggle("empty", !Object.keys(priceByDate).length);
+  }
+}
+
+/** Estimativa para dias sem cotação: interpola pelos vizinhos conhecidos do mês */
+function estimatePriceMap(year, month) {
+  const ym = `${year}-${String(month + 1).padStart(2, "0")}`;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const known = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    const iso = `${ym}-${String(d).padStart(2, "0")}`;
+    if (priceByDate[iso]) known.push({ day: d, preco: priceByDate[iso].preco, real: true });
+  }
+  const out = {};
+  if (!known.length) {
+    // sem dados: leve variação por dia da semana (fins de semana um pouco mais caros)
+    for (let d = 1; d <= daysInMonth; d++) {
+      const iso = `${ym}-${String(d).padStart(2, "0")}`;
+      const dow = new Date(iso + "T12:00:00").getDay();
+      const base = 100;
+      const bump = (dow === 0 || dow === 5 || dow === 6) ? 1.15 : (dow === 1 || dow === 2) ? 0.9 : 1;
+      out[iso] = { preco: Math.round(base * bump), estimated: true };
+    }
+    return out;
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const iso = `${ym}-${String(d).padStart(2, "0")}`;
+    if (priceByDate[iso]) {
+      out[iso] = { ...priceByDate[iso], estimated: false };
+      continue;
+    }
+    // interpolação linear entre vizinhos
+    let left = null, right = null;
+    for (const k of known) {
+      if (k.day < d) left = k;
+      if (k.day > d && !right) right = k;
+    }
+    let preco;
+    if (left && right) {
+      const t = (d - left.day) / (right.day - left.day);
+      preco = left.preco + (right.preco - left.preco) * t;
+    } else if (left) {
+      preco = left.preco;
+    } else {
+      preco = right.preco;
+    }
+    // micro variação por dia da semana
+    const dow = new Date(iso + "T12:00:00").getDay();
+    if (dow === 0 || dow === 6) preco *= 1.04;
+    if (dow === 2 || dow === 3) preco *= 0.98;
+    out[iso] = { preco: Math.round(preco), estimated: true };
+  }
+  return out;
+}
+
+function priceTier(preco, minP, maxP) {
+  if (minP == null || maxP == null || minP === maxP) return "mid";
+  const t = (preco - minP) / (maxP - minP);
+  if (t <= 0.34) return "low";
+  if (t <= 0.66) return "mid";
+  return "high";
+}
+
+function renderPriceCalendar() {
+  const panel = document.getElementById("price-cal-panel");
+  if (!panel || !openCalId) return;
+  const input = document.getElementById(openCalId);
+  const selected = input ? input.value : "";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (!calView.year) {
+    const base = selected ? new Date(selected + "T12:00:00") : new Date();
+    calView.year = base.getFullYear();
+    calView.month = base.getMonth();
+  }
+  const y = calView.year;
+  const m = calView.month;
+  const monthName = new Date(y, m, 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const monthMap = estimatePriceMap(y, m);
+  const prices = Object.values(monthMap).map((x) => x.preco);
+  const minP = prices.length ? Math.min(...prices) : null;
+  const maxP = prices.length ? Math.max(...prices) : null;
+  const firstDow = new Date(y, m, 1).getDay();
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+
+  let cells = "";
+  for (let i = 0; i < firstDow; i++) cells += `<button type="button" class="pc-day" disabled></button>`;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const iso = `${y}-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const dObj = new Date(iso + "T12:00:00");
+    const past = dObj < today;
+    const info = monthMap[iso];
+    const isToday = iso === today.toISOString().slice(0, 10);
+    const isSel = iso === selected;
+    let cls = "pc-day";
+    if (!past && info) cls += " " + priceTier(info.preco, minP, maxP);
+    if (isToday) cls += " today";
+    if (isSel) cls += " selected";
+    cells += `<button type="button" class="${cls}" data-iso="${iso}" ${past ? "disabled" : ""}>
+      <span class="dn">${day}</span>
+    </button>`;
+  }
+
+  panel.innerHTML = `
+    <button type="button" class="pc-close" aria-label="Fechar">×</button>
+    <div class="pc-head">
+      <span class="pc-title">${monthName}</span>
+      <div class="pc-nav">
+        <button type="button" data-nav="-1" aria-label="Mês anterior">‹</button>
+        <button type="button" data-nav="1" aria-label="Próximo mês">›</button>
+      </div>
+    </div>
+    <div class="pc-legend">
+      <span><i class="lg"></i> barato</span>
+      <span><i class="lm"></i> médio</span>
+      <span><i class="lh"></i> alto</span>
+    </div>
+    <div class="pc-week">
+      <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+    </div>
+    <div class="pc-grid">${cells}</div>
+    <div class="pc-foot">Verde = mais barato · vermelho = mais caro</div>
+  `;
+
+  panel.querySelector(".pc-close").addEventListener("click", (e) => {
+    e.stopPropagation();
+    closePriceCal();
+  });
+  panel.querySelectorAll("[data-nav]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const dir = Number(btn.dataset.nav);
+      calView.month += dir;
+      if (calView.month < 0) { calView.month = 11; calView.year--; }
+      if (calView.month > 11) { calView.month = 0; calView.year++; }
+      renderPriceCalendar();
+    });
+  });
+  panel.querySelectorAll(".pc-day[data-iso]:not(:disabled)").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const iso = btn.dataset.iso;
+      if (!iso || !input) return;
+      input.value = iso;
+      if (openCalId === "f-depart") {
+        const ret = document.getElementById("f-return");
+        if (ret && ret.closest(".field") && ret.closest(".field").style.display !== "none") {
+          if (!ret.value || ret.value < iso) {
+            const d = new Date(iso + "T12:00:00");
+            d.setDate(d.getDate() + 7);
+            ret.value = d.toISOString().slice(0, 10);
+          }
+        }
+      }
+      syncDateTriggers();
+      closePriceCal();
+    });
+  });
+}
+
+function closePriceCal() {
+  const ov = document.getElementById("price-cal-overlay");
+  if (ov) {
+    ov.classList.remove("open");
+    ov.setAttribute("aria-hidden", "true");
+  }
+  openCalId = null;
+  document.body.classList.remove("picker-open");
+}
+function openPriceCal(inputId) {
+  const ov = document.getElementById("price-cal-overlay");
+  const input = document.getElementById(inputId);
+  if (!ov || !input) return;
+  const base = input.value ? new Date(input.value + "T12:00:00") : new Date();
+  calView.year = base.getFullYear();
+  calView.month = base.getMonth();
+  openCalId = inputId;
+  renderPriceCalendar();
+  ov.classList.add("open");
+  ov.setAttribute("aria-hidden", "false");
+  document.body.classList.add("picker-open");
+}
+
+async function carregarDiasBaratos() {
+  const origin = selectedAirport.origin.code;
+  const dest = selectedAirport.destination.code;
+  if (!origin || !dest || origin === dest) {
+    priceByDate = {};
+    syncDateTriggers();
+    return;
+  }
+  if (cheapDaysAbort) cheapDaysAbort.abort();
+  cheapDaysAbort = new AbortController();
+  try {
+    const qs = `origin=${encodeURIComponent(origin)}&dest=${encodeURIComponent(dest)}&currency=brl&months=4`;
+    const url = `${API_PROXY}${encodeURIComponent(API_BASE + "/api/dias-baratos?" + qs)}`;
+    const res = await fetch(url, { signal: cheapDaysAbort.signal });
+    const dados = await res.json();
+    priceByDate = {};
+    if (dados.sucesso && Array.isArray(dados.dias)) {
+      dados.dias.forEach((d) => {
+        if (d && d.data) priceByDate[d.data] = d;
+      });
+    }
+    syncDateTriggers();
+    if (openCalId) renderPriceCalendar();
+  } catch (e) {
+    if (e.name === "AbortError") return;
+    console.warn("Dias baratos indisponíveis:", e);
+  }
+}
+
+document.getElementById("f-depart-btn")?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (openCalId === "f-depart") closePriceCal();
+  else openPriceCal("f-depart");
+});
+document.getElementById("f-return-btn")?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (openCalId === "f-return") closePriceCal();
+  else openPriceCal("f-return");
+});
+document.getElementById("price-cal-overlay")?.addEventListener("click", (e) => {
+  if (e.target.id === "price-cal-overlay") closePriceCal();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closePriceCal();
+});
+syncDateTriggers();
+
+// Price insights (1 crédito / 6h por rota+data — só roda depois de uma busca real)
+async function carregarPriceInsights(origin, dest, outbound, returnDate) {
+  const banner = document.getElementById("price-insight-banner");
+  if (!banner) return;
+  banner.classList.remove("show");
+  try {
+    const url = `${API_PROXY}${encodeURIComponent(API_BASE + "/api/price-insights")}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ origin, dest, outbound, returnDate: returnDate || null, currency: "brl" }),
+    });
+    const dados = await res.json();
+    if (!dados.sucesso || !dados.priceLevel) return;
+
+    const labels = {
+      baixo: "Preço baixo para esta rota",
+      típico: "Preço dentro da média",
+      tipico: "Preço dentro da média",
+      alto: "Preço acima da média — vale flexionar a data",
+    };
+    const level = String(dados.priceLevel).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const dot = document.getElementById("pib-dot");
+    const text = document.getElementById("pib-text");
+    const range = document.getElementById("pib-range");
+    dot.className = "pib-dot " + (level === "baixo" ? "baixo" : level === "alto" ? "alto" : "tipico");
+    text.innerHTML = (labels[dados.priceLevel] || labels[level] || "Análise de preço") +
+      (dados.lowestPrice != null ? ` · menor visto: <span>${fmtPrecoOferta(dados.lowestPrice, dados.moeda)}</span>` : "");
+    if (dados.typicalRange && dados.typicalRange.length === 2) {
+      range.textContent = `Faixa típica: ${fmtPrecoOferta(dados.typicalRange[0], dados.moeda)} – ${fmtPrecoOferta(dados.typicalRange[1], dados.moeda)}`;
+    } else {
+      range.textContent = "";
+    }
+    banner.classList.add("show");
+  } catch (e) {
+    console.warn("Price insights indisponível:", e);
+  }
+}
+
+carregarOfertasRelampago(selectedAirport.origin.code, selectedAirport.origin.city);
+carregarDiasBaratos();
 
 // trust strip
 const STATS = [["+40 mil","passagens emitidas"],["4.9/5","avaliação média"],["28x","valor fixo por mil milhas"],["4","companhias comparadas"]];
@@ -1731,8 +2390,17 @@ function refreshMobileCtaRoute(){
 }
 refreshMobileCtaRoute();
 const _origUpdatePickerButton = updatePickerButton;
-updatePickerButton = function(field){ _origUpdatePickerButton(field); refreshMobileCtaRoute(); };
-document.getElementById("swap-btn").addEventListener("click", refreshMobileCtaRoute);
+updatePickerButton = function(field){
+  _origUpdatePickerButton(field);
+  refreshMobileCtaRoute();
+  if (field === "origin") carregarOfertasRelampago(selectedAirport.origin.code, selectedAirport.origin.city);
+  carregarDiasBaratos();
+};
+document.getElementById("swap-btn").addEventListener("click", () => {
+  refreshMobileCtaRoute();
+  carregarOfertasRelampago(selectedAirport.origin.code, selectedAirport.origin.city);
+  carregarDiasBaratos();
+});
 
 // ---------- rotating status messages while searching ----------
 const SEARCH_STATUS_MESSAGES = [
@@ -1818,7 +2486,14 @@ function mmRenderHeader(){
     const firstName = (user.name || "").split(" ")[0] || "Você";
     const avatar = document.createElement("span");
     avatar.className = "account-avatar";
-    avatar.textContent = mmInitials(user.name);
+    if (user.photoURL) {
+      avatar.style.backgroundImage = "url(" + user.photoURL + ")";
+      avatar.style.backgroundSize = "cover";
+      avatar.style.backgroundPosition = "center";
+      avatar.textContent = "";
+    } else {
+      avatar.textContent = mmInitials(user.name);
+    }
     trigger.insertBefore(avatar, label);
     label.textContent = firstName;
     label.className = "account-name";
@@ -1832,11 +2507,19 @@ function mmRenderHeader(){
   }
 }
 
+function mmRequireLogin(motivo){
+  if (mmCurrentUser()) return true;
+  const err = document.getElementById("auth-error");
+  if (err) {
+    err.textContent = motivo || "Entre com Google para continuar.";
+    err.classList.add("show");
+  }
+  mmOpenAuthModal();
+  return false;
+}
 function mmOpenAuthModal(tab){
-  document.getElementById("auth-error").classList.remove("show");
-  document.getElementById("login-form").reset();
-  document.getElementById("signup-form").reset();
-  mmSwitchAuthTab(tab || "login");
+  const err = document.getElementById("auth-error");
+  if (err && !err.classList.contains("show")) err.classList.remove("show");
   document.getElementById("auth-overlay").classList.add("show");
   document.body.classList.add("picker-open");
 }
@@ -1844,60 +2527,16 @@ function mmCloseAuthModal(){
   document.getElementById("auth-overlay").classList.remove("show");
   document.body.classList.remove("picker-open");
 }
-function mmSwitchAuthTab(tab){
-  document.querySelectorAll(".auth-tab").forEach(t => t.classList.toggle("active", t.dataset.authTab === tab));
-  document.getElementById("login-form").style.display = tab === "login" ? "" : "none";
-  document.getElementById("signup-form").style.display = tab === "signup" ? "" : "none";
-  document.getElementById("auth-error").classList.remove("show");
-}
+function mmSwitchAuthTab(tab){ /* Google-only: sem abas */ }
 function mmShowAuthError(msg){
   const el = document.getElementById("auth-error");
   el.textContent = msg;
   el.classList.add("show");
 }
 
-document.querySelectorAll(".auth-tab").forEach(t => t.addEventListener("click", () => mmSwitchAuthTab(t.dataset.authTab)));
-document.getElementById("go-signup").addEventListener("click", (e) => { e.preventDefault(); mmSwitchAuthTab("signup"); });
-document.getElementById("go-login").addEventListener("click", (e) => { e.preventDefault(); mmSwitchAuthTab("login"); });
-document.getElementById("auth-close").addEventListener("click", mmCloseAuthModal);
-document.getElementById("auth-overlay").addEventListener("click", (e) => { if (e.target.id === "auth-overlay") mmCloseAuthModal(); });
+document.getElementById("auth-close")?.addEventListener("click", mmCloseAuthModal);
+document.getElementById("auth-overlay")?.addEventListener("click", (e) => { if (e.target.id === "auth-overlay") mmCloseAuthModal(); });
 
-document.getElementById("login-form").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const email = document.getElementById("login-email").value.trim().toLowerCase();
-  const password = document.getElementById("login-password").value;
-  const users = mmLoadUsers();
-  const user = users.find(u => u.email === email);
-  if (!user || user.password !== mmObfuscate(password)) {
-    mmShowAuthError("E-mail ou senha incorretos. Confira e tente de novo.");
-    return;
-  }
-  mmSetSession(email);
-  mmCloseAuthModal();
-  mmRenderHeader();
-});
-
-document.getElementById("signup-form").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const name = document.getElementById("signup-name").value.trim();
-  const email = document.getElementById("signup-email").value.trim().toLowerCase();
-  const phone = document.getElementById("signup-phone").value.trim();
-  const password = document.getElementById("signup-password").value;
-  if (!name || !email || password.length < 4) {
-    mmShowAuthError("Preencha nome, e-mail e uma senha com pelo menos 4 caracteres.");
-    return;
-  }
-  const users = mmLoadUsers();
-  if (users.some(u => u.email === email)) {
-    mmShowAuthError("Já existe uma conta com esse e-mail. Tente entrar.");
-    return;
-  }
-  users.push({ name, email, phone, password: mmObfuscate(password) });
-  mmSaveUsers(users);
-  mmSetSession(email);
-  mmCloseAuthModal();
-  mmRenderHeader();
-});
 
 // ---------- dropdown da conta ----------
 const accountWrap = document.getElementById("account-wrap");
@@ -1911,6 +2550,7 @@ document.addEventListener("click", (e) => { if (!accountWrap.contains(e.target))
 
 document.getElementById("menu-sair").addEventListener("click", () => {
   mmClearSession();
+  if (typeof window.mmGoogleSignOut === "function") window.mmGoogleSignOut();
   accountDropdown.classList.remove("show");
   mmRenderHeader();
 });
@@ -1999,11 +2639,780 @@ document.getElementById("tickets-container").addEventListener("click", (e) => {
   mmSaveTripsList(user.email, trips);
 });
 
+
+// ---- Exige login para ofertas / compra ----
+document.addEventListener("click", (e) => {
+  const select = e.target.closest("a.select-btn, .select-btn");
+  if (select) {
+    if (!mmCurrentUser()) {
+      e.preventDefault();
+      e.stopPropagation();
+      mmRequireLogin("Entre com Google para solicitar essa passagem.");
+      return;
+    }
+  }
+  const flash = e.target.closest("a.flash-card, .flash-card");
+  if (flash) {
+    if (!mmCurrentUser()) {
+      e.preventDefault();
+      e.stopPropagation();
+      mmRequireLogin("Entre com Google para ver e aproveitar as ofertas relâmpago.");
+      return;
+    }
+  }
+  const flashJump = e.target.closest("a.flash-jump-btn, .flash-jump-btn");
+  if (flashJump) {
+    if (!mmCurrentUser()) {
+      e.preventDefault();
+      e.stopPropagation();
+      mmRequireLogin("Entre com Google para ver as ofertas relâmpago.");
+      return;
+    }
+  }
+}, true);
+
 mmRenderHeader();
+</script>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.17.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTOIZH1d1Ep3SmgUdL-uIhYi_hUnem1sY",
+  authDomain: "marujosmilhas-f02b1.firebaseapp.com",
+  projectId: "marujosmilhas-f02b1",
+  storageBucket: "marujosmilhas-f02b1.firebasestorage.app",
+  messagingSenderId: "921633658307",
+  appId: "1:921633658307:web:3b10211aabe22fd8605976",
+  measurementId: "G-PZ42ZPLB3N"
+};
+
+const app = initializeApp(firebaseConfig);
+try { getAnalytics(app); } catch (_) {}
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
+
+const API_MILHAS_USER = "https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009/proxy?url=" +
+  encodeURIComponent("http://br2.bronxyshost.com:4009/api/milhas/usuarios/google");
+
+async function mmSyncUserToBackend(profile) {
+  try {
+    await fetch(API_MILHAS_USER, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profile)
+    });
+  } catch (e) {
+    console.warn("[Milhas] sync usuário falhou (offline?):", e);
+  }
+}
+
+function mmApplyGoogleUser(user) {
+  if (!user) return;
+  const email = (user.email || "").toLowerCase();
+  const profile = {
+    uid: user.uid,
+    email,
+    name: user.displayName || email.split("@")[0] || "Passageiro",
+    phone: user.phoneNumber || "",
+    photoURL: user.photoURL || "",
+    provider: "google",
+    lastLogin: new Date().toISOString()
+  };
+  // localStorage (sessão rápida no navegador)
+  const users = (typeof mmLoadUsers === "function") ? mmLoadUsers() : [];
+  const idx = users.findIndex(u => u.email === email || u.uid === user.uid);
+  if (idx >= 0) {
+    users[idx] = { ...users[idx], ...profile, password: users[idx].password || null };
+  } else {
+    users.push({ ...profile, password: null });
+  }
+  if (typeof mmSaveUsers === "function") mmSaveUsers(users);
+  if (typeof mmSetSession === "function") mmSetSession(email);
+  if (typeof mmRenderHeader === "function") mmRenderHeader();
+  mmSyncUserToBackend(profile);
+}
+
+window.mmGoogleSignIn = async function () {
+  const btn = document.getElementById("auth-google-btn");
+  if (btn) { btn.disabled = true; btn.textContent = "Conectando..."; }
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    mmApplyGoogleUser(result.user);
+    if (typeof mmCloseAuthModal === "function") mmCloseAuthModal();
+  } catch (err) {
+    console.error("[Firebase Auth]", err);
+    let msg = "Não foi possível entrar com Google. Tente de novo.";
+    if (err && err.code === "auth/popup-closed-by-user") msg = "Janela do Google fechada. Tente novamente.";
+    if (err && err.code === "auth/unauthorized-domain") msg = "Domínio não autorizado no Firebase. Adicione este site em Authentication → Settings → Authorized domains.";
+    if (typeof mmShowAuthError === "function") mmShowAuthError(msg);
+    else alert(msg);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="18" height="18"> Continuar com Google';
+    }
+  }
+};
+
+window.mmGoogleSignOut = async function () {
+  try { await signOut(auth); } catch (_) {}
+};
+
+// Restaura sessão Google se o Firebase ainda estiver logado
+onAuthStateChanged(auth, (user) => {
+  if (user) mmApplyGoogleUser(user);
+});
+
+document.getElementById("auth-google-btn")?.addEventListener("click", () => window.mmGoogleSignIn());
 </script>
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
