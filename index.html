@@ -605,26 +605,57 @@
   .auth-divider{display:flex;align-items:center;gap:12px;margin:4px 0 14px;color:var(--slate-soft);font-size:12px;font-weight:600;}
   .auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--card-line);}
 
-  .pax-overlay{position:fixed;inset:0;background:rgba(9,15,30,0.6);backdrop-filter:blur(3px);z-index:140;display:none;align-items:center;justify-content:center;padding:16px;overscroll-behavior:contain;}
+  .pax-overlay{position:fixed;inset:0;background:rgba(9,15,30,0.62);backdrop-filter:blur(4px);z-index:140;display:none;align-items:flex-end;justify-content:center;padding:0;overscroll-behavior:contain;}
   .pax-overlay.show{display:flex;}
-  .pax-modal{background:#fff;width:100%;max-width:520px;max-height:90vh;border-radius:18px;box-shadow:0 28px 64px rgba(9,15,30,0.35);display:flex;flex-direction:column;overflow:hidden;}
-  .pax-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--card-line);flex-shrink:0;}
-  .pax-head h3{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:18px;}
-  .pax-body{padding:16px 18px;overflow-y:auto;flex:1;}
-  .pax-trip{background:var(--paper);border:1px solid var(--card-line);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13.5px;}
-  .pax-trip strong{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;}
-  .pax-block{border:1px solid var(--card-line);border-radius:14px;padding:14px;margin-bottom:12px;background:#FFFEFA;}
-  .pax-block h4{margin:0 0 12px;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.4px;text-transform:uppercase;color:var(--brass-dark);}
+  .pax-modal{background:#fff;width:100%;max-width:640px;max-height:94vh;border-radius:20px 20px 0 0;box-shadow:0 -20px 60px rgba(9,15,30,0.35);display:flex;flex-direction:column;overflow:hidden;animation:pax-up .25s ease;}
+  @keyframes pax-up{from{transform:translateY(24px);opacity:.5}to{transform:none;opacity:1}}
+  @media(min-width:700px){
+    .pax-overlay{align-items:center;padding:20px;}
+    .pax-modal{border-radius:20px;max-height:90vh;animation:none;}
+  }
+  .pax-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px 12px;border-bottom:1px solid var(--card-line);flex-shrink:0;background:linear-gradient(180deg,#fff,var(--paper));}
+  .pax-head h3{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:19px;color:var(--ink);}
+  .pax-head .pax-sub{font-size:12.5px;color:var(--slate);margin-top:4px;line-height:1.4;}
+  .pax-steps{display:flex;gap:6px;padding:10px 18px 0;flex-shrink:0;flex-wrap:wrap;}
+  .pax-step{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:var(--paper);color:var(--slate);border:1px solid var(--card-line);}
+  .pax-step.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .pax-body{padding:12px 18px 8px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;}
+  .pax-trip{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px;}
+  .pax-trip .pt-route{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;}
+  .pax-trip .pt-meta{font-size:12.5px;color:#C2D0EC;margin-top:6px;line-height:1.45;}
+  .pax-trip .pt-price{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--brass-soft);margin-top:8px;font-weight:600;}
+  .pax-block{border:1px solid var(--card-line);border-radius:16px;margin-bottom:14px;background:#FFFEFA;overflow:hidden;}
+  .pax-block-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;background:var(--paper);border-bottom:1px solid var(--card-line);}
+  .pax-block-head h4{margin:0;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase;color:var(--brass-dark);}
+  .pax-block-head .pax-badge{font-size:10px;font-weight:800;background:var(--brass);color:var(--navy);padding:3px 8px;border-radius:999px;}
+  .pax-sec{padding:12px 14px;border-bottom:1px dashed var(--card-line);}
+  .pax-sec:last-child{border-bottom:none;}
+  .pax-sec-title{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--slate);margin:0 0 10px;display:flex;align-items:center;gap:6px;}
+  .pax-sec-title span{flex:1;height:1px;background:var(--card-line);}
   .pax-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .pax-grid .full{grid-column:1/-1;}
-  .pax-field label{display:block;font-size:11px;font-weight:700;color:var(--slate);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px;}
-  .pax-field input,.pax-field select{width:100%;border:1px solid var(--card-line);border-radius:10px;padding:10px 11px;font-size:14px;font-family:inherit;background:var(--paper);outline:none;}
-  .pax-field input:focus,.pax-field select:focus{outline:3px solid var(--brass-soft);border-color:var(--brass);}
-  .pax-foot{padding:14px 18px;border-top:1px solid var(--card-line);display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
-  .pax-foot .btn-wa{width:100%;background:#25D366;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .pax-grid .third{grid-column:span 1;}
+  .pax-field label{display:block;font-size:11px;font-weight:700;color:var(--slate);margin-bottom:4px;text-transform:uppercase;letter-spacing:.25px;}
+  .pax-field label .req{color:var(--red);}
+  .pax-field input,.pax-field select,textarea.pax-ta{width:100%;border:1px solid var(--card-line);border-radius:10px;padding:10px 11px;font-size:14px;font-family:inherit;background:#fff;outline:none;color:var(--ink);}
+  .pax-field input:focus,.pax-field select:focus,textarea.pax-ta:focus{outline:3px solid var(--brass-soft);border-color:var(--brass);}
+  .pax-field input[readonly]{background:var(--paper);color:var(--slate);}
+  .pax-field .hint{font-size:11px;color:var(--slate-soft);margin-top:3px;}
+  textarea.pax-ta{min-height:64px;resize:vertical;}
+  .pax-check{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--ink);margin-top:6px;}
+  .pax-check input{margin-top:3px;width:16px;height:16px;flex-shrink:0;}
+  details.pax-more{border-top:1px dashed var(--card-line);}
+  details.pax-more > summary{cursor:pointer;padding:12px 14px;font-size:13px;font-weight:700;color:var(--blue);list-style:none;display:flex;align-items:center;justify-content:space-between;}
+  details.pax-more > summary::-webkit-details-marker{display:none;}
+  details.pax-more > summary::after{content:"+";font-weight:800;color:var(--slate);}
+  details.pax-more[open] > summary::after{content:"–";}
+  details.pax-more .pax-sec{padding-top:0;}
+  .pax-foot{padding:12px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--card-line);display:flex;flex-direction:column;gap:8px;flex-shrink:0;background:#fff;}
+  .pax-foot .btn-wa{width:100%;background:#25D366;color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 20px rgba(37,211,102,.35);}
   .pax-foot .btn-wa:hover{background:#1ebe57;}
-  .pax-foot .hint{font-size:12px;color:var(--slate);text-align:center;margin:0;}
-  @media(max-width:520px){.pax-grid{grid-template-columns:1fr;}}
+  .pax-foot .btn-wa:disabled{opacity:.6;cursor:wait;}
+  .pax-foot .hint{font-size:12px;color:var(--slate);text-align:center;margin:0;line-height:1.4;}
+  @media(max-width:560px){.pax-grid{grid-template-columns:1fr;}}
 
   .auth-overlay{position:fixed;inset:0;background:rgba(9,15,30,0.6);backdrop-filter:blur(2px);z-index:110;display:none;align-items:center;justify-content:center;padding:20px;overscroll-behavior:contain;}
   .auth-overlay.show{display:flex;}
@@ -823,16 +854,20 @@
 <div class="pax-overlay" id="pax-overlay" aria-hidden="true">
   <div class="pax-modal" role="dialog" aria-modal="true" aria-label="Dados dos passageiros">
     <div class="pax-head">
-      <h3 class="display">Dados da emissão</h3>
+      <div>
+        <h3 class="display">Emitir passagem</h3>
+        <div class="pax-sub">Preencha os dados como no documento. Salvamos na sua conta para a próxima viagem.</div>
+      </div>
       <button type="button" class="auth-close" id="pax-close" aria-label="Fechar">✕</button>
     </div>
+    <div class="pax-steps" id="pax-steps" aria-hidden="true"></div>
     <div class="pax-body">
       <div class="pax-trip" id="pax-trip-summary"></div>
       <div id="pax-forms"></div>
     </div>
     <div class="pax-foot">
-      <button type="button" class="btn-wa" id="pax-submit">Enviar no WhatsApp para emitir →</button>
-      <p class="hint">Os dados ficam salvos na sua conta para a próxima viagem. Fechamos a emissão pelo WhatsApp.</p>
+      <button type="button" class="btn-wa" id="pax-submit">📱 Enviar pedido no WhatsApp</button>
+      <p class="hint">Nossa equipe confirma a tarifa e finaliza a emissão com você no WhatsApp. Pagamento via PIX.</p>
     </div>
   </div>
 </div>
@@ -2688,31 +2723,152 @@ function fmtCpfInput(v){
   return d.slice(0,3)+"."+d.slice(3,6)+"."+d.slice(6,9)+"-"+d.slice(9);
 }
 
-function paxFieldHtml(idx, pref, labelTitular){
+function paxEsc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"); }
+function paxOpt(val, cur){ return val === cur ? "selected" : ""; }
+
+function paxFieldHtml(idx, pref, isTitular, accountEmail){
   const t = pref || {};
-  const title = idx === 0 ? (labelTitular || "Passageiro 1 (titular)") : ("Passageiro " + (idx+1));
+  const emailLocked = accountEmail || t.email || "";
+  const title = isTitular ? "Passageiro 1 — Titular" : ("Passageiro " + (idx + 1));
+  const badge = isTitular ? '<span class="pax-badge">Titular</span>' : '';
   return `<div class="pax-block" data-pax-idx="${idx}">
-    <h4>${title}</h4>
-    <div class="pax-grid">
-      <div class="pax-field full"><label>Nome completo (como no documento)</label>
-        <input type="text" name="nome" value="${(t.nome||"").replace(/"/g,"&quot;")}" required autocomplete="name" placeholder="Nome completo"></div>
-      <div class="pax-field"><label>CPF</label>
-        <input type="text" name="cpf" inputmode="numeric" value="${fmtCpfInput(t.cpf||"")}" placeholder="000.000.000-00" maxlength="14"></div>
-      <div class="pax-field"><label>Nascimento</label>
-        <input type="date" name="nascimento" value="${t.nascimento||""}" required></div>
-      <div class="pax-field"><label>Gênero</label>
-        <select name="genero">
-          <option value="">—</option>
-          <option value="M" ${t.genero==="M"?"selected":""}>Masculino</option>
-          <option value="F" ${t.genero==="F"?"selected":""}>Feminino</option>
-          <option value="X" ${t.genero==="X"?"selected":""}>Outro / prefiro não dizer</option>
-        </select></div>
-      <div class="pax-field"><label>Telefone / WhatsApp</label>
-        <input type="tel" name="telefone" value="${(t.telefone||"").replace(/"/g,"&quot;")}" placeholder="(00) 00000-0000" autocomplete="tel"></div>
-      <div class="pax-field"><label>E-mail</label>
-        <input type="email" name="email" value="${(t.email||"").replace(/"/g,"&quot;")}" placeholder="email@exemplo.com" autocomplete="email"></div>
+    <div class="pax-block-head"><h4>${title}</h4>${badge}</div>
+
+    <div class="pax-sec">
+      <div class="pax-sec-title">Identificação <span></span></div>
+      <div class="pax-grid">
+        <div class="pax-field"><label>Nome <span class="req">*</span></label>
+          <input type="text" name="nome" value="${paxEsc(t.nome)}" required autocomplete="given-name" placeholder="Primeiro nome"></div>
+        <div class="pax-field"><label>Sobrenome <span class="req">*</span></label>
+          <input type="text" name="sobrenome" value="${paxEsc(t.sobrenome)}" required autocomplete="family-name" placeholder="Como no documento"></div>
+        <div class="pax-field"><label>Data de nascimento <span class="req">*</span></label>
+          <input type="date" name="nascimento" value="${paxEsc(t.nascimento)}" required></div>
+        <div class="pax-field"><label>Sexo <span class="req">*</span></label>
+          <select name="sexo" required>
+            <option value="">Selecione</option>
+            <option value="M" ${paxOpt("M", t.sexo||t.genero)}>Masculino</option>
+            <option value="F" ${paxOpt("F", t.sexo||t.genero)}>Feminino</option>
+            <option value="X" ${paxOpt("X", t.sexo||t.genero)}>Outro / não informar</option>
+          </select></div>
+        <div class="pax-field"><label>Nacionalidade <span class="req">*</span></label>
+          <input type="text" name="nacionalidade" value="${paxEsc(t.nacionalidade||'Brasileira')}" required placeholder="Ex.: Brasileira"></div>
+        <div class="pax-field"><label>CPF <span class="req">*</span></label>
+          <input type="text" name="cpf" inputmode="numeric" value="${paxEsc(fmtCpfInput(t.cpf||''))}" placeholder="000.000.000-00" maxlength="14" required></div>
+      </div>
     </div>
+
+    <div class="pax-sec">
+      <div class="pax-sec-title">Contato <span></span></div>
+      <div class="pax-grid">
+        <div class="pax-field full"><label>E-mail ${isTitular ? '(da sua conta)' : ''}</label>
+          <input type="email" name="email" value="${paxEsc(isTitular ? emailLocked : (t.email||''))}" ${isTitular ? 'readonly' : ''} placeholder="email@exemplo.com" autocomplete="email">
+          ${isTitular ? '<div class="hint">Vinculado ao login Google — não é possível alterar aqui.</div>' : ''}</div>
+        <div class="pax-field full"><label>Telefone / WhatsApp <span class="req">*</span></label>
+          <input type="tel" name="telefone" value="${paxEsc(t.telefone)}" required placeholder="(00) 00000-0000" autocomplete="tel"></div>
+      </div>
+    </div>
+
+    <div class="pax-sec">
+      <div class="pax-sec-title">Documento <span></span></div>
+      <div class="pax-grid">
+        <div class="pax-field"><label>Tipo de documento <span class="req">*</span></label>
+          <select name="docTipo" required>
+            <option value="">Selecione</option>
+            <option value="RG" ${paxOpt("RG", t.docTipo)}>RG</option>
+            <option value="CNH" ${paxOpt("CNH", t.docTipo)}>CNH</option>
+            <option value="Passaporte" ${paxOpt("Passaporte", t.docTipo)}>Passaporte</option>
+            <option value="RNE" ${paxOpt("RNE", t.docTipo)}>RNE / RNM</option>
+          </select></div>
+        <div class="pax-field"><label>Número do documento <span class="req">*</span></label>
+          <input type="text" name="docNumero" value="${paxEsc(t.docNumero)}" required placeholder="Número"></div>
+        <div class="pax-field"><label>Órgão emissor</label>
+          <input type="text" name="docOrgao" value="${paxEsc(t.docOrgao)}" placeholder="Ex.: SSP/AM"></div>
+        <div class="pax-field"><label>País emissor</label>
+          <input type="text" name="docPais" value="${paxEsc(t.docPais||'Brasil')}" placeholder="Brasil"></div>
+        <div class="pax-field"><label>Data de emissão</label>
+          <input type="date" name="docEmissao" value="${paxEsc(t.docEmissao)}"></div>
+        <div class="pax-field"><label>Validade</label>
+          <input type="date" name="docValidade" value="${paxEsc(t.docValidade)}"></div>
+      </div>
+    </div>
+
+    <div class="pax-sec">
+      <div class="pax-sec-title">Residência <span></span></div>
+      <div class="pax-grid">
+        <div class="pax-field"><label>País de residência</label>
+          <input type="text" name="paisResidencia" value="${paxEsc(t.paisResidencia||'Brasil')}" placeholder="Brasil"></div>
+        <div class="pax-field"><label>CEP</label>
+          <input type="text" name="cep" inputmode="numeric" value="${paxEsc(t.cep)}" placeholder="00000-000" maxlength="9"></div>
+        <div class="pax-field full"><label>Endereço completo</label>
+          <input type="text" name="endereco" value="${paxEsc(t.endereco)}" placeholder="Rua, número, bairro" autocomplete="street-address"></div>
+        <div class="pax-field full"><label>Cidade / UF</label>
+          <input type="text" name="cidade" value="${paxEsc(t.cidade)}" placeholder="Ex.: Manaus / AM"></div>
+      </div>
+    </div>
+
+    <details class="pax-more">
+      <summary>Mais opções (fidelidade, assistência, bagagem…)</summary>
+      <div class="pax-sec">
+        <div class="pax-grid">
+          <div class="pax-field full"><label>Contato de emergência (nome e telefone)</label>
+            <input type="text" name="emergencia" value="${paxEsc(t.emergencia)}" placeholder="Nome — (00) 00000-0000"></div>
+          <div class="pax-field"><label>Programa de fidelidade</label>
+            <input type="text" name="fidelidadeProg" value="${paxEsc(t.fidelidadeProg)}" placeholder="LATAM Pass, Smiles…"></div>
+          <div class="pax-field"><label>Nº do programa</label>
+            <input type="text" name="fidelidadeNum" value="${paxEsc(t.fidelidadeNum)}" placeholder="Número"></div>
+          <div class="pax-field"><label>Preferência de assento</label>
+            <select name="assento">
+              <option value="">Sem preferência</option>
+              <option value="Janela" ${paxOpt("Janela", t.assento)}>Janela</option>
+              <option value="Corredor" ${paxOpt("Corredor", t.assento)}>Corredor</option>
+              <option value="Meio" ${paxOpt("Meio", t.assento)}>Meio</option>
+            </select></div>
+          <div class="pax-field"><label>Refeição especial</label>
+            <input type="text" name="refeicao" value="${paxEsc(t.refeicao)}" placeholder="Vegetariana, kosher…"></div>
+          <div class="pax-field full"><label>Assistência especial</label>
+            <input type="text" name="assistencia" value="${paxEsc(t.assistencia)}" placeholder="Cadeirante, visual, beliche…"></div>
+          <div class="pax-field"><label>Bagagem despachada</label>
+            <select name="bagagem">
+              <option value="">Não informar</option>
+              <option value="Só mão" ${paxOpt("Só mão", t.bagagem)}>Só bagagem de mão</option>
+              <option value="1 volume" ${paxOpt("1 volume", t.bagagem)}>1 volume</option>
+              <option value="2 volumes" ${paxOpt("2 volumes", t.bagagem)}>2 volumes</option>
+            </select></div>
+          <div class="pax-field"><label>Seguro viagem</label>
+            <select name="seguro">
+              <option value="">Não informar</option>
+              <option value="Sim, quero cotar" ${paxOpt("Sim, quero cotar", t.seguro)}>Sim, quero cotar</option>
+              <option value="Não" ${paxOpt("Não", t.seguro)}>Não</option>
+            </select></div>
+          <div class="pax-field full"><label>Visto / imigração (se aplicável)</label>
+            <input type="text" name="visto" value="${paxEsc(t.visto)}" placeholder="Número do visto, validade…"></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="pax-more">
+      <summary>Menor de idade — dados do responsável</summary>
+      <div class="pax-sec">
+        <div class="pax-grid">
+          <div class="pax-field full"><label>Nome do responsável</label>
+            <input type="text" name="respNome" value="${paxEsc(t.respNome)}" placeholder="Nome completo"></div>
+          <div class="pax-field"><label>CPF do responsável</label>
+            <input type="text" name="respCpf" value="${paxEsc(fmtCpfInput(t.respCpf||''))}" placeholder="000.000.000-00" maxlength="14"></div>
+          <div class="pax-field"><label>Telefone do responsável</label>
+            <input type="tel" name="respTel" value="${paxEsc(t.respTel)}" placeholder="(00) 00000-0000"></div>
+          <div class="pax-field full"><label>Parentesco</label>
+            <input type="text" name="respParentesco" value="${paxEsc(t.respParentesco)}" placeholder="Pai, mãe, tutor…"></div>
+        </div>
+      </div>
+    </details>
   </div>`;
+}
+
+function splitName(full){
+  const parts = String(full||"").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return { nome: "", sobrenome: "" };
+  if (parts.length === 1) return { nome: parts[0], sobrenome: "" };
+  return { nome: parts[0], sobrenome: parts.slice(1).join(" ") };
 }
 
 async function openPaxModal(flight){
@@ -2722,20 +2878,25 @@ async function openPaxModal(flight){
   const n = Math.max(1, parseInt(document.getElementById("f-pax")?.value || "1", 10) || 1);
   const depDate = document.getElementById("f-depart")?.value || "";
   const retDate = document.getElementById("f-return")?.value || "";
-  const tripTypeLabel = (typeof tripType !== "undefined" && tripType === "OW") ? "Só ida" : "Ida e volta";
+  const isOW = (typeof tripType !== "undefined" && tripType === "OW");
+  const tripTypeLabel = isOW ? "Só ida" : "Ida e volta";
 
   document.getElementById("pax-trip-summary").innerHTML = `
-    <strong>${flight.route || ""}</strong><br>
-    ${flight.airline || ""} · ${currency(Number(flight.price)||0)} · PIX<br>
-    ${depDate ? "Ida: " + depDate : ""}${retDate && tripTypeLabel!=="Só ida" ? " · Volta: " + retDate : ""} · ${flight.dep || ""} → ${flight.arr || ""}<br>
-    <span class="muted">${n} passageiro${n>1?"s":""} · ${tripTypeLabel}</span>
+    <div class="pt-route">${flight.route || ""}</div>
+    <div class="pt-meta">${flight.airline || "Companhia"} · ${flight.dep || "—"} → ${flight.arr || "—"}
+      ${depDate ? "<br>Ida " + depDate : ""}${!isOW && retDate ? " · Volta " + retDate : ""}
+      <br>${n} passageiro${n>1?"s":""} · ${tripTypeLabel}${flight.locator ? " · Ref " + flight.locator : ""}</div>
+    <div class="pt-price">PIX ${currency(Number(flight.price)||0)} · por adulto (referência)</div>
   `;
 
+  const steps = document.getElementById("pax-steps");
+  if (steps) {
+    steps.innerHTML = Array.from({length:n}, (_,i) =>
+      `<span class="pax-step on">Pax ${i+1}</span>`).join("");
+  }
+
   let saved = mmLoadTravelersLocal(user.email);
-  // tenta backend
   try {
-    const url = API_MILHAS_PAX + (API_MILHAS_PAX.includes("?") ? "&" : "?") ;
-    // GET via proxy: pass query in target
     const target = "http://br2.bronxyshost.com:4009/api/milhas/usuarios/passageiros?email=" + encodeURIComponent(user.email);
     const res = await fetch(API_MILHAS_BASE + encodeURIComponent(target));
     const dados = await res.json();
@@ -2745,18 +2906,42 @@ async function openPaxModal(flight){
     }
   } catch (_) {}
 
-  // se não tem nenhum, pré-preenche titular com dados da conta Google
   if (!saved.length) {
-    saved = [{ nome: user.name || "", email: user.email || "", telefone: user.phone || "" }];
+    const sp = splitName(user.name || "");
+    saved = [{
+      nome: sp.nome,
+      sobrenome: sp.sobrenome,
+      email: user.email || "",
+      telefone: user.phone || "",
+      nacionalidade: "Brasileira",
+      docPais: "Brasil",
+      paisResidencia: "Brasil"
+    }];
+  } else {
+    // normalize legacy single "nome" full name
+    saved = saved.map(s => {
+      if (s && s.nome && !s.sobrenome && String(s.nome).includes(" ")) {
+        const sp = splitName(s.nome);
+        return { ...s, nome: sp.nome, sobrenome: sp.sobrenome };
+      }
+      return s;
+    });
   }
 
   let html = "";
   for (let i = 0; i < n; i++) {
-    html += paxFieldHtml(i, saved[i] || (i===0 ? saved[0] : {}), i===0 ? "Passageiro 1 (titular)" : null);
+    const base = saved[i] || (i === 0 ? saved[0] : {});
+    html += paxFieldHtml(i, base, i === 0, user.email);
   }
   document.getElementById("pax-forms").innerHTML = html;
-  document.getElementById("pax-forms").querySelectorAll('input[name="cpf"]').forEach(inp => {
+  document.getElementById("pax-forms").querySelectorAll('input[name="cpf"], input[name="respCpf"]').forEach(inp => {
     inp.addEventListener("input", () => { inp.value = fmtCpfInput(inp.value); });
+  });
+  document.getElementById("pax-forms").querySelectorAll('input[name="cep"]').forEach(inp => {
+    inp.addEventListener("input", () => {
+      let d = onlyDigits(inp.value).slice(0,8);
+      inp.value = d.length > 5 ? d.slice(0,5)+"-"+d.slice(5) : d;
+    });
   });
 
   document.getElementById("pax-overlay").classList.add("show");
@@ -2773,17 +2958,30 @@ function closePaxModal(){
 
 function collectPaxForms(){
   const blocks = [...document.querySelectorAll("#pax-forms .pax-block")];
+  const fields = [
+    "nome","sobrenome","nascimento","sexo","nacionalidade","cpf","email","telefone",
+    "docTipo","docNumero","docOrgao","docPais","docEmissao","docValidade",
+    "paisResidencia","cep","endereco","cidade",
+    "emergencia","fidelidadeProg","fidelidadeNum","assento","refeicao","assistencia",
+    "bagagem","seguro","visto","respNome","respCpf","respTel","respParentesco"
+  ];
   return blocks.map(b => {
-    const g = (name) => b.querySelector(`[name="${name}"]`)?.value?.trim() || "";
-    return {
-      nome: g("nome"),
-      cpf: onlyDigits(g("cpf")),
-      nascimento: g("nascimento"),
-      genero: g("genero"),
-      telefone: g("telefone"),
-      email: g("email")
-    };
+    const o = {};
+    fields.forEach(name => {
+      const el = b.querySelector(`[name="${name}"]`);
+      o[name] = el ? String(el.value || "").trim() : "";
+    });
+    o.cpf = onlyDigits(o.cpf);
+    o.respCpf = onlyDigits(o.respCpf);
+    o.cep = onlyDigits(o.cep);
+    o.nomeCompleto = [o.nome, o.sobrenome].filter(Boolean).join(" ");
+    return o;
   });
+}
+
+function waLine(label, value){
+  if (!value) return "";
+  return `• *${label}:* ${value}\n`;
 }
 
 async function submitPaxAndWhatsApp(){
@@ -2792,19 +2990,21 @@ async function submitPaxAndWhatsApp(){
   const travelers = collectPaxForms();
   for (let i = 0; i < travelers.length; i++) {
     const t = travelers[i];
-    if (!t.nome || t.nome.length < 3) {
-      alert("Preencha o nome completo do passageiro " + (i+1) + ".");
+    if (!t.nome || !t.sobrenome) {
+      alert("Preencha nome e sobrenome do passageiro " + (i+1) + ".");
       return;
     }
-    if (!t.nascimento) {
-      alert("Informe a data de nascimento do passageiro " + (i+1) + ".");
-      return;
-    }
+    if (!t.nascimento) { alert("Data de nascimento do passageiro " + (i+1) + "."); return; }
+    if (!t.sexo) { alert("Selecione o sexo do passageiro " + (i+1) + "."); return; }
+    if (!t.cpf || t.cpf.length < 11) { alert("CPF válido do passageiro " + (i+1) + "."); return; }
+    if (!t.telefone) { alert("Telefone do passageiro " + (i+1) + "."); return; }
+    if (!t.docTipo || !t.docNumero) { alert("Documento do passageiro " + (i+1) + "."); return; }
   }
 
-  // salva local
+  const btn = document.getElementById("pax-submit");
+  if (btn) { btn.disabled = true; btn.textContent = "Preparando WhatsApp…"; }
+
   mmSaveTravelersLocal(user.email, travelers);
-  // atualiza conta local
   const users = mmLoadUsers();
   const idx = users.findIndex(u => u.email === user.email);
   if (idx >= 0) {
@@ -2813,7 +3013,6 @@ async function submitPaxAndWhatsApp(){
     mmSaveUsers(users);
   }
 
-  // backend
   try {
     await fetch(API_MILHAS_PAX, {
       method: "POST",
@@ -2829,39 +3028,90 @@ async function submitPaxAndWhatsApp(){
       body: JSON.stringify({
         email: user.email,
         tipo: "selecionou_voo",
-        dados: { ...pendingFlight, pax: travelers.length }
+        dados: { route: pendingFlight.route, price: pendingFlight.price, pax: travelers.length, airline: pendingFlight.airline }
       })
     });
   } catch (_) {}
 
-  // monta WhatsApp
   const depDate = document.getElementById("f-depart")?.value || "";
   const retDate = document.getElementById("f-return")?.value || "";
+  const isOW = (typeof tripType !== "undefined" && tripType === "OW");
   const origin = selectedAirport.origin;
   const dest = selectedAirport.destination;
-  let msg = "Olá! Quero emitir esta passagem pela Marujo's Milhas:%0A%0A";
-  msg += "*Voo*%0A";
-  msg += pendingFlight.route + "%0A";
-  msg += (pendingFlight.airline || "") + " · R$ " + Number(pendingFlight.price).toLocaleString("pt-BR") + " (PIX)%0A";
-  msg += "Horário: " + (pendingFlight.dep||"—") + " → " + (pendingFlight.arr||"—") + "%0A";
-  if (depDate) msg += "Data ida: " + depDate + "%0A";
-  if (retDate) msg += "Data volta: " + retDate + "%0A";
-  msg += "Ref: " + (pendingFlight.locator||"—") + "%0A%0A";
-  msg += "*Passageiros (" + travelers.length + ")*%0A";
-  travelers.forEach((t, i) => {
-    msg += (i+1) + ") " + t.nome + "%0A";
-    if (t.cpf) msg += "CPF: " + t.cpf + "%0A";
-    if (t.nascimento) msg += "Nasc.: " + t.nascimento + "%0A";
-    if (t.genero) msg += "Gênero: " + t.genero + "%0A";
-    if (t.telefone) msg += "Tel: " + t.telefone + "%0A";
-    if (t.email) msg += "E-mail: " + t.email + "%0A";
-    msg += "%0A";
-  });
-  msg += "*Contato da conta*%0A";
-  msg += (user.name||"") + " · " + (user.email||"") + "%0A";
-  msg += "Origem escolhida: " + origin.city + " (" + origin.code + ") → " + dest.city + " (" + dest.code + ")";
+  const sexoMap = { M: "Masculino", F: "Feminino", X: "Outro" };
 
-  // salva viagem local se logado
+  let msg = "";
+  msg += "✈️ *PEDIDO DE EMISSÃO — Marujo's Milhas*\n";
+  msg += "━━━━━━━━━━━━━━━━━━━━\n\n";
+
+  msg += "📍 *TRECHO*\n";
+  msg += `• *Rota:* ${pendingFlight.route || (origin.city + " → " + dest.city)}\n`;
+  msg += `• *Companhia:* ${pendingFlight.airline || "—"}\n`;
+  msg += `• *Horário:* ${pendingFlight.dep || "—"} → ${pendingFlight.arr || "—"}\n`;
+  if (depDate) msg += `• *Data ida:* ${depDate}\n`;
+  if (!isOW && retDate) msg += `• *Data volta:* ${retDate}\n`;
+  msg += `• *Tipo:* ${isOW ? "Só ida" : "Ida e volta"}\n`;
+  if (pendingFlight.duration) msg += `• *Duração:* ${pendingFlight.duration}\n`;
+  if (pendingFlight.stops !== undefined && pendingFlight.stops !== "") {
+    msg += `• *Paradas:* ${Number(pendingFlight.stops) === 0 ? "Direto" : pendingFlight.stops}\n`;
+  }
+  if (pendingFlight.locator) msg += `• *Ref. busca:* ${pendingFlight.locator}\n`;
+  msg += `• *Valor ref. (PIX):* R$ ${Number(pendingFlight.price||0).toLocaleString("pt-BR")}\n\n`;
+
+  travelers.forEach((t, i) => {
+    msg += `👤 *PASSAGEIRO ${i+1}${i===0 ? " (TITULAR)" : ""}*\n`;
+    msg += waLine("Nome completo", t.nomeCompleto);
+    msg += waLine("Nascimento", t.nascimento);
+    msg += waLine("Sexo", sexoMap[t.sexo] || t.sexo);
+    msg += waLine("Nacionalidade", t.nacionalidade);
+    msg += waLine("CPF", t.cpf);
+    msg += waLine("E-mail", t.email);
+    msg += waLine("Telefone", t.telefone);
+    msg += "\n📄 *Documento*\n";
+    msg += waLine("Tipo", t.docTipo);
+    msg += waLine("Número", t.docNumero);
+    msg += waLine("Órgão", t.docOrgao);
+    msg += waLine("País emissor", t.docPais);
+    msg += waLine("Emissão", t.docEmissao);
+    msg += waLine("Validade", t.docValidade);
+    if (t.endereco || t.cidade || t.cep) {
+      msg += "\n🏠 *Residência*\n";
+      msg += waLine("País", t.paisResidencia);
+      msg += waLine("Endereço", t.endereco);
+      msg += waLine("Cidade", t.cidade);
+      msg += waLine("CEP", t.cep);
+    }
+    const extras = [
+      ["Emergência", t.emergencia],
+      ["Fidelidade", [t.fidelidadeProg, t.fidelidadeNum].filter(Boolean).join(" ")],
+      ["Assento", t.assento],
+      ["Refeição", t.refeicao],
+      ["Assistência", t.assistencia],
+      ["Bagagem", t.bagagem],
+      ["Seguro", t.seguro],
+      ["Visto", t.visto],
+    ].filter(([,v]) => v);
+    if (extras.length) {
+      msg += "\n✨ *Preferências*\n";
+      extras.forEach(([k,v]) => { msg += waLine(k, v); });
+    }
+    if (t.respNome) {
+      msg += "\n👨‍👩‍👧 *Responsável (menor)*\n";
+      msg += waLine("Nome", t.respNome);
+      msg += waLine("CPF", t.respCpf);
+      msg += waLine("Telefone", t.respTel);
+      msg += waLine("Parentesco", t.respParentesco);
+    }
+    msg += "\n";
+  });
+
+  msg += "━━━━━━━━━━━━━━━━━━━━\n";
+  msg += "🔐 *CONTA NO SITE*\n";
+  msg += waLine("Nome", user.name);
+  msg += waLine("E-mail", user.email);
+  msg += waLine("Aeroportos", `${origin.city} (${origin.code}) → ${dest.city} (${dest.code})`);
+  msg += "\n_Pedido gerado pelo site Marujo's Milhas. Aguardando confirmação e PIX._";
+
   try {
     const trips = mmLoadTrips(user.email);
     trips.push({
@@ -2871,13 +3121,14 @@ async function submitPaxAndWhatsApp(){
       dep: pendingFlight.dep,
       locator: pendingFlight.locator,
       savedAt: new Date().toISOString(),
-      travelers: travelers.map(t => t.nome)
+      travelers: travelers.map(t => t.nomeCompleto)
     });
     mmSaveTripsList(user.email, trips);
   } catch(_){}
 
   closePaxModal();
-  window.open("https://wa.me/5521967026563?text=" + msg, "_blank", "noopener");
+  if (btn) { btn.disabled = false; btn.textContent = "📱 Enviar pedido no WhatsApp"; }
+  window.open("https://wa.me/5521967026563?text=" + encodeURIComponent(msg), "_blank", "noopener");
 }
 
 document.getElementById("pax-close")?.addEventListener("click", closePaxModal);
@@ -3036,648 +3287,6 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
