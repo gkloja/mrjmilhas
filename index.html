@@ -872,46 +872,110 @@
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window.__mmOneSignalAppId = "94ae04f7-0f0d-4c9c-88f8-51f628ef71b9";
+
   OneSignalDeferred.push(async function (OneSignal) {
-    await OneSignal.init({
-      appId: "94ae04f7-0f0d-4c9c-88f8-51f628ef71b9",
-      notifyButton: { enable: false },
-      allowLocalhostAsSecureOrigin: true
-    });
-    window.__mmOneSignalReady = true;
-    // Se já houver sessão Google, vincula o e-mail
     try {
-      if (typeof mmCurrentUser === "function") {
-        const u = mmCurrentUser();
-        if (u && u.email) await window.mmOneSignalLogin(u.email);
-      }
-    } catch (_) {}
+      await OneSignal.init({
+        appId: window.__mmOneSignalAppId,
+        // Service worker padrão do OneSignal (precisa estar acessível na raiz do site)
+        serviceWorkerPath: "OneSignalSDKWorker.js",
+        serviceWorkerParam: { scope: "/" },
+        notifyButton: { enable: false },
+        allowLocalhostAsSecureOrigin: true
+      });
+      window.__mmOneSignalReady = true;
+      console.log("[Milhas OneSignal] init OK | permission=", OneSignal.Notifications.permissionNative);
+      try {
+        if (typeof mmCurrentUser === "function") {
+          const u = mmCurrentUser();
+          if (u && u.email) await window.mmOneSignalLogin(u.email);
+        }
+      } catch (_) {}
+    } catch (e) {
+      console.error("[Milhas OneSignal] init falhou", e);
+    }
   });
 
+  /**
+   * 1) Pede permissão de push no navegador
+   * 2) Faz opt-in da subscription
+   * 3) Liga external_user_id = e-mail (para o backend mirar só essa pessoa)
+   */
   window.mmOneSignalLogin = async function (email) {
     const id = String(email || "").trim().toLowerCase();
-    if (!id) return;
-    try {
-      await new Promise((resolve) => {
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        OneSignalDeferred.push(async function (OneSignal) {
-          try {
-            await OneSignal.login(id);
-            // Pede permissão de push (só se ainda não estiver inscrito)
-            const perm = await OneSignal.Notifications.permissionNative;
-            if (perm !== "granted") {
-              await OneSignal.Notifications.requestPermission();
-            }
-            console.log("[Milhas OneSignal] login", id, "permission=", await OneSignal.Notifications.permissionNative);
-          } catch (e) {
-            console.warn("[Milhas OneSignal] login falhou", e);
+    if (!id) return false;
+
+    return new Promise(function (resolve) {
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function (OneSignal) {
+        try {
+          // A) permissão do browser
+          let perm = OneSignal.Notifications.permissionNative;
+          if (perm !== "granted") {
+            // requestPermission abre o diálogo nativo (ou soft prompt se configurado no painel)
+            perm = await OneSignal.Notifications.requestPermission();
           }
-          resolve();
-        });
+          console.log("[Milhas OneSignal] permission =", perm);
+
+          if (perm !== "granted" && perm !== true) {
+            console.warn("[Milhas OneSignal] usuário NÃO autorizou notificações — sem push token");
+            resolve(false);
+            return;
+          }
+
+          // B) garante inscrição de push
+          try {
+            if (OneSignal.User && OneSignal.User.PushSubscription) {
+              const opted = OneSignal.User.PushSubscription.optedIn;
+              if (!opted) {
+                await OneSignal.User.PushSubscription.optIn();
+              }
+            }
+          } catch (eOpt) {
+            console.warn("[Milhas OneSignal] optIn", eOpt);
+          }
+
+          // C) external_user_id = e-mail (o backend usa include_external_user_ids)
+          await OneSignal.login(id);
+
+          // Diagnóstico no console
+          try {
+            const sub = OneSignal.User && OneSignal.User.PushSubscription;
+            console.log("[Milhas OneSignal] login OK", {
+              email: id,
+              permission: OneSignal.Notifications.permissionNative,
+              optedIn: sub && sub.optedIn,
+              token: sub && sub.token ? String(sub.token).slice(0, 16) + "…" : null,
+              id: sub && sub.id
+            });
+          } catch (_) {}
+
+          resolve(true);
+        } catch (e) {
+          console.error("[Milhas OneSignal] login falhou", e);
+          resolve(false);
+        }
       });
-    } catch (e) {
-      console.warn("[Milhas OneSignal]", e);
-    }
+    });
+  };
+
+  // Atalho manual no console: mmOneSignalStatus()
+  window.mmOneSignalStatus = async function () {
+    return new Promise(function (resolve) {
+      OneSignalDeferred.push(async function (OneSignal) {
+        const sub = OneSignal.User && OneSignal.User.PushSubscription;
+        const info = {
+          permission: OneSignal.Notifications.permissionNative,
+          optedIn: sub && sub.optedIn,
+          hasToken: !!(sub && sub.token),
+          subscriptionId: sub && sub.id,
+          externalId: OneSignal.User && OneSignal.User.externalId
+        };
+        console.log("[Milhas OneSignal] status", info);
+        resolve(info);
+      });
+    });
   };
 </script>
 
@@ -3704,6 +3768,373 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
