@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0E1930">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Passagens aéreas em milhas por até 50% menos. Comparamos LATAM, GOL, Azul e TAP e você paga em real, sem precisar ter milhas.">
+<title>Marujo's Milhas — Passagens em milhas, sempre pelo menor preço</title>
+
+<!-- favicon -->
+<link rel="icon" type="image/jpeg" href="https://dl.dropboxusercontent.com/scl/fi/qseevce34se66s867pqcv/1785431732563_tmp.jpg?rlkey=rabna4gdxhawdqgdgg6r4w6hx&dl=0">
+<link rel="apple-touch-icon" href="https://dl.dropboxusercontent.com/scl/fi/qseevce34se66s867pqcv/1785431732563_tmp.jpg?rlkey=rabna4gdxhawdqgdgg6r4w6hx&dl=0">
+
+<!-- Open Graph / redes sociais -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Marujo's Milhas">
+<meta property="og:title" content="Marujo's Milhas — Passagens em milhas, sempre pelo menor preço">
+<meta property="og:description" content="Comparamos LATAM, GOL, Azul e TAP em milhas e tarifa normal. Você paga em real, parcela em até 12x e economiza até 50%.">
+<meta property="og:image" content="https://dl.dropboxusercontent.com/scl/fi/qseevce34se66s867pqcv/1785431732563_tmp.jpg?rlkey=rabna4gdxhawdqgdgg6r4w6hx&dl=0">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Marujo's Milhas — Passagens em milhas, sempre pelo menor preço">
+<meta name="twitter:description" content="Economize até 50% em passagens aéreas comparando LATAM, GOL, Azul e TAP. Pague em real, sem precisar ter milhas.">
+
+<!-- Dados estruturados para busca (rich results) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TravelAgency",
+  "name": "Marujo's Milhas",
+  "description": "Agência especializada em passagens aéreas emitidas com milhas, com preço fixo em real e parcelamento em até 12x.",
+  "priceRange": "$$",
+  "areaServed": "BR",
+  "sameAs": ["https://wa.me/5500000000000"],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5.0",
+    "reviewCount": "50"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Preciso ter milhas para comprar?", "acceptedAnswer": { "@type": "Answer", "text": "Não. A Marujo's usa milhas intermediadas para emitir sua passagem. Você paga em real (PIX ou cartão) e recebe o bilhete das companhias normalmente." } },
+    { "@type": "Question", "name": "As passagens são das companhias oficiais?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. Emitimos com Gol, Latam e Azul. Localizador e check-in funcionam nos canais oficiais." } },
+    { "@type": "Question", "name": "Posso parcelar?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. PIX à vista ou cartão em até 12x, conforme condições no atendimento." } },
+    { "@type": "Question", "name": "Os preços mudam?", "acceptedAnswer": { "@type": "Answer", "text": "Ofertas em milhas são dinâmicas. Após escolher, nossa equipe confirma e emite rápido para garantir o valor." } }
+  ]
+}
+</script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root{
+    /* ---- identidade: carta náutica + cartão de embarque ---- */
+    --navy: #0E1930;
+    --navy-2: #16274A;
+    --navy-3: #1F3768;
+    --blue: #3972DB;
+    --brass: #D9A23B;
+    --brass-dark: #A87A1E;
+    --brass-soft: #F0D9A8;
+    --ink: #16213E;
+    --slate: #5B6478;
+    --slate-soft: #8B93A8;
+    --paper: #FAF6EC;
+    --paper-2: #F3ECD8;
+    --paper-line: #E4D9BB;
+    --card-line: #E4E1D3;
+    --white: #FFFFFF;
+    --green: #1E8F5F;
+    --red: #C1432D;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;max-width:100%;overflow-x:hidden;}
+  body{margin:0;font-family:'Figtree',sans-serif;background:var(--paper);color:var(--ink);max-width:100%;overflow-x:hidden;}
+  .display{font-family:'Bricolage Grotesque',sans-serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;}
+  button{font-family:inherit;}
+  img{max-width:100%;display:block;}
+  ::selection{background:var(--brass-soft);color:var(--navy);}
+
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- reveal on scroll ---------- */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+  }
+
+  /* ---------- ticker / departures board ---------- */
+  .ticker-bar{background:var(--navy);overflow:hidden;padding:9px 0;border-bottom:1px solid rgba(217,162,59,0.25);}
+  .ticker-track{display:flex;width:max-content;animation:ticker-scroll 32s linear infinite;}
+  .ticker-track span{display:inline-flex;align-items:center;gap:9px;color:var(--brass-soft);font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.4px;white-space:nowrap;padding:0 26px;}
+  .ticker-track span b{color:#fff;font-weight:600;}
+  .ticker-track span::after{content:"✦";color:var(--brass-dark);margin-left:26px;}
+  @keyframes ticker-scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @media (prefers-reduced-motion: reduce){ .ticker-track{animation:none;} }
+
+  /* ---------- header ---------- */
+  header{background:var(--blue);padding:14px 0;position:sticky;top:0;z-index:40;box-shadow:0 2px 24px rgba(9,15,30,0.22);border-bottom:1px solid rgba(255,255,255,0.14);}
+  header .row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;row-gap:12px;}
+  header .logo-img{height:44px;width:auto;display:block;flex-shrink:0;}
+  header nav{display:flex;align-items:center;gap:26px;flex-wrap:wrap;row-gap:10px;margin-left:auto;}
+  header nav a{text-decoration:none;color:#EAF0FE;font-size:14px;font-weight:500;white-space:nowrap;position:relative;padding-bottom:2px;}
+  header nav a::after{content:"";position:absolute;left:0;right:100%;bottom:-3px;height:1.5px;background:var(--brass);transition:right .18s ease;}
+  header nav a:hover{color:#fff;}
+  header nav a:hover::after{right:0;}
+  .btn-amber{background:var(--brass);color:var(--navy);border:none;padding:10px 18px;border-radius:9px;font-weight:700;font-size:13.5px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .btn-amber:hover{background:#c68f2c;}
+
+  @media (max-width: 780px){
+    header .row{justify-content:center;text-align:center;}
+    header .logo-img{margin:0 auto;}
+    header nav{justify-content:center;width:100%;margin-left:0;gap:16px 20px;}
+    header nav a{font-size:13.5px;}
+  }
+  @media (max-width: 480px){
+    header nav .nav-links{display:none;}
+    header nav{justify-content:center;}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(217,162,59,0.16), transparent 60%),
+      linear-gradient(180deg, var(--blue) 0%, var(--navy-2) 50%, var(--navy-3) 100%);
+    padding:60px 0 152px;position:relative;overflow:hidden;}
+  .hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px);background-size:26px 26px;opacity:.5;pointer-events:none;}
+  .hero-inner{max-width:720px;margin:0 auto;text-align:center;position:relative;z-index:2;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,162,59,0.12);border:1px solid rgba(217,162,59,0.4);border-radius:999px;padding:6px 16px;margin-bottom:22px;}
+  .eyebrow span{color:var(--brass-soft);font-size:11px;letter-spacing:.8px;font-family:'IBM Plex Mono',monospace;}
+  .hero h1{color:#fff;font-size:clamp(32px,5vw,53px);font-weight:700;line-height:1.08;margin:0;letter-spacing:-.5px;}
+  .hero h1 em{font-style:normal;color:var(--brass);}
+  .hero p{color:#C2D0EC;font-size:17px;margin:20px auto 0;line-height:1.65;max-width:520px;}
+
+  .trail-svg{position:absolute;top:26px;left:0;width:100%;height:150px;opacity:.7;z-index:1;}
+  .trail-svg .plane-icon{fill:var(--brass);}
+
+  /* ---------- search card, styled as a boarding pass ---------- */
+  .search-card{max-width:1000px;margin:44px auto 0;background:#fff;border-radius:20px;box-shadow:0 30px 70px rgba(6,12,26,0.4);position:relative;z-index:3;overflow:hidden;}
+  .bp-strip{background:linear-gradient(90deg,var(--brass-dark),var(--brass));padding:9px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .bp-strip span{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.6px;color:var(--navy);font-weight:600;text-transform:uppercase;}
+  .bp-strip .bp-dots{display:flex;gap:4px;}
+  .bp-strip .bp-dots i{width:4px;height:4px;border-radius:50%;background:rgba(14,25,48,0.4);display:block;}
+  .search-card-body{padding:22px 24px 24px;}
+  .search-grid{display:grid;grid-template-columns:1.3fr auto 1.3fr 1fr 1fr .8fr;gap:12px;align-items:end;}
+  .field label{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--slate);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
+  .field input, .field select{width:100%;border:1px solid var(--card-line);border-radius:10px;padding:10px;font-size:14px;color:var(--ink);background:var(--paper);outline:none;font-family:inherit;}
+  .field input:focus, .field select:focus{outline:3px solid var(--brass-soft);outline-offset:1px;border-color:var(--brass);}
+  .swap-btn{background:var(--paper);border:1px solid var(--card-line);border-radius:10px;width:38px;height:38px;margin-bottom:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .search-submit{margin-top:16px;width:100%;background:var(--navy);color:#fff;border:none;border-radius:12px;padding:16px 0;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .search-submit:hover{background:#0a1428;}
+  .search-perks{display:flex;flex-wrap:wrap;gap:14px 24px;justify-content:center;padding:16px 0 2px;font-size:12px;color:var(--slate);font-weight:500;border-top:1px dashed var(--card-line);margin-top:16px;}
+  .search-perks strong{color:var(--ink);}
+
+  /* ---------- results ---------- */
+  #results-section{max-width:1000px;margin:-84px auto 0;padding:0 24px 10px;position:relative;z-index:3;display:none;}
+  #results-section.show{display:block;}
+  .results-bar{background:var(--navy);border-radius:16px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+  .results-bar .route{color:#fff;font-size:18px;font-weight:600;}
+  .results-bar .count{color:#93AAD1;font-size:13px;margin-left:10px;}
+  .sort-btn{background:transparent;color:#CBD8EC;border:1px solid #2C4468;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;}
+  .sort-btn.active{background:var(--brass);color:var(--navy);border-color:var(--brass);}
+
+  .ticket{position:relative;background:#fff;border-radius:18px;box-shadow:0 10px 28px rgba(20,30,55,0.09);display:grid;grid-template-columns:1fr auto 1fr;margin-bottom:18px;transition:transform .18s ease, box-shadow .18s ease;}
+  .ticket:hover{transform:translateY(-3px);box-shadow:0 16px 36px rgba(20,30,55,0.16);}
+  .ticket-notch{position:absolute;width:24px;height:24px;background:var(--paper);border-radius:50%;top:50%;transform:translateY(-50%);z-index:2;}
+  .ticket-notch.left{left:-12px;}
+  .ticket-notch.right{right:-12px;}
+  .ticket-divider{border-left:2px dashed var(--card-line);}
+  .ticket-left{padding:22px 26px;display:flex;flex-direction:column;gap:12px;}
+  .ticket-right{padding:20px 26px;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:210px;}
+  .airline-chip{width:30px;height:30px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+  .best-badge{position:absolute;top:-16px;left:20px;background:var(--brass);color:var(--navy);font-size:10.5px;font-weight:800;padding:7px 13px;border-radius:999px;letter-spacing:.4px;box-shadow:0 4px 12px rgba(0,0,0,0.18);transform:rotate(-3deg);border:1.5px dashed rgba(14,25,48,0.35);}
+  .strike{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--red);text-decoration:line-through;}
+  .final-price{font-family:'Bricolage Grotesque',sans-serif;font-size:27px;font-weight:700;color:var(--ink);line-height:1;}
+  .save-line{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--green);font-weight:700;}
+  .select-btn{margin-top:8px;background:var(--navy);color:#fff;border:none;border-radius:9px;padding:10px 0;font-size:13.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;box-sizing:border-box;}
+  .select-btn:hover{background:#0a1428;}
+
+  /* ---------- generic sections ---------- */
+  section.block{max-width:1140px;margin:0 auto;padding:92px 24px 40px;}
+  .eyebrow-line{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:1.4px;color:var(--brass-dark);}
+  .eyebrow-line .dash{width:18px;height:1.5px;background:var(--brass-dark);display:inline-block;}
+  .eyebrow-line.on-dark{color:var(--brass);}
+  .eyebrow-line.on-dark .dash{background:var(--brass);}
+  h2.section-title{font-family:'Bricolage Grotesque',sans-serif;font-size:33px;font-weight:700;margin-top:10px;margin-bottom:34px;letter-spacing:-.3px;}
+
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+
+  .how-card{background:#fff;border:1px solid var(--card-line);border-radius:16px;padding:24px;position:relative;}
+  .how-card .step-mono{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--brass-dark);letter-spacing:1.4px;margin-bottom:12px;}
+  .how-card .icon-box{width:44px;height:44px;border-radius:10px;background:var(--paper);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:20px;}
+  .how-card h3{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;margin:0 0 6px;}
+  .how-card p{font-size:14px;color:var(--slate);line-height:1.55;margin:0;}
+
+  /* ---------- destinations: luggage-tag postcards ---------- */
+  .dest-section{background:var(--navy);padding:84px 0;position:relative;overflow:hidden;}
+  .dest-section::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(217,162,59,0.14) 1px, transparent 1px);background-size:24px 24px;pointer-events:none;}
+  .dest-card{background:linear-gradient(160deg,#1B3160,var(--navy));border-radius:4px 14px 14px 14px;padding:22px 22px 20px;border:1px dashed rgba(217,162,59,0.4);position:relative;transition:transform .2s ease;}
+  .dest-card:hover{transform:rotate(-1deg) translateY(-2px);}
+  .dest-card .tag-hole{position:absolute;top:-8px;left:22px;width:14px;height:14px;border-radius:50%;background:var(--navy);border:2px solid rgba(217,162,59,0.55);}
+  .dest-card .city{font-family:'Bricolage Grotesque',sans-serif;color:#fff;font-size:21px;font-weight:600;margin-top:10px;}
+  .dest-card .country{color:#9FB0D4;font-size:13.5px;}
+  .dest-card .note{font-family:'IBM Plex Mono',monospace;color:var(--brass);font-size:11px;margin-top:12px;letter-spacing:.3px;padding-top:10px;border-top:1px dashed rgba(217,162,59,0.3);}
+
+  .testi-note{color:var(--slate);font-size:14px;margin-bottom:8px;}
+  .testi-agg{display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap;}
+  .testi-agg .agg-score{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;color:var(--ink);}
+  .testi-agg .agg-stars{color:var(--brass);letter-spacing:1px;}
+  .testi-agg .agg-count{font-size:13px;color:var(--slate);}
+
+  /* ---------- testimonial cards styled as Google review screenshots ---------- */
+  .testi-card{
+    background:#fff;border-radius:14px;padding:16px 16px 14px;
+    box-shadow:0 8px 22px rgba(20,30,55,0.07);border:1px solid var(--card-line);
+    position:relative;display:flex;flex-direction:column;
+  }
+  .testi-head{display:flex;align-items:flex-start;gap:11px;}
+  .avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
+  .testi-headtext{flex:1;min-width:0;}
+  .testi-name{font-size:14px;font-weight:500;color:#1F1F1F;line-height:1.3;display:flex;align-items:center;gap:4px;}
+  .testi-name .guide-badge{width:14px;height:14px;flex-shrink:0;}
+  .testi-meta{font-size:12px;color:#70757A;line-height:1.3;}
+  .testi-dots{color:#70757A;font-size:16px;line-height:1;padding:2px 4px;flex-shrink:0;}
+  .testi-stars-row{display:flex;align-items:center;gap:7px;margin-top:7px;flex-wrap:wrap;}
+  .testi-stars{color:var(--brass);font-size:14px;letter-spacing:1px;}
+  .testi-when{font-size:12px;color:#70757A;}
+  .testi-new-pill{background:var(--paper);color:#3C4043;font-size:11.5px;font-weight:600;border-radius:6px;padding:2px 8px;}
+  .testi-card p.testi-text{font-size:13.5px;line-height:1.55;color:#3C4043;margin:8px 0 0;flex:1;}
+  .testi-foot{display:flex;align-items:center;gap:16px;margin-top:14px;}
+  .testi-reply-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--card-line);background:#fff;border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600;color:var(--blue);}
+  .testi-reply-btn svg{width:13px;height:13px;flex-shrink:0;}
+  .testi-heart-hint{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#70757A;}
+  .testi-heart-hint svg{width:14px;height:14px;flex-shrink:0;}
+  .testi-heart-count{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#70757A;margin-left:auto;}
+  .testi-google-chip{position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:4px;background:var(--paper);border-radius:999px;padding:2px 8px 2px 6px;}
+  .testi-google-chip svg{width:11px;height:11px;flex-shrink:0;}
+  .testi-google-chip span{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8A98A6;}
+
+  .trust-strip{background:var(--navy);padding:40px 24px;position:relative;overflow:hidden;}
+  .trust-strip::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(217,162,59,0.16) 1px, transparent 1px);background-size:22px 22px;pointer-events:none;}
+  .trust-row{max-width:1080px;margin:0 auto;display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px;position:relative;z-index:1;}
+  .trust-num{font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:700;color:#fff;}
+  .trust-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--brass);letter-spacing:.7px;}
+
+  /* ---------- FAQ ---------- */
+  .faq-wrap{max-width:720px;}
+  .faq-item{background:#fff;border:1px solid var(--card-line);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+  .faq-item summary{list-style:none;cursor:pointer;font-weight:600;font-size:15px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .faq-item summary::-webkit-details-marker{display:none;}
+  .faq-item summary .chevron{flex-shrink:0;width:18px;height:18px;transition:transform .2s ease;color:var(--brass-dark);}
+  .faq-item[open] summary .chevron{transform:rotate(180deg);}
+  .faq-item p{color:var(--slate);font-size:14px;line-height:1.6;margin:0 20px 18px;}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--navy);padding:56px 0 26px;border-top:1px solid rgba(217,162,59,0.16);}
+  .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:36px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .footer-brand-name{font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-weight:800;color:#fff;letter-spacing:-.3px;}
+  .footer-brand p{color:#93A4C6;font-size:13.5px;line-height:1.6;margin:12px 0 0;max-width:280px;}
+  footer h4{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.2px;color:var(--brass);text-transform:uppercase;margin:0 0 14px;}
+  footer .flinks{display:flex;flex-direction:column;gap:10px;}
+  footer .flinks a{color:#C2D0EC;font-size:14px;text-decoration:none;}
+  footer .flinks a:hover{color:#fff;}
+  footer .row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;padding-top:22px;}
+  footer .copy{font-family:'IBM Plex Mono',monospace;color:#7C93BE;font-size:12px;}
+  footer .badges{display:flex;gap:14px;flex-wrap:wrap;}
+  footer .badges span{font-size:12px;color:#93A4C6;display:flex;align-items:center;gap:5px;}
+
+  @media (max-width:880px){
+    .search-grid{grid-template-columns:1fr;}
+    .grid-3{grid-template-columns:1fr;}
+    .ticket{grid-template-columns:1fr;}
+    .ticket-divider{display:none;}
+    .ticket-notch{display:none;}
+    .footer-grid{grid-template-columns:1fr;gap:26px;}
+  }
+  /* ---------- app feel: tap feedback, safe areas ---------- */
+  button{-webkit-tap-highlight-color:transparent;}
+  .search-submit, .select-btn, .btn-amber, .picker-btn, .sort-btn{transition:transform .12s ease, background .15s ease;}
+  .search-submit:active, .select-btn:active, .btn-amber:active{transform:scale(.97);}
+  header{padding-top:calc(14px + env(safe-area-inset-top));}
+  footer{padding-bottom:calc(26px + env(safe-area-inset-bottom));}
+
+  :focus-visible{outline:3px solid var(--brass-soft);outline-offset:2px;}
+
+  /* ---------- airport picker fields ---------- */
+  .picker-btn{width:100%;border:1px solid var(--card-line);border-radius:10px;padding:9px 10px;font-size:14px;color:var(--ink);background:var(--paper);text-align:left;cursor:pointer;display:flex;align-items:baseline;gap:7px;font-family:inherit;}
+  .picker-btn:hover{border-color:var(--brass);}
+  .picker-btn:focus-visible{outline:3px solid var(--brass-soft);outline-offset:1px;}
+  .picker-city{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .picker-code{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--slate);flex-shrink:0;}
+
+  .airport-overlay{position:fixed;inset:0;background:rgba(9,15,30,0.6);backdrop-filter:blur(2px);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0;overscroll-behavior:contain;}
+  .airport-overlay.show{display:flex;}
+  .airport-sheet{position:relative;background:#fff;width:100%;max-width:480px;height:min(82vh, 560px);max-height:82vh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;box-shadow:0 -12px 40px rgba(9,15,30,0.4);animation:sheet-up .22s ease;overflow:hidden;}
+  @keyframes sheet-up{from{transform:translateY(24px);opacity:.4;}to{transform:translateY(0);opacity:1;}}
+  .airport-sheet-grip{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:36px;height:4px;border-radius:99px;background:var(--card-line);z-index:1;}
+  .airport-sheet-head{display:flex;align-items:center;gap:8px;padding:22px 14px 10px;border-bottom:1px solid var(--card-line);flex-shrink:0;background:#fff;}
+  #airport-search{flex:1;border:1px solid var(--card-line);border-radius:10px;padding:11px 12px;font-size:15px;background:var(--paper);outline:none;min-width:0;font-family:inherit;}
+  #airport-search:focus{outline:3px solid var(--brass-soft);outline-offset:1px;}
+  .airport-close{background:var(--paper);border:1px solid var(--card-line);border-radius:10px;width:38px;height:38px;flex-shrink:0;cursor:pointer;font-size:15px;color:var(--slate);}
+  .airport-list{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:6px 6px 24px;scroll-padding-bottom:24px;}
+  .airport-group-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1px;color:var(--brass-dark);padding:12px 12px 4px;text-transform:uppercase;position:sticky;top:0;background:#fff;z-index:1;}
+  .airport-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .airport-row:hover, .airport-row.active{background:var(--paper);}
+  .airport-row-code{width:44px;height:32px;border-radius:8px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;flex-shrink:0;}
+  .airport-row-text{min-width:0;flex:1;}
+  .airport-row-city{font-size:14.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .airport-row-name{font-size:12px;color:var(--slate);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .airport-empty{padding:40px 16px;text-align:center;color:var(--slate);font-size:14px;}
+
+  @media (min-width:780px){
+    .airport-overlay{align-items:center;padding:24px;}
+    .airport-sheet{border-radius:18px;height:min(70vh, 520px);max-height:70vh;box-shadow:0 24px 60px rgba(9,15,30,0.35);}
+  }
+
+  /* ---------- filters & richer tickets ---------- */
+  .filters-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center;}
+  .filter-chip{background:#fff;border:1px solid var(--card-line);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:600;color:var(--slate);cursor:pointer;font-family:inherit;transition:background .12s,color .12s,border-color .12s;}
+  .filter-chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .filter-chip:hover{border-color:var(--brass);}
+  .type-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.2px;}
+  .type-pill.miles{background:#E8F7EF;color:var(--green);}
+  .type-pill.revenue{background:var(--paper);color:var(--navy-3);}
+  .leg-row{display:flex;align-items:center;gap:12px;margin-top:6px;}
+  .leg-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--brass-dark);letter-spacing:.5px;width:36px;flex-shrink:0;}
+  .fee-line{font-size:11.5px;color:var(--slate);margin-top:2px;}
+  .ticket-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;}
+  .results-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .ticket.rt .ticket-left{gap:10px;}
+  body.picker-open{overflow:hidden;touch-action:none;}
+
+  /* ---------- skeleton loading for ticket search ---------- */
+  .ticket-skel{background:#fff;border-radius:18px;box-shadow:0 10px 28px rgba(20,30,55,0.07);height:118px;margin-bottom:18px;position:relative;overflow:hidden;}
+  .ticket-skel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg, transparent, rgba(20,30,55,0.06), transparent);animation:skel-sweep 1.3s infinite;}
+  @keyframes skel-sweep{from{transform:translateX(-100%);}to{transform:translateX(100%);}}
+
+  @media (prefers-reduced-motion: reduce){
+    .airport-sheet{animation:none;}
+    .ticket-skel::after{animation:none;}
+  }
+
+  /* ---------- mobile hamburger menu ---------- */
+  .hamburger-btn{display:none;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.25);border-radius:9px;width:40px;height:40px;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+  .hamburger-btn span, .hamburger-btn span::before, .hamburger-btn span::after{content:"";display:block;width:18px;height:2px;background:#fff;border-radius:2px;position:relative;transition:transform .2s ease, opacity .2s ease;}
+  .hamburger-btn span::before{position:absolute;top:-6px;}
+  .hamburger-btn span::after{position:absolute;top:6px;}
+  .hamburger-btn.open span{background:transparent;}
+  .hamburger-btn.open span::before{transform:translateY(6px) rotate(45deg);}
+  .hamburger-btn.open span::after{transform:translateY(-6px) rotate(-45deg);}
+
+  .mobile-menu{position:fixed;inset:0;background:rgba(9,15,30,0.55);backdrop-filter:blur(2px);z-index:90;display:none;}
+  .mobile-menu.show{display:block;}
+  .mobile-menu-panel{position:absolute;top:0;right:0;height:100%;width:min(78vw,320px);background:var(--navy);box-shadow:-16px 0 40px rgba(0,0,0,0.3);padding:24px 22px;display:flex;flex-direction:column;gap:6px;transform:translateX(100%);transition:transform .24s ease;}
+  .mobile-menu.show .mobile-menu-panel{transform:translateX(0);}
+  .mobile-menu-close{align-self:flex-end;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;width:36px;height:36px;border-radius:9px;cursor:pointer;margin-bottom:18px;}
+  .mobile-menu-panel a{color:#EAF0FE;text-decoration:none;font-size:16px;font-weight:600;padding:14px 4px;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .mobile-menu-panel .btn-amber{margin-top:18px;text-align:center;}
+
+  @media (max-width:480px){
+    .hamburger-btn{display:flex;}
+  }
+
+  /* ---------- floating WhatsApp button ---------- */
+  .wa-float{position:fixed;right:18px;bottom:18px;z-index:60;width:58px;height:58px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(9,15,30,0.35);text-decoration:none;}
+  .wa-float svg{width:30px;height:30px;}
+  .wa-float::before{content:"";position:absolute;inset:0;border-radius:50%;background:#25D366;opacity:.55;animation:wa-pulse 2.2s ease-out infinite;z-index:-1;}
+  @keyframes wa-pulse{0%{transform:scale(1);opacity:.5;}100%{transform:scale(1.7);opacity:0;}}
+  @media (prefers-reduced-motion: reduce){ .wa-float::before{animation:none;} }
+  @media (max-width:480px){ .wa-float{right:14px;bottom:calc(78px + env(safe-area-inset-bottom));width:52px;height:52px;} .wa-float svg{width:26px;height:26px;} }
+
+  /* ---------- sticky mobile CTA bar ---------- */
+  .mobile-cta-bar{position:fixed;left:0;right:0;bottom:0;z-index:55;background:var(--navy);padding:12px 16px calc(12px + env(safe-area-inset-bottom));display:none;align-items:center;gap:12px;box-shadow:0 -8px 24px rgba(0,0,0,0.25);transform:translateY(100%);transition:transform .25s ease;}
+  .mobile-cta-bar.show{transform:translateY(0);}
+  .mobile-cta-bar .info{flex:1;min-width:0;}
+  .mobile-cta-bar .info .route{color:#fff;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mobile-cta-bar .info .sub{color:#93AAD1;font-size:11px;}
+  .mobile-cta-bar button{background:var(--brass);color:var(--navy);border:none;border-radius:10px;padding:12px 18px;font-size:13.5px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  @media (max-width:640px){ .mobile-cta-bar{display:flex;} }
+
+  /* ---------- trust / security badges strip ---------- */
+  .security-strip{background:var(--paper-2);border-top:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line);padding:22px 0;}
+  .security-row{max-width:1080px;margin:0 auto;display:flex;justify-content:center;flex-wrap:wrap;gap:28px;padding:0 24px;}
+  .security-item{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--slate);font-weight:600;}
+  .security-item svg{width:19px;height:19px;color:var(--brass-dark);flex-shrink:0;}
+
+  /* ---------- referral / indicação program ---------- */
+  .referral-card{background:linear-gradient(135deg,var(--navy-3),var(--navy));border-radius:22px;padding:44px 40px;position:relative;overflow:hidden;display:grid;grid-template-columns:1.2fr auto;gap:32px;align-items:center;}
+  .referral-card::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(217,162,59,0.16) 1px, transparent 1px);background-size:22px 22px;pointer-events:none;}
+  .referral-card .rc-text{position:relative;z-index:1;}
+  .referral-card h3{font-family:'Bricolage Grotesque',sans-serif;color:#fff;font-size:26px;font-weight:700;margin:0 0 10px;}
+  .referral-card p{color:#C2D0EC;font-size:14.5px;line-height:1.6;margin:0;max-width:440px;}
+  .referral-card .rc-cta{position:relative;z-index:1;text-align:center;}
+  .referral-badge{display:inline-flex;flex-direction:column;align-items:center;background:rgba(255,255,255,0.06);border:1px dashed rgba(217,162,59,0.5);border-radius:16px;padding:18px 26px;margin-bottom:14px;}
+  .referral-badge .num{font-family:'Bricolage Grotesque',sans-serif;color:var(--brass);font-size:30px;font-weight:800;line-height:1;}
+  .referral-badge .lbl{font-family:'IBM Plex Mono',monospace;color:#C2D0EC;font-size:10px;letter-spacing:.6px;margin-top:4px;}
+  @media (max-width:780px){
+    .referral-card{grid-template-columns:1fr;text-align:center;padding:32px 24px;}
+    .referral-card p{margin:0 auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="ticker-bar">
+  <div class="ticker-track" id="ticker-track"></div>
+</div>
+
+<div class="airport-overlay" id="airport-overlay">
+  <div class="airport-sheet" role="dialog" aria-modal="true" aria-label="Escolher aeroporto">
+    <div class="airport-sheet-grip" aria-hidden="true"></div>
+    <div class="airport-sheet-head">
+      <input type="text" id="airport-search" placeholder="Cidade, aeroporto ou código" autocomplete="off" inputmode="search">
+      <button class="airport-close" id="airport-close" type="button" aria-label="Fechar">✕</button>
+    </div>
+    <div class="airport-list" id="airport-list"></div>
+  </div>
+</div>
+
+<header>
+  <div class="wrap row">
+    <img class="logo-img" src="https://dl.dropboxusercontent.com/scl/fi/qseevce34se66s867pqcv/1785431732563_tmp.jpg?rlkey=rabna4gdxhawdqgdgg6r4w6hx&dl=0" alt="Marujo's Milhas — Agência de Viagens">
+    <nav>
+      <span class="nav-links" style="display:flex;gap:22px;flex-wrap:wrap;">
+        <a href="#destinos">Destinos</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#depoimentos">Depoimentos</a>
+        <a href="#faq">Dúvidas</a>
+      </span>
+      <a class="btn-amber" style="text-decoration:none;display:inline-block;" href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Quero%20cotar%20uma%20passagem%20com%20a%20Marujo's%20Milhas." target="_blank" rel="noopener">Fale conosco</a>
+      <button class="hamburger-btn" id="hamburger-btn" aria-label="Abrir menu" aria-expanded="false"><span></span></button>
+    </nav>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobile-menu">
+  <div class="mobile-menu-panel">
+    <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Fechar menu">✕</button>
+    <a href="#destinos">Destinos</a>
+    <a href="#como-funciona">Como funciona</a>
+    <a href="#depoimentos">Depoimentos</a>
+    <a href="#faq">Dúvidas</a>
+    <a class="btn-amber" style="width:100%;text-decoration:none;display:block;box-sizing:border-box;" href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Quero%20cotar%20uma%20passagem%20com%20a%20Marujo's%20Milhas." target="_blank" rel="noopener">Fale conosco</a>
+  </div>
+</div>
+
+<a class="wa-float" id="wa-float" href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Quero%20cotar%20uma%20passagem%20com%20a%20Marujo's%20Milhas." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="#fff"><path d="M17.47 14.38c-.29-.15-1.7-.84-1.97-.93-.26-.1-.46-.15-.65.15-.2.29-.75.93-.92 1.12-.17.2-.34.22-.63.08-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.2-.29.29-.48.1-.2.05-.37-.02-.51-.08-.15-.65-1.58-.9-2.16-.24-.58-.48-.5-.65-.5-.17-.01-.37-.01-.56-.01-.2 0-.51.07-.78.37-.26.29-1.02 1-1.02 2.42s1.05 2.8 1.19 3c.15.2 2.06 3.15 5 4.42.7.3 1.24.48 1.67.61.7.22 1.34.19 1.84.12.56-.08 1.7-.7 1.94-1.37.24-.68.24-1.25.17-1.37-.07-.12-.26-.2-.55-.34z"/><path d="M12.02 2C6.5 2 2.02 6.48 2.02 12c0 1.85.5 3.58 1.36 5.07L2 22l5.08-1.33A9.96 9.96 0 0 0 12.02 22C17.53 22 22 17.52 22 12S17.53 2 12.02 2zm0 18.15c-1.66 0-3.2-.48-4.5-1.32l-.32-.2-3.02.79.81-2.94-.21-.31A8.14 8.14 0 0 1 3.86 12c0-4.5 3.66-8.15 8.16-8.15S20.18 7.5 20.18 12s-3.66 8.15-8.16 8.15z"/></svg>
+</a>
+
+<div class="mobile-cta-bar" id="mobile-cta-bar">
+  <div class="info">
+    <div class="route" id="mcb-route">São Paulo → Rio de Janeiro</div>
+    <div class="sub">Toque para buscar as melhores ofertas</div>
+  </div>
+  <button id="mcb-btn">🔍 Buscar</button>
+</div>
+
+<section class="hero">
+  <svg class="trail-svg" viewBox="0 0 1200 150" preserveAspectRatio="none" aria-hidden="true">
+    <path id="route-path" d="M 50 105 Q 380 25, 610 85 T 1150 50" stroke="#D9A23B" stroke-width="2.5" fill="none" stroke-dasharray="7 8" opacity="0.85"/>
+    <circle cx="50" cy="105" r="4" fill="#D9A23B"/>
+    <circle cx="1150" cy="50" r="4" fill="#D9A23B"/>
+    <g class="plane-icon">
+      <path d="M0,-6 L5,4 L1.4,2.6 L1.4,7 L-1.4,7 L-1.4,2.6 L-5,4 Z"/>
+      <animateMotion id="planeAnim" dur="7s" repeatCount="indefinite" rotate="auto">
+        <mpath href="#route-path"/>
+      </animateMotion>
+    </g>
+  </svg>
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="eyebrow"><span>✦ MILHAS DE VERDADE, PREÇO DE VERDADE</span></div>
+      <h1 class="display">Passagens aéreas com até <em>50% de economia</em></h1>
+      <p>Comparamos LATAM, GOL, Azul e TAP em milhas e em tarifa normal. Você paga em real, parcela em até 12x e embarca sem precisar ter uma milha sequer.</p>
+    </div>
+
+    <div class="search-card" id="search-card">
+      <div class="bp-strip">
+        <span>Cartão de embarque · Marujo's Milhas</span>
+        <div class="bp-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="search-card-body">
+        <div style="display:flex;gap:4px;padding:0 0 12px">
+          <button type="button" class="trip-tab active" data-trip="RT" style="background:var(--paper);border:none;padding:9px 16px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer">Ida e volta</button>
+          <button type="button" class="trip-tab" data-trip="OW" style="background:transparent;border:none;padding:9px 16px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--slate);cursor:pointer">Somente ida</button>
+        </div>
+        <div class="search-grid">
+          <div class="field">
+            <label>Origem</label>
+            <button type="button" class="picker-btn" id="f-origin-btn" data-field="origin">
+              <span class="picker-city" id="f-origin-city">São Paulo</span>
+              <span class="picker-code" id="f-origin-code">GRU</span>
+            </button>
+          </div>
+          <button class="swap-btn" id="swap-btn" aria-label="Inverter origem e destino">⇄</button>
+          <div class="field">
+            <label>Destino</label>
+            <button type="button" class="picker-btn" id="f-destination-btn" data-field="destination">
+              <span class="picker-city" id="f-destination-city">Rio de Janeiro</span>
+              <span class="picker-code" id="f-destination-code">GIG</span>
+            </button>
+          </div>
+          <div class="field">
+            <label>Ida</label>
+            <input id="f-depart" type="date" value="2026-09-14">
+          </div>
+          <div class="field">
+            <label>Volta</label>
+            <input id="f-return" type="date" value="2026-09-28">
+          </div>
+          <div class="field">
+            <label>Passageiros</label>
+            <select id="f-pax">
+              <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+            </select>
+          </div>
+        </div>
+        <button class="search-submit" id="search-btn">🔍 Buscar voos</button>
+        <div class="search-perks">
+          <span>✓ <strong>Sem milhas</strong> na sua conta</span>
+          <span>✓ <strong>PIX</strong> ou cartão em até 12x</span>
+          <span>✓ Emissão com as <strong>mesmas companhias</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="results-section">
+  <div class="results-bar">
+    <div><span class="route" id="route-label"></span><span class="count" id="route-count"></span></div>
+    <div class="results-tools">
+      <button class="sort-btn active" data-sort="price">Menor preço</button>
+      <button class="sort-btn" data-sort="duration">Mais rápido</button>
+      <button class="sort-btn" data-sort="departure">Saída mais cedo</button>
+    </div>
+  </div>
+  <div class="filters-row" id="filters-row">
+    <button type="button" class="filter-chip active" data-filter="all">Todos</button>
+    <button type="button" class="filter-chip" data-filter="miles">Só milhas</button>
+    <button type="button" class="filter-chip" data-filter="direct">Só direto</button>
+    <button type="button" class="filter-chip" data-filter="gol">Gol</button>
+    <button type="button" class="filter-chip" data-filter="latam">Latam</button>
+    <button type="button" class="filter-chip" data-filter="azul">Azul</button>
+  </div>
+  <div id="tickets-container"></div>
+</section>
+
+<section class="block reveal" id="como-funciona">
+  <div class="eyebrow-line"><span class="dash"></span>COMO FUNCIONA</div>
+  <h2 class="section-title display">O mesmo assento, um preço mais justo</h2>
+  <div class="grid-3">
+    <div class="how-card"><div class="step-mono">TRECHO 1 DE 3</div><div class="icon-box">🧭</div><h3 class="display">Buscamos nas companhias</h3><p>Comparamos rotas e disponibilidade em LATAM, GOL, Azul e TAP em tempo real.</p></div>
+    <div class="how-card"><div class="step-mono">TRECHO 2 DE 3</div><div class="icon-box">📉</div><h3 class="display">Convertemos as milhas</h3><p>Cada mil milhas equivale a um valor fixo em reais — repassamos esse valor direto pra você, sem inflar o preço.</p></div>
+    <div class="how-card"><div class="step-mono">TRECHO 3 DE 3</div><div class="icon-box">🛡️</div><h3 class="display">Você paga menos</h3><p>O mesmo bilhete que custaria mais caro na companhia ou em milhas próprias sai por um valor menor aqui.</p></div>
+  </div>
+</section>
+
+<section class="dest-section reveal" id="destinos">
+  <div class="wrap">
+    <div class="eyebrow-line on-dark"><span class="dash"></span>DESTINOS EM ALTA</div>
+    <h2 class="section-title display" style="color:#fff;">Pra onde o vento leva você</h2>
+    <div class="grid-3" id="destinos-grid"></div>
+  </div>
+</section>
+
+<section class="security-strip reveal">
+  <div class="security-row">
+    <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z"/><path d="m9 12 2 2 4-4"/></svg>Compra 100% segura</div>
+    <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>PIX ou cartão em até 12x</div>
+    <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Emissão pelas companhias oficiais</div>
+    <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Atendimento humano, sem robô</div>
+  </div>
+</section>
+
+<section class="block reveal" id="depoimentos">
+  <div class="eyebrow-line"><span class="dash"></span>QUEM VIAJOU, APROVOU</div>
+  <h2 class="section-title display" style="margin-bottom:8px;">O que os passageiros dizem</h2>
+  <p class="testi-note">Avaliações reais de clientes, direto do Google.</p>
+  <div class="testi-agg" id="testi-agg"></div>
+  <div class="grid-3" id="testi-grid"></div>
+  <div style="text-align:center;margin-top:28px;">
+    <button id="testi-more-btn" class="sort-btn" style="border-color:var(--navy);color:var(--navy);padding:10px 22px;">Ver mais depoimentos</button>
+  </div>
+</section>
+
+<section class="trust-strip reveal">
+  <div class="trust-row" id="trust-row"></div>
+</section>
+
+<section class="block reveal">
+  <div class="referral-card">
+    <div class="rc-text">
+      <div class="eyebrow-line on-dark" style="margin-bottom:12px;"><span class="dash"></span>INDIQUE E GANHE</div>
+      <h3 class="display">Cada amigo embarcado é um desconto pra sua próxima viagem</h3>
+      <p>Indique a Marujo's Milhas pra alguém que vai viajar. Quando a passagem dessa pessoa for emitida, você ganha desconto na sua próxima compra — sem limite de indicações.</p>
+    </div>
+    <div class="rc-cta">
+      <div class="referral-badge">
+        <span class="num display">R$50</span>
+        <span class="lbl">POR INDICAÇÃO CONFIRMADA</span>
+      </div>
+      <div>
+        <a class="btn-amber" style="display:inline-block;text-decoration:none;" href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Quero%20participar%20do%20programa%20de%20indica%C3%A7%C3%A3o%20da%20Marujo's%20Milhas." target="_blank" rel="noopener">Quero indicar →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block reveal" id="faq">
+  <div class="eyebrow-line"><span class="dash"></span> TIRA-DÚVIDAS</div>
+  <h2 class="section-title display">Perguntas frequentes</h2>
+  <div class="faq-wrap">
+    <details open class="faq-item">
+      <summary>Preciso ter milhas para comprar?
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <p>Não. A Marujo's usa milhas intermediadas para emitir sua passagem. Você paga em real (PIX ou cartão) e recebe o bilhete das companhias normalmente.</p>
+    </details>
+    <details class="faq-item">
+      <summary>As passagens são das companhias oficiais?
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <p>Sim. Emitimos com Gol, Latam e Azul. Localizador e check-in funcionam nos canais oficiais.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Posso parcelar?
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <p>Sim. PIX à vista ou cartão em até 12x, conforme condições no atendimento.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Os preços mudam?
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <p>Ofertas em milhas são dinâmicas. Após escolher, nossa equipe confirma e emite rápido para garantir o valor.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-name">Marujo<span style="color:var(--brass)">'s</span> <span style="font-weight:600;font-size:13px;opacity:.85;">Milhas</span></div>
+        <p>Passagens aéreas em milhas com preço fixo e justo. Comparamos LATAM, GOL, Azul e TAP para você embarcar pagando menos — sem precisar ter uma milha na conta.</p>
+      </div>
+      <div>
+        <h4>Navegue</h4>
+        <div class="flinks">
+          <a href="#destinos">Destinos</a>
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#depoimentos">Depoimentos</a>
+          <a href="#faq">Perguntas frequentes</a>
+        </div>
+      </div>
+      <div>
+        <h4>Fale com a gente</h4>
+        <div class="flinks">
+          <a href="https://wa.me/5500000000000" target="_blank" rel="noopener">WhatsApp da agência</a>
+          <a href="#search-card">Buscar passagem</a>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="copy">© 2026 Marujo's Milhas — todos os direitos reservados</div>
+      <div class="badges">
+        <span>✓ Emissão pelas companhias oficiais</span>
+        <span>✓ Pagamento via PIX ou cartão</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const AIRLINES = [
+  { name: "LATAM", code: "LA", multiplier: 27, color: "#7A2331" },
+  { name: "GOL", code: "G3", multiplier: 24, color: "#C46A1B" },
+  { name: "Azul", code: "AD", multiplier: 30, color: "#0F5A94" },
+  { name: "TAP", code: "TP", multiplier: 32, color: "#7A2331" },
+];
+
+const DESTINATIONS = [
+  { city: "Lisboa", country: "Portugal", note: "a partir de 22 mil milhas" },
+  { city: "Fortaleza", country: "Brasil", note: "a partir de 14 mil milhas" },
+  { city: "Buenos Aires", country: "Argentina", note: "a partir de 16 mil milhas" },
+  { city: "Orlando", country: "EUA", note: "a partir de 38 mil milhas" },
+  { city: "Punta Cana", country: "Rep. Dominicana", note: "a partir de 31 mil milhas" },
+  { city: "Porto", country: "Portugal", note: "a partir de 24 mil milhas" },
+];
+
+// Avaliações reais de clientes no Google, transcritas das suas capturas de tela.
+const TESTIMONIALS = [
+  { name: "Paulo Victor", text: "Atendimento diferenciado e preços incomparáveis!!! Só viajo com a Marujo's.", rating: 5, when: "3 semanas atrás", reviews: 3, isNew: true },
+  { name: "Dhiego Rodríguez", text: "Excelente atendimento. Minhas três passagens foram adquiridas por um ótimo preço. E praticamente com todas as necessidades solicitadas.", rating: 5, when: "10 meses atrás", reviews: 5, photos: 3 },
+  { name: "Amanda Prieto Klezewsky", text: "Confiável! Pedi para cotar meu trecho de viagem, preço super acessível, fechamos no mesmo dia e já foi emitido as passagens aéreas.", rating: 5, when: "10 meses atrás", reviews: 5, photos: 2 },
+  { name: "Michel Barcellos", text: "Se tivessem 10 estrelas eu daria, atendimento top, tudo perfeito! Confio de olhos fechados!! Parabéns pelo serviço 👏👏", rating: 5, when: "3 semanas atrás", reviews: 3, photos: 2, isNew: true },
+  { name: "Eleinne Justino", text: "Excelente atendimento! Atencioso, preço justo. Podem confiar. Minha viagem foi Manaus x Rio e Rio x Manaus. Com certeza as próximas viagens serão com vocês!", rating: 5, when: "3 semanas atrás", reviews: 48, photos: 13, guide: true, isNew: true },
+  { name: "Jacqueline Maria", text: "Serviço de excelência, flexibilidade de opções e de pagamento também, comprarei mais passagens futuramente. Serviço todo certinho. Gostei ✌️ e ainda me ajudou com os check-in 👏👏", rating: 5, when: "9 meses atrás", reviews: 32, photos: 1, guide: true, hearts: 1 },
+  { name: "Aline Larais", text: "Minhas experiências tem sido excelente, prático, rápido e eficaz. Todas as vezes que precisei sempre fui bem atendida. Eu super recomendo. Nota milhões.", rating: 5, when: "uma semana atrás", reviews: 2, isNew: true },
+  { name: "Tamires Olaya", text: "Ele foi indicação do meu cunhado que já comprou com ele. Desde então eu também só compro passagens com ele. Pois dá todo suporte e é muito paciente. Ajudou minha mãe todo tempo pois foi a primeira viagem dela.", rating: 5, when: "3 semanas atrás", reviews: 2, photos: 1, isNew: true },
+  { name: "Marcus Silva", text: "Ótimo atendimento, conduziram a aquisição das passagens de forma rápida e eficiente. Certeza que comprarei mais vezes.", rating: 5, when: "9 meses atrás", reviews: 3 },
+  { name: "Priscila Pessoa", text: "Excelente atendimento, rápido e preço justo. Recomendo a compra. Obrigada pelo ótimo atendimento.", rating: 5, when: "10 meses atrás", reviews: 3 },
+  { name: "Gilberto Vieira", text: "Profissional de alto gabarito, atencioso, disposto a ajudar e com grande conhecimento na aérea de atuação!", rating: 5, when: "10 meses atrás", reviews: 2 },
+  { name: "Felipe Araújo", text: "Excelente! Sempre comprei passagem por essa empresa. Nunca tive nenhum tipo de problema. Indico sempre.", rating: 5, when: "3 semanas atrás", reviews: 1, isNew: true },
+  { name: "Guilherme Sousa", text: "Excelente atendimento, independente do horário, sempre pronto para o cliente. Super indico.", rating: 5, when: "3 semanas atrás", reviews: 1, isNew: true },
+  { name: "Anne Azevedo", text: "Excelente atendimento, excelentes preços.", rating: 5, when: "5 meses atrás", reviews: 2 },
+  { name: "Leda do Nascimento", text: "Fiquei satisfeita com o atendimento e esclarecimentos prestados.", rating: 5, when: "10 meses atrás", reviews: 1 },
+  { name: "Angelina Barreto", text: "Minha experiência é sempre ótimos, atendimento excelente !!!", rating: 5, when: "3 semanas atrás", reviews: 1, isNew: true },
+  { name: "Joyce Lorrana", text: "Muito atencioso e prestativo e conseguiu me passar todas informações claramente", rating: 5, when: "1 dia atrás", reviews: 1, photos: 1, isNew: true },
+  { name: "Pedro Henrique Melo", text: "Muito boa. Bem rápido atendimento e bem solícito. Preços muito bons.", rating: 5, when: "9 meses atrás", reviews: 1 },
+  { name: "Bruno Cavalcante", text: "Excelente", rating: 5, when: "9 meses atrás", reviews: 2 },
+];
+
+const AVATAR_COLORS = ["#3972DB", "#D9A23B", "#0E1930", "#C1432D", "#1E8F5F", "#7A4FC4", "#D8792A", "#2B8FA8"];
+function currency(v){ return v.toLocaleString("pt-BR", { style:"currency", currency:"BRL" }); }
+function initials(name){ return (name||"?").split(" ").map(n=>n[0]).slice(0,2).join("").toUpperCase(); }
+
+function makeFlight(seed, origin, destination){
+  const airline = AIRLINES[seed % AIRLINES.length];
+  const miles = 18000 + (seed * 3700) % 42000;
+  const marketMultiplier = 34;
+  const ourValue = Math.round((miles/1000) * airline.multiplier);
+  const marketValue = Math.round((miles/1000) * marketMultiplier);
+  const savings = marketValue - ourValue;
+  const stops = seed % 3 === 0 ? 0 : (seed % 3);
+  const durationH = 6 + (seed % 10);
+  const durationM = (seed * 7) % 60;
+  const depHour = 5 + (seed % 16);
+  const depMin = (seed * 11) % 60;
+  const arrHour = (depHour + durationH) % 24;
+  return {
+    id: seed, airline, origin, destination, miles, ourValue, marketValue, savings, stops,
+    duration: `${durationH}h${String(durationM).padStart(2,"0")}`,
+    dep: `${String(depHour).padStart(2,"0")}:${String(depMin).padStart(2,"0")}`,
+    arr: `${String(arrHour).padStart(2,"0")}:${String(depMin).padStart(2,"0")}`,
+    locator: (100000 + seed*7331 + miles).toString(36).toUpperCase().slice(0,6),
+  };
+}
+
+function renderLeg(leg, label){
+  if(!leg) return "";
+  const stopsTxt = leg.stops === 0 ? "Direto" : (leg.stops + " parada" + (leg.stops>1?"s":""));
+  return `<div class="leg-row">
+    <div class="leg-label">${label}</div>
+    <div class="mono" style="font-size:17px;font-weight:600;">${leg.dep}</div>
+    <div style="flex:1;text-align:center;min-width:0;">
+      <div style="font-size:10.5px;color:#8A98A6;margin-bottom:2px;">⏱ ${leg.duration} · ${stopsTxt}</div>
+      <div style="border-top:1.5px dashed #D8D0BA;"></div>
+      <div style="font-size:10px;color:#B7C4DC;margin-top:2px;">${leg.originCode || ""} → ${leg.destCode || ""}</div>
+    </div>
+    <div class="mono" style="font-size:17px;font-weight:600;">${leg.arr}</div>
+  </div>`;
+}
+
+function renderTicket(r, isCheapest){
+  const hasMarket = r.marketValue && r.marketValue > r.ourValue;
+  const pct = hasMarket ? Math.round((r.savings / r.marketValue) * 100) : 0;
+  const originCity = (r.origin || "").split(" (")[0];
+  const destCity = (r.destination || "").split(" (")[0];
+  const typePill = r.offerType === "miles"
+    ? '<span class="type-pill miles">✦ Em milhas</span>'
+    : (r.offerType === "revenue" ? '<span class="type-pill revenue">Tarifa</span>' : "");
+  const bagTxt = r.baggage ? ("🧳 " + r.baggage) : "Só bagagem de mão";
+  const isRT = !!(r.outbound && r.inbound);
+  let legsHtml = "";
+  if (isRT) {
+    legsHtml = renderLeg(r.outbound, "IDA") + renderLeg(r.inbound, "VOLTA");
+  } else {
+    legsHtml = `<div style="display:flex;align-items:center;gap:16px;">
+        <div><div class="mono" style="font-size:20px;font-weight:600;">${r.dep}</div><div style="font-size:12px;color:#8A98A6;">${originCity}</div></div>
+        <div style="flex:1;text-align:center;">
+          <div style="font-size:11px;color:#8A98A6;margin-bottom:2px;">⏱ ${r.duration}</div>
+          <div style="border-top:1.5px dashed #D8D0BA;"></div>
+        </div>
+        <div><div class="mono" style="font-size:20px;font-weight:600;">${r.arr}</div><div style="font-size:12px;color:#8A98A6;">${destCity}</div></div>
+      </div>`;
+  }
+  const feeTxt = r.fees ? `<div class="fee-line">Taxas inclusas: ${currency(r.fees)}</div>` : "";
+  const waText = encodeURIComponent(
+    `Olá! Quero emitir essa passagem:\\n${originCity} → ${destCity}\\n${r.airline.name} · ${currency(r.ourValue)}\\n${r.dep || ""} / ${r.arr || ""}\\nRef: ${r.locator}`
+  );
+  const selectHref = `https://wa.me/5500000000000?text=${waText}`;
+  return `
+  <div class="ticket${isRT ? " rt" : ""}">
+    ${isCheapest ? '<div class="best-badge">MELHOR PREÇO</div>' : ''}
+    <div class="ticket-left">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div class="airline-chip" style="background:${r.airline.color}">${r.airline.code}</div>
+        <div style="font-size:13.5px;font-weight:700;">${r.airline.name}</div>
+        ${typePill}
+        <div class="mono" style="font-size:11.5px;color:#8A98A6;margin-left:auto;">${r.stops === 0 ? "Voo direto" : r.stops + " parada" + (r.stops>1?"s":"")}</div>
+      </div>
+      ${legsHtml}
+      <div class="ticket-meta">
+        <span class="mono" style="font-size:10px;color:#B7C4DC;letter-spacing:1.5px;">REF ${r.locator}</span>
+        <span style="font-size:11.5px;color:#8A98A6;">${bagTxt}</span>
+      </div>
+    </div>
+    <div class="ticket-divider"></div>
+    <div class="ticket-notch left"></div>
+    <div class="ticket-notch right"></div>
+    <div class="ticket-right">
+      ${hasMarket ? `<div class="strike">${currency(r.marketValue)}</div>` : `<div class="mono" style="font-size:11.5px;color:#8A98A6;">Por adulto</div>`}
+      <div class="final-price display">${currency(r.ourValue)}</div>
+      ${feeTxt}
+      ${hasMarket && pct > 0 ? `<div class="save-line">✓ ${pct}% mais barato</div>` : (r.offerType === "miles" ? '<div class="save-line">✓ Preço em milhas</div>' : '')}
+      <div style="font-size:12px;color:#1E8F5F;font-weight:600;margin-top:4px">PIX ${currency(Math.round(r.ourValue*0.95))}</div>
+      <div style="font-size:11.5px;color:#5C7185">ou 12x de ${currency(Math.ceil(r.ourValue/12))}</div>
+      <a class="select-btn" href="${selectHref}" target="_blank" rel="noopener" style="text-decoration:none;text-align:center;">Selecionar →</a>
+    </div>
+  </div>`;
+}
+
+let currentResults = [];
+let currentSort = "price";
+
+const AIRLINE_BY_SLUG = { latam: AIRLINES[0], gol: AIRLINES[1], azul: AIRLINES[2] };
+
+function fmtHora(iso){
+  if(!iso) return "--:--";
+  return new Date(iso).toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit", timeZone:"America/Sao_Paulo" });
+}
+
+// =========================================================
+// ✈️ Seletor de aeroportos (autocomplete estilo app)
+// =========================================================
+const AIRPORTS = [
+  { code:"GRU", city:"São Paulo", name:"Guarulhos", country:"Brasil", pop:1 },
+  { code:"CGH", city:"São Paulo", name:"Congonhas", country:"Brasil", pop:1 },
+  { code:"VCP", city:"Campinas", name:"Viracopos", country:"Brasil" },
+  { code:"GIG", city:"Rio de Janeiro", name:"Galeão", country:"Brasil", pop:1 },
+  { code:"SDU", city:"Rio de Janeiro", name:"Santos Dumont", country:"Brasil" },
+  { code:"BSB", city:"Brasília", name:"Brasília", country:"Brasil", pop:1 },
+  { code:"CNF", city:"Belo Horizonte", name:"Confins", country:"Brasil", pop:1 },
+  { code:"PLU", city:"Belo Horizonte", name:"Pampulha", country:"Brasil" },
+  { code:"SSA", city:"Salvador", name:"Salvador", country:"Brasil", pop:1 },
+  { code:"REC", city:"Recife", name:"Recife/Guararapes", country:"Brasil", pop:1 },
+  { code:"FOR", city:"Fortaleza", name:"Pinto Martins", country:"Brasil", pop:1 },
+  { code:"POA", city:"Porto Alegre", name:"Salgado Filho", country:"Brasil", pop:1 },
+  { code:"CWB", city:"Curitiba", name:"Afonso Pena", country:"Brasil", pop:1 },
+  { code:"FLN", city:"Florianópolis", name:"Hercílio Luz", country:"Brasil" },
+  { code:"VIX", city:"Vitória", name:"Eurico de Aguiar Salles", country:"Brasil" },
+  { code:"BEL", city:"Belém", name:"Val de Cans", country:"Brasil" },
+  { code:"MAO", city:"Manaus", name:"Eduardo Gomes", country:"Brasil" },
+  { code:"GYN", city:"Goiânia", name:"Santa Genoveva", country:"Brasil" },
+  { code:"CGB", city:"Cuiabá", name:"Marechal Rondon", country:"Brasil" },
+  { code:"NAT", city:"Natal", name:"Governador Aluízio Alves", country:"Brasil" },
+  { code:"MCZ", city:"Maceió", name:"Zumbi dos Palmares", country:"Brasil" },
+  { code:"JPA", city:"João Pessoa", name:"Castro Pinto", country:"Brasil" },
+  { code:"AJU", city:"Aracaju", name:"Santa Maria", country:"Brasil" },
+  { code:"THE", city:"Teresina", name:"Senador Petrônio Portella", country:"Brasil" },
+  { code:"SLZ", city:"São Luís", name:"Marechal Cunha Machado", country:"Brasil" },
+  { code:"IOS", city:"Ilhéus", name:"Jorge Amado", country:"Brasil" },
+  { code:"PVH", city:"Porto Velho", name:"Governador Jorge Teixeira", country:"Brasil" },
+  { code:"BPS", city:"Porto Seguro", name:"Porto Seguro", country:"Brasil" },
+  { code:"IGU", city:"Foz do Iguaçu", name:"Cataratas", country:"Brasil" },
+  { code:"JOI", city:"Joinville", name:"Lauro Carneiro de Loyola", country:"Brasil" },
+  { code:"LIS", city:"Lisboa", name:"Humberto Delgado", country:"Portugal", pop:1 },
+  { code:"OPO", city:"Porto", name:"Francisco Sá Carneiro", country:"Portugal", pop:1 },
+  { code:"MAD", city:"Madri", name:"Barajas", country:"Espanha" },
+  { code:"BCN", city:"Barcelona", name:"El Prat", country:"Espanha" },
+  { code:"CDG", city:"Paris", name:"Charles de Gaulle", country:"França", pop:1 },
+  { code:"FCO", city:"Roma", name:"Fiumicino", country:"Itália" },
+  { code:"LHR", city:"Londres", name:"Heathrow", country:"Reino Unido" },
+  { code:"FRA", city:"Frankfurt", name:"Frankfurt", country:"Alemanha" },
+  { code:"AMS", city:"Amsterdã", name:"Schiphol", country:"Holanda" },
+  { code:"MIA", city:"Miami", name:"Miami Intl.", country:"EUA", pop:1 },
+  { code:"MCO", city:"Orlando", name:"Orlando Intl.", country:"EUA", pop:1 },
+  { code:"JFK", city:"Nova York", name:"John F. Kennedy", country:"EUA" },
+  { code:"EWR", city:"Nova York", name:"Newark", country:"EUA" },
+  { code:"LAX", city:"Los Angeles", name:"Los Angeles Intl.", country:"EUA" },
+  { code:"EZE", city:"Buenos Aires", name:"Ministro Pistarini", country:"Argentina", pop:1 },
+  { code:"SCL", city:"Santiago", name:"Arturo Merino Benítez", country:"Chile" },
+  { code:"LIM", city:"Lima", name:"Jorge Chávez", country:"Peru" },
+  { code:"BOG", city:"Bogotá", name:"El Dorado", country:"Colômbia" },
+  { code:"CUN", city:"Cancún", name:"Cancún Intl.", country:"México", pop:1 },
+  { code:"PUJ", city:"Punta Cana", name:"Punta Cana Intl.", country:"Rep. Dominicana", pop:1 },
+  { code:"MEX", city:"Cidade do México", name:"Benito Juárez", country:"México" },
+  { code:"DXB", city:"Dubai", name:"Dubai Intl.", country:"Emirados Árabes" },
+];
+const AIRPORT_BY_CODE = Object.fromEntries(AIRPORTS.map(a => [a.code, a]));
+
+const selectedAirport = {
+  origin: AIRPORT_BY_CODE["GRU"],
+  destination: AIRPORT_BY_CODE["GIG"],
+};
+let activePickerField = null;
+
+function normalizeText(s){
+  return (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+function updatePickerButton(field){
+  const a = selectedAirport[field];
+  document.getElementById(`f-${field}-city`).textContent = a.city;
+  document.getElementById(`f-${field}-code`).textContent = a.code;
+}
+
+function airportRowHtml(a){
+  return `<div class="airport-row" data-code="${a.code}" role="button" tabindex="0">
+    <div class="airport-row-code">${a.code}</div>
+    <div class="airport-row-text">
+      <div class="airport-row-city">${a.city}</div>
+      <div class="airport-row-name">${a.name} · ${a.country}</div>
+    </div>
+  </div>`;
+}
+
+function renderAirportList(query){
+  const listEl = document.getElementById("airport-list");
+  const q = normalizeText(query);
+  let results;
+  if (!q) {
+    results = AIRPORTS.filter(a => a.pop);
+    listEl.innerHTML = '<div class="airport-group-label">Destinos populares</div>' + results.map(airportRowHtml).join("");
+  } else {
+    results = AIRPORTS.filter(a =>
+      normalizeText(a.code) === q ||
+      normalizeText(a.code).startsWith(q) ||
+      normalizeText(a.city).includes(q) ||
+      normalizeText(a.name).includes(q) ||
+      normalizeText(a.country).includes(q)
+    );
+    if (results.length === 0) {
+      listEl.innerHTML = '<div class="airport-empty">Nenhum aeroporto encontrado pra "' + query.replace(/[<>&"]/g,"") + '" 🧭</div>';
+    } else {
+      listEl.innerHTML = '<div class="airport-group-label">' + results.length + ' resultado' + (results.length>1?'s':'') + '</div>' + results.map(airportRowHtml).join("");
+    }
+  }
+  // Mantém o topo da lista sempre visível (evita "sumir" quando restam poucos itens)
+  listEl.scrollTop = 0;
+}
+
+function openAirportPicker(field){
+  activePickerField = field;
+  const overlay = document.getElementById("airport-overlay");
+  const search = document.getElementById("airport-search");
+  search.value = "";
+  renderAirportList("");
+  overlay.classList.add("show");
+  document.body.classList.add("picker-open");
+  setTimeout(() => search.focus(), 60);
+}
+
+function closeAirportPicker(){
+  document.getElementById("airport-overlay").classList.remove("show");
+  document.body.classList.remove("picker-open");
+  activePickerField = null;
+}
+
+document.getElementById("f-origin-btn").addEventListener("click", () => openAirportPicker("origin"));
+document.getElementById("f-destination-btn").addEventListener("click", () => openAirportPicker("destination"));
+document.getElementById("airport-close").addEventListener("click", closeAirportPicker);
+document.getElementById("airport-overlay").addEventListener("click", (e) => {
+  if (e.target.id === "airport-overlay") closeAirportPicker();
+});
+document.getElementById("airport-search").addEventListener("input", (e) => renderAirportList(e.target.value));
+document.getElementById("airport-list").addEventListener("click", (e) => {
+  const row = e.target.closest(".airport-row");
+  if (!row || !activePickerField) return;
+  selectedAirport[activePickerField] = AIRPORT_BY_CODE[row.dataset.code];
+  updatePickerButton(activePickerField);
+  closeAirportPicker();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.getElementById("airport-overlay").classList.contains("show")) closeAirportPicker();
+});
+
+// Converte uma oferta real vinda do backend (/api/buscar-passagens) pro formato
+// que renderTicket já sabe desenhar.
+function durationSecToText(sec){
+  if (sec == null || isNaN(sec)) return "--";
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  return h + "h" + String(m).padStart(2, "0") + "m";
+}
+
+function mapLeg(leg){
+  if (!leg) return null;
+  const depAp = AIRPORT_BY_CODE[leg.departure] || AIRPORT_BY_CODE[leg.depAirport] || selectedAirport.origin;
+  const arrAp = AIRPORT_BY_CODE[leg.arrival] || AIRPORT_BY_CODE[leg.arrAirport] || selectedAirport.destination;
+  return {
+    dep: fmtHora(leg.departureTime || leg.depTime),
+    arr: fmtHora(leg.arrivalTime || leg.arrTime),
+    duration: leg.durationText || durationSecToText(leg.duration) || leg.duration || "--",
+    durationSec: typeof leg.duration === "number" ? leg.duration : 0,
+    stops: leg.stops || 0,
+    originCode: depAp.code,
+    destCode: arrAp.code,
+    originCity: depAp.city,
+    destCity: arrAp.city,
+  };
+}
+
+function mapOferta(o){
+  const airlineSlug = (o.airline || o.carrier || "").toLowerCase();
+  const airline = AIRLINE_BY_SLUG[airlineSlug] || AIRLINES[0];
+  const offerType = (o.type || o.offerType || "miles").toLowerCase();
+  const total = Math.round(Number(o.totalPrice) || 0);
+  const market = o.marketPrice != null ? Math.round(Number(o.marketPrice)) : null;
+  const fees = o.fees != null ? Math.round(Number(o.fees)) : null;
+
+  // Formato MaxMilhas combo (outbound/inbound) OU formato plano do backend
+  let outbound = null, inbound = null;
+  if (o.outbound || o.inbound) {
+    outbound = mapLeg(o.outbound);
+    inbound = mapLeg(o.inbound);
+  }
+
+  const depAirport = o.depAirport || (o.outbound && o.outbound.departure) || selectedAirport.origin.code;
+  const arrAirport = o.arrAirport || (o.outbound && o.outbound.arrival) || selectedAirport.destination.code;
+  const depAp = AIRPORT_BY_CODE[depAirport] || selectedAirport.origin;
+  const arrAp = AIRPORT_BY_CODE[arrAirport] || selectedAirport.destination;
+
+  const stops = outbound
+    ? (outbound.stops + (inbound ? inbound.stops : 0))
+    : (o.stops || 0);
+  const durationSec = outbound
+    ? (outbound.durationSec + (inbound ? inbound.durationSec : 0))
+    : (typeof o.minDuration === "number" ? o.minDuration : 0);
+  const duration = o.minDurationText
+    || (outbound ? (outbound.duration + (inbound ? " + " + inbound.duration : "")) : null)
+    || o.duration
+    || durationSecToText(durationSec)
+    || "--";
+
+  const dep = outbound ? outbound.dep : fmtHora(o.depTime);
+  const arr = outbound ? outbound.arr : fmtHora(o.arrTime);
+  const depTs = o.outbound && o.outbound.departureTime
+    ? new Date(o.outbound.departureTime).getTime()
+    : (o.depTime ? new Date(o.depTime).getTime() : 0);
+
+  return {
+    id: o.offerId || o.id || Math.random().toString(36).slice(2),
+    airline,
+    airlineSlug,
+    offerType,
+    miles: null,
+    baggage: o.baggage || null,
+    ourValue: total,
+    marketValue: market,
+    savings: market != null ? Math.max(0, market - total) : 0,
+    fees,
+    serviceCharge: o.serviceCharge != null ? Math.round(Number(o.serviceCharge)) : null,
+    boardingFees: o.boardingFees != null ? Math.round(Number(o.boardingFees)) : null,
+    stops,
+    duration,
+    durationSec,
+    dep,
+    arr,
+    depTs,
+    origin: `${depAp.city} (${depAp.code})`,
+    destination: `${arrAp.city} (${arrAp.code})`,
+    outbound,
+    inbound,
+    locator: String(o.offerId || o.id || "MARUJO").replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase() || "MARUJO",
+  };
+}
+
+async function runSearch(){
+  const origin = selectedAirport.origin.code;
+  const destination = selectedAirport.destination.code;
+  const departureDate = document.getElementById("f-depart").value;
+  const returnDate = (typeof tripType !== "undefined" && tripType === "OW") ? "" : document.getElementById("f-return").value;
+  const numAdults = parseInt(document.getElementById("f-pax").value, 10) || 1;
+
+  const btn = document.getElementById("search-btn");
+  const textoOriginal = btn.textContent;
+  btn.textContent = "Buscando...";
+  btn.disabled = true;
+
+  document.getElementById("route-label").textContent = selectedAirport.origin.city + " → " + selectedAirport.destination.city;
+  document.getElementById("route-count").textContent = "Procurando as melhores ofertas...";
+  document.getElementById("tickets-container").innerHTML = Array.from({length:4}).map(() => '<div class="ticket-skel"></div>').join("");
+  document.getElementById("results-section").classList.add("show");
+  document.getElementById("results-section").scrollIntoView({behavior:"smooth", block:"start"});
+
+  try {
+    if (origin === destination) {
+      alert("Origem e destino precisam ser diferentes.");
+      return;
+    }
+    if (!departureDate) {
+      alert("Escolha a data de ida.");
+      return;
+    }
+
+    const resposta = await fetch("https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009/proxy?url=http://br2.bronxyshost.com:4009/api/buscar-passagens", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ from: origin, to: destination, departureDate, returnDate: returnDate || undefined, numAdults })
+    });
+    const dados = await resposta.json();
+
+    // Aceita tanto o formato do backend ({sucesso, passagens}) quanto o payload bruto MaxMilhas ({data:{offers}} / {offers})
+    let lista = null;
+    if (Array.isArray(dados.passagens)) lista = dados.passagens;
+    else if (Array.isArray(dados.offers)) lista = dados.offers;
+    else if (dados.data && Array.isArray(dados.data.offers)) lista = dados.data.offers;
+    else if (dados.data && Array.isArray(dados.data.passagens)) lista = dados.data.passagens;
+
+    if (dados.sucesso === false && !lista) {
+      alert(dados.erro || "Não foi possível buscar passagens agora. Tente novamente.");
+      document.getElementById("tickets-container").innerHTML = "";
+      return;
+    }
+    if (!lista || lista.length === 0) {
+      document.getElementById("tickets-container").innerHTML = '<div class="airport-empty">Nenhuma passagem encontrada pra essa rota/data. Tente outras datas ✈️</div>';
+      document.getElementById("route-count").textContent = "0 voos encontrados";
+      return;
+    }
+
+    currentResults = lista.map(mapOferta);
+    currentFilter = "all";
+    document.querySelectorAll(".filter-chip").forEach(b => b.classList.toggle("active", b.dataset.filter === "all"));
+    applySortAndRender();
+  } catch (e) {
+    console.error("Erro na busca de passagens:", e);
+    document.getElementById("route-count").textContent = "Erro na busca";
+    document.getElementById("tickets-container").innerHTML = '<div class="airport-empty">Erro ao buscar passagens. Tente novamente em instantes.</div>';
+  } finally {
+    btn.textContent = textoOriginal;
+    btn.disabled = false;
+  }
+}
+
+let currentFilter = "all";
+
+function applySortAndRender(){
+  let list = [...currentResults];
+  if (currentFilter === "miles") list = list.filter(r => r.offerType === "miles");
+  else if (currentFilter === "direct") list = list.filter(r => r.stops === 0);
+  else if (currentFilter === "gol" || currentFilter === "latam" || currentFilter === "azul") {
+    list = list.filter(r => r.airlineSlug === currentFilter);
+  }
+
+  if (currentSort === "price") list.sort((a,b)=>a.ourValue-b.ourValue);
+  else if (currentSort === "departure") list.sort((a,b)=>(a.depTs||0)-(b.depTs||0));
+  else list.sort((a,b)=>(a.durationSec||0)-(b.durationSec||0) || String(a.duration).localeCompare(String(b.duration)));
+
+  const cheapest = list.length ? Math.min(...list.map(r=>r.ourValue)) : 0;
+  document.getElementById("route-label").textContent = selectedAirport.origin.city + " → " + selectedAirport.destination.city;
+  document.getElementById("route-count").textContent = list.length + " voo" + (list.length===1?"":"s") + " encontrado" + (list.length===1?"":"s");
+  if (!list.length) {
+    document.getElementById("tickets-container").innerHTML = '<div class="airport-empty">Nenhuma oferta com esse filtro. Tente outro filtro ✈️</div>';
+    return;
+  }
+  document.getElementById("tickets-container").innerHTML = list.map(r => renderTicket(r, r.ourValue === cheapest)).join("");
+}
+
+let tripType = "RT";
+document.querySelectorAll(".trip-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".trip-tab").forEach(t => {
+      t.classList.remove("active");
+      t.style.background = "transparent";
+      t.style.color = "#5B6478";
+    });
+    tab.classList.add("active");
+    tab.style.background = "#FAF6EC";
+    tab.style.color = "#16213E";
+    tripType = tab.dataset.trip;
+    const rf = document.getElementById("f-return");
+    if (rf) {
+      rf.closest(".field").style.display = tripType === "OW" ? "none" : "";
+    }
+  });
+});
+
+document.getElementById("search-btn").addEventListener("click", runSearch);
+document.getElementById("swap-btn").addEventListener("click", () => {
+  const tmp = selectedAirport.origin;
+  selectedAirport.origin = selectedAirport.destination;
+  selectedAirport.destination = tmp;
+  updatePickerButton("origin");
+  updatePickerButton("destination");
+});
+document.querySelectorAll(".sort-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".sort-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentSort = btn.dataset.sort;
+    applySortAndRender();
+  });
+});
+document.querySelectorAll(".filter-chip").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-chip").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;
+    applySortAndRender();
+  });
+});
+
+// destinations
+document.getElementById("destinos-grid").innerHTML = DESTINATIONS.map(d => `
+  <div class="dest-card">
+    <div class="tag-hole" aria-hidden="true"></div>
+    <div style="font-size:18px;">✈️</div>
+    <div class="city display">${d.city}</div>
+    <div class="country">${d.country}</div>
+    <div class="note">${d.note.toUpperCase()}</div>
+  </div>`).join("");
+
+// departures-board ticker, built from the real routes above
+const tickerItems = DESTINATIONS.map(d => `<span>GRU → <b>${d.city.toUpperCase()}</b> · ${d.note}</span>`);
+const tickerHtml = tickerItems.concat(['<span><b>Parcelamento em até 12x</b></span>', '<span>Economia de até <b>50%</b> com milhas</span>']).join("");
+document.getElementById("ticker-track").innerHTML = tickerHtml + tickerHtml; // duplicado p/ loop contínuo
+
+// trust strip
+const STATS = [["+40 mil","passagens emitidas"],["4.9/5","avaliação média"],["28x","valor fixo por mil milhas"],["4","companhias comparadas"]];
+document.getElementById("trust-row").innerHTML = STATS.map(([n,l]) => `
+  <div style="text-align:center;">
+    <div class="trust-num display">${n}</div>
+    <div class="trust-label mono">${l.toUpperCase()}</div>
+  </div>`).join("");
+
+// testimonials — rendered as authentic Google-review "screenshot" cards
+const GOOGLE_ICON = `<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M23.52 12.27c0-.86-.08-1.68-.22-2.47H12v4.68h6.47a5.53 5.53 0 0 1-2.4 3.63v3h3.88c2.27-2.09 3.57-5.17 3.57-8.84z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.95-2.9l-3.88-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.27v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.27 14.29A7.2 7.2 0 0 1 4.9 12c0-.8.14-1.57.37-2.29v-3.1H1.27A12 12 0 0 0 0 12c0 1.94.46 3.77 1.27 5.39z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.69 1.27 6.61l4 3.1C6.22 6.86 8.87 4.75 12 4.75z"/></svg>`;
+const GUIDE_BADGE = `<svg class="guide-badge" viewBox="0 0 24 24"><path fill="#4285F4" d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>`;
+const PENCIL_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
+const HEART_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="#70757A" stroke-width="1.6"><path d="M12 21s-7-4.35-9.5-8.5C.5 9 2 5 6 5c2 0 3.5 1.2 4 2.2C10.5 6.2 12 5 14 5c4 0 5.5 4 4.5 7.5C16 16.65 12 21 12 21z"/></svg>`;
+const HEART_ICON_FILLED = `<svg viewBox="0 0 24 24" fill="#EA4335"><path d="M12 21s-7-4.35-9.5-8.5C.5 9 2 5 6 5c2 0 3.5 1.2 4 2.2C10.5 6.2 12 5 14 5c4 0 5.5 4 4.5 7.5C16 16.65 12 21 12 21z"/></svg>`;
+
+function metaLine(t){
+  const parts = [];
+  if (t.guide) parts.push("Local Guide");
+  parts.push(t.reviews === 1 ? "1 avaliação" : `${t.reviews} avaliações`);
+  if (t.photos) parts.push(t.photos === 1 ? "1 foto" : `${t.photos} fotos`);
+  return parts.join(" · ");
+}
+
+function renderTestimonials(list){
+  document.getElementById("testi-grid").innerHTML = list.map((t, i) => `
+    <div class="testi-card">
+      <div class="testi-google-chip">${GOOGLE_ICON}<span>Google</span></div>
+      <div class="testi-head">
+        <div class="avatar" style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]};">${initials(t.name)}</div>
+        <div class="testi-headtext">
+          <div class="testi-name">${t.name}${t.guide ? GUIDE_BADGE : ""}</div>
+          <div class="testi-meta">${metaLine(t)}</div>
+        </div>
+        <div class="testi-dots">⋮</div>
+      </div>
+      <div class="testi-stars-row">
+        <span class="testi-stars">${"★".repeat(t.rating)}</span>
+        <span class="testi-when">${t.when}</span>
+        ${t.isNew ? '<span class="testi-new-pill">Nova</span>' : ""}
+      </div>
+      <p class="testi-text">${t.text}</p>
+      <div class="testi-foot">
+        <span class="testi-reply-btn">${PENCIL_ICON} Responder</span>
+        <span class="testi-heart-hint">${HEART_ICON} Toque e segure para reagir</span>
+        ${t.hearts ? `<span class="testi-heart-count">${HEART_ICON_FILLED} ${t.hearts}</span>` : ""}
+      </div>
+    </div>`).join("");
+}
+
+// resumo agregado, calculado a partir dos próprios depoimentos acima
+(function renderAggregate(){
+  const avg = (TESTIMONIALS.reduce((s,t)=>s+t.rating,0) / TESTIMONIALS.length).toFixed(1);
+  document.getElementById("testi-agg").innerHTML = `
+    <span class="agg-score display">${avg}</span>
+    <span class="agg-stars">★★★★★</span>
+    <span class="agg-count">baseado em ${TESTIMONIALS.length} avaliações no Google</span>`;
+})();
+
+const TESTI_PREVIEW_COUNT = 6;
+let testiExpanded = false;
+function refreshTestimonialsView(){
+  const list = testiExpanded ? TESTIMONIALS : TESTIMONIALS.slice(0, TESTI_PREVIEW_COUNT);
+  renderTestimonials(list);
+  const btn = document.getElementById("testi-more-btn");
+  btn.textContent = testiExpanded ? "Ver menos" : `Ver mais depoimentos (${TESTIMONIALS.length - TESTI_PREVIEW_COUNT})`;
+}
+document.getElementById("testi-more-btn").addEventListener("click", () => {
+  testiExpanded = !testiExpanded;
+  refreshTestimonialsView();
+  if(!testiExpanded) document.getElementById("depoimentos").scrollIntoView({behavior:"smooth", block:"start"});
+});
+refreshTestimonialsView();
+
+// ---------- mobile hamburger menu ----------
+const hamburgerBtn = document.getElementById("hamburger-btn");
+const mobileMenu = document.getElementById("mobile-menu");
+function openMobileMenu(){
+  mobileMenu.classList.add("show");
+  hamburgerBtn.classList.add("open");
+  hamburgerBtn.setAttribute("aria-expanded","true");
+  document.body.classList.add("picker-open");
+}
+function closeMobileMenu(){
+  mobileMenu.classList.remove("show");
+  hamburgerBtn.classList.remove("open");
+  hamburgerBtn.setAttribute("aria-expanded","false");
+  document.body.classList.remove("picker-open");
+}
+if (hamburgerBtn) {
+  hamburgerBtn.addEventListener("click", () => {
+    mobileMenu.classList.contains("show") ? closeMobileMenu() : openMobileMenu();
+  });
+  document.getElementById("mobile-menu-close").addEventListener("click", closeMobileMenu);
+  mobileMenu.addEventListener("click", (e) => { if (e.target === mobileMenu) closeMobileMenu(); });
+  mobileMenu.querySelectorAll("a").forEach(a => a.addEventListener("click", closeMobileMenu));
+}
+
+// ---------- sticky mobile CTA bar ----------
+const mobileCtaBar = document.getElementById("mobile-cta-bar");
+const searchCardEl = document.getElementById("search-card");
+if (mobileCtaBar && searchCardEl && "IntersectionObserver" in window) {
+  const ctaIo = new IntersectionObserver((entries) => {
+    entries.forEach(e => mobileCtaBar.classList.toggle("show", !e.isIntersecting));
+  }, { threshold: 0 });
+  ctaIo.observe(searchCardEl);
+}
+document.getElementById("mcb-btn").addEventListener("click", () => {
+  document.getElementById("search-card").scrollIntoView({behavior:"smooth", block:"center"});
+});
+function refreshMobileCtaRoute(){
+  const el = document.getElementById("mcb-route");
+  if (el) el.textContent = selectedAirport.origin.city + " → " + selectedAirport.destination.city;
+}
+refreshMobileCtaRoute();
+const _origUpdatePickerButton = updatePickerButton;
+updatePickerButton = function(field){ _origUpdatePickerButton(field); refreshMobileCtaRoute(); };
+document.getElementById("swap-btn").addEventListener("click", refreshMobileCtaRoute);
+
+// ---------- rotating status messages while searching ----------
+const SEARCH_STATUS_MESSAGES = [
+  "Consultando a LATAM...",
+  "Comparando com a GOL...",
+  "Verificando a Azul...",
+  "Cruzando preços em milhas...",
+  "Quase lá, garantindo o menor valor..."
+];
+let searchStatusTimer = null;
+function startSearchStatusRotation(){
+  const el = document.getElementById("route-count");
+  if (!el) return;
+  let i = 0;
+  el.textContent = SEARCH_STATUS_MESSAGES[0];
+  searchStatusTimer = setInterval(() => {
+    i = (i + 1) % SEARCH_STATUS_MESSAGES.length;
+    el.textContent = SEARCH_STATUS_MESSAGES[i];
+  }, 900);
+}
+function stopSearchStatusRotation(){
+  if (searchStatusTimer) { clearInterval(searchStatusTimer); searchStatusTimer = null; }
+}
+const _origRunSearch = runSearch;
+runSearch = async function(){
+  startSearchStatusRotation();
+  try { await _origRunSearch(); } finally { stopSearchStatusRotation(); }
+};
+document.getElementById("search-btn").removeEventListener("click", _origRunSearch);
+document.getElementById("search-btn").addEventListener("click", runSearch);
+
+// scroll reveal for major sections
+if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+} else {
+  document.querySelectorAll(".reveal").forEach(el => el.classList.add("in"));
+}
+
+// respect reduced-motion for the hero plane animation
+if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  const anim = document.getElementById("planeAnim");
+  if (anim) anim.setAttribute("repeatCount", "1");
+}
+</script>
+
+</body>
+</html>
+
+
+
+
+
