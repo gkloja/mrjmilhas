@@ -604,6 +604,28 @@
   .auth-google img{width:18px;height:18px;flex-shrink:0;}
   .auth-divider{display:flex;align-items:center;gap:12px;margin:4px 0 14px;color:var(--slate-soft);font-size:12px;font-weight:600;}
   .auth-divider::before,.auth-divider::after{content:"";flex:1;height:1px;background:var(--card-line);}
+
+  .pax-overlay{position:fixed;inset:0;background:rgba(9,15,30,0.6);backdrop-filter:blur(3px);z-index:140;display:none;align-items:center;justify-content:center;padding:16px;overscroll-behavior:contain;}
+  .pax-overlay.show{display:flex;}
+  .pax-modal{background:#fff;width:100%;max-width:520px;max-height:90vh;border-radius:18px;box-shadow:0 28px 64px rgba(9,15,30,0.35);display:flex;flex-direction:column;overflow:hidden;}
+  .pax-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--card-line);flex-shrink:0;}
+  .pax-head h3{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:18px;}
+  .pax-body{padding:16px 18px;overflow-y:auto;flex:1;}
+  .pax-trip{background:var(--paper);border:1px solid var(--card-line);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13.5px;}
+  .pax-trip strong{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;}
+  .pax-block{border:1px solid var(--card-line);border-radius:14px;padding:14px;margin-bottom:12px;background:#FFFEFA;}
+  .pax-block h4{margin:0 0 12px;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.4px;text-transform:uppercase;color:var(--brass-dark);}
+  .pax-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pax-grid .full{grid-column:1/-1;}
+  .pax-field label{display:block;font-size:11px;font-weight:700;color:var(--slate);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px;}
+  .pax-field input,.pax-field select{width:100%;border:1px solid var(--card-line);border-radius:10px;padding:10px 11px;font-size:14px;font-family:inherit;background:var(--paper);outline:none;}
+  .pax-field input:focus,.pax-field select:focus{outline:3px solid var(--brass-soft);border-color:var(--brass);}
+  .pax-foot{padding:14px 18px;border-top:1px solid var(--card-line);display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
+  .pax-foot .btn-wa{width:100%;background:#25D366;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .pax-foot .btn-wa:hover{background:#1ebe57;}
+  .pax-foot .hint{font-size:12px;color:var(--slate);text-align:center;margin:0;}
+  @media(max-width:520px){.pax-grid{grid-template-columns:1fr;}}
+
   .auth-overlay{position:fixed;inset:0;background:rgba(9,15,30,0.6);backdrop-filter:blur(2px);z-index:110;display:none;align-items:center;justify-content:center;padding:20px;overscroll-behavior:contain;}
   .auth-overlay.show{display:flex;}
   .auth-modal{background:#fff;width:100%;max-width:420px;border-radius:20px;overflow:hidden;box-shadow:0 24px 60px rgba(9,15,30,0.4);animation:sheet-up .22s ease;max-height:90vh;display:flex;flex-direction:column;}
@@ -797,6 +819,24 @@
 </div>
 
 <!-- Modal de login / cadastro -->
+
+<div class="pax-overlay" id="pax-overlay" aria-hidden="true">
+  <div class="pax-modal" role="dialog" aria-modal="true" aria-label="Dados dos passageiros">
+    <div class="pax-head">
+      <h3 class="display">Dados da emissão</h3>
+      <button type="button" class="auth-close" id="pax-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="pax-body">
+      <div class="pax-trip" id="pax-trip-summary"></div>
+      <div id="pax-forms"></div>
+    </div>
+    <div class="pax-foot">
+      <button type="button" class="btn-wa" id="pax-submit">Enviar no WhatsApp para emitir →</button>
+      <p class="hint">Os dados ficam salvos na sua conta para a próxima viagem. Fechamos a emissão pelo WhatsApp.</p>
+    </div>
+  </div>
+</div>
+
 <div class="auth-overlay" id="auth-overlay">
   <div class="auth-modal" role="dialog" aria-modal="true" aria-label="Entrar com Google">
     <div class="auth-modal-head">
@@ -1403,7 +1443,7 @@ function renderTicket(r, isCheapest){
       ${hasMarket && pct > 0 ? `<div class="save-line">✓ ${pct}% mais barato</div>` : (r.offerType === "miles" ? '<div class="save-line">✓ Preço em milhas</div>' : '')}
       <div style="font-size:12px;color:#1E8F5F;font-weight:600;margin-top:4px">PIX ${currency(r.ourValue)}</div>
       <div style="font-size:11.5px;color:#5C7185">Pagamento via PIX · −8,87%</div>
-      <a class="select-btn" href="${selectHref}" target="_blank" rel="noopener" style="text-decoration:none;text-align:center;" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-locator="${r.locator}">Selecionar →</a>
+      <button type="button" class="select-btn" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">Selecionar →</button>
     </div>
   </div>`;
 }
@@ -2622,34 +2662,250 @@ function mmRenderTrips(){
 }
 
 // salva a viagem quando o passageiro clica em "Selecionar" num voo, se estiver logado
-document.getElementById("tickets-container").addEventListener("click", (e) => {
-  const btn = e.target.closest(".select-btn");
-  if (!btn) return;
+/* select-btn handled by pax modal */
+
+
+// ---- Exige login + modal de passageiros ----
+const API_MILHAS_BASE = "https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009/proxy?url=";
+const API_MILHAS_PAX = API_MILHAS_BASE + encodeURIComponent("http://br2.bronxyshost.com:4009/api/milhas/usuarios/passageiros");
+const API_MILHAS_EVT = API_MILHAS_BASE + encodeURIComponent("http://br2.bronxyshost.com:4009/api/milhas/usuarios/evento");
+let pendingFlight = null;
+
+function mmTravelersKey(email){ return "mm_travelers_" + email; }
+function mmLoadTravelersLocal(email){
+  try { return JSON.parse(localStorage.getItem(mmTravelersKey(email))) || []; } catch(e){ return []; }
+}
+function mmSaveTravelersLocal(email, list){
+  localStorage.setItem(mmTravelersKey(email), JSON.stringify(list || []));
+}
+
+function onlyDigits(s){ return String(s||"").replace(/\D/g,""); }
+function fmtCpfInput(v){
+  const d = onlyDigits(v).slice(0,11);
+  if (d.length <= 3) return d;
+  if (d.length <= 6) return d.slice(0,3)+"."+d.slice(3);
+  if (d.length <= 9) return d.slice(0,3)+"."+d.slice(3,6)+"."+d.slice(6);
+  return d.slice(0,3)+"."+d.slice(3,6)+"."+d.slice(6,9)+"-"+d.slice(9);
+}
+
+function paxFieldHtml(idx, pref, labelTitular){
+  const t = pref || {};
+  const title = idx === 0 ? (labelTitular || "Passageiro 1 (titular)") : ("Passageiro " + (idx+1));
+  return `<div class="pax-block" data-pax-idx="${idx}">
+    <h4>${title}</h4>
+    <div class="pax-grid">
+      <div class="pax-field full"><label>Nome completo (como no documento)</label>
+        <input type="text" name="nome" value="${(t.nome||"").replace(/"/g,"&quot;")}" required autocomplete="name" placeholder="Nome completo"></div>
+      <div class="pax-field"><label>CPF</label>
+        <input type="text" name="cpf" inputmode="numeric" value="${fmtCpfInput(t.cpf||"")}" placeholder="000.000.000-00" maxlength="14"></div>
+      <div class="pax-field"><label>Nascimento</label>
+        <input type="date" name="nascimento" value="${t.nascimento||""}" required></div>
+      <div class="pax-field"><label>Gênero</label>
+        <select name="genero">
+          <option value="">—</option>
+          <option value="M" ${t.genero==="M"?"selected":""}>Masculino</option>
+          <option value="F" ${t.genero==="F"?"selected":""}>Feminino</option>
+          <option value="X" ${t.genero==="X"?"selected":""}>Outro / prefiro não dizer</option>
+        </select></div>
+      <div class="pax-field"><label>Telefone / WhatsApp</label>
+        <input type="tel" name="telefone" value="${(t.telefone||"").replace(/"/g,"&quot;")}" placeholder="(00) 00000-0000" autocomplete="tel"></div>
+      <div class="pax-field"><label>E-mail</label>
+        <input type="email" name="email" value="${(t.email||"").replace(/"/g,"&quot;")}" placeholder="email@exemplo.com" autocomplete="email"></div>
+    </div>
+  </div>`;
+}
+
+async function openPaxModal(flight){
+  if (!mmRequireLogin("Entre com Google para solicitar essa passagem.")) return;
+  pendingFlight = flight;
   const user = mmCurrentUser();
-  if (!user) return; // segue o link normalmente pro WhatsApp; sem conta, não salva
-  const trips = mmLoadTrips(user.email);
-  trips.push({
-    route: btn.dataset.route,
-    airline: btn.dataset.airline,
-    price: Number(btn.dataset.price),
-    dep: btn.dataset.dep,
-    locator: btn.dataset.locator,
-    savedAt: new Date().toISOString(),
+  const n = Math.max(1, parseInt(document.getElementById("f-pax")?.value || "1", 10) || 1);
+  const depDate = document.getElementById("f-depart")?.value || "";
+  const retDate = document.getElementById("f-return")?.value || "";
+  const tripTypeLabel = (typeof tripType !== "undefined" && tripType === "OW") ? "Só ida" : "Ida e volta";
+
+  document.getElementById("pax-trip-summary").innerHTML = `
+    <strong>${flight.route || ""}</strong><br>
+    ${flight.airline || ""} · ${currency(Number(flight.price)||0)} · PIX<br>
+    ${depDate ? "Ida: " + depDate : ""}${retDate && tripTypeLabel!=="Só ida" ? " · Volta: " + retDate : ""} · ${flight.dep || ""} → ${flight.arr || ""}<br>
+    <span class="muted">${n} passageiro${n>1?"s":""} · ${tripTypeLabel}</span>
+  `;
+
+  let saved = mmLoadTravelersLocal(user.email);
+  // tenta backend
+  try {
+    const url = API_MILHAS_PAX + (API_MILHAS_PAX.includes("?") ? "&" : "?") ;
+    // GET via proxy: pass query in target
+    const target = "http://br2.bronxyshost.com:4009/api/milhas/usuarios/passageiros?email=" + encodeURIComponent(user.email);
+    const res = await fetch(API_MILHAS_BASE + encodeURIComponent(target));
+    const dados = await res.json();
+    if (dados.sucesso && Array.isArray(dados.travelers) && dados.travelers.length) {
+      saved = dados.travelers;
+      mmSaveTravelersLocal(user.email, saved);
+    }
+  } catch (_) {}
+
+  // se não tem nenhum, pré-preenche titular com dados da conta Google
+  if (!saved.length) {
+    saved = [{ nome: user.name || "", email: user.email || "", telefone: user.phone || "" }];
+  }
+
+  let html = "";
+  for (let i = 0; i < n; i++) {
+    html += paxFieldHtml(i, saved[i] || (i===0 ? saved[0] : {}), i===0 ? "Passageiro 1 (titular)" : null);
+  }
+  document.getElementById("pax-forms").innerHTML = html;
+  document.getElementById("pax-forms").querySelectorAll('input[name="cpf"]').forEach(inp => {
+    inp.addEventListener("input", () => { inp.value = fmtCpfInput(inp.value); });
   });
-  mmSaveTripsList(user.email, trips);
+
+  document.getElementById("pax-overlay").classList.add("show");
+  document.getElementById("pax-overlay").setAttribute("aria-hidden","false");
+  document.body.classList.add("picker-open");
+}
+
+function closePaxModal(){
+  document.getElementById("pax-overlay").classList.remove("show");
+  document.getElementById("pax-overlay").setAttribute("aria-hidden","true");
+  document.body.classList.remove("picker-open");
+  pendingFlight = null;
+}
+
+function collectPaxForms(){
+  const blocks = [...document.querySelectorAll("#pax-forms .pax-block")];
+  return blocks.map(b => {
+    const g = (name) => b.querySelector(`[name="${name}"]`)?.value?.trim() || "";
+    return {
+      nome: g("nome"),
+      cpf: onlyDigits(g("cpf")),
+      nascimento: g("nascimento"),
+      genero: g("genero"),
+      telefone: g("telefone"),
+      email: g("email")
+    };
+  });
+}
+
+async function submitPaxAndWhatsApp(){
+  const user = mmCurrentUser();
+  if (!user || !pendingFlight) return;
+  const travelers = collectPaxForms();
+  for (let i = 0; i < travelers.length; i++) {
+    const t = travelers[i];
+    if (!t.nome || t.nome.length < 3) {
+      alert("Preencha o nome completo do passageiro " + (i+1) + ".");
+      return;
+    }
+    if (!t.nascimento) {
+      alert("Informe a data de nascimento do passageiro " + (i+1) + ".");
+      return;
+    }
+  }
+
+  // salva local
+  mmSaveTravelersLocal(user.email, travelers);
+  // atualiza conta local
+  const users = mmLoadUsers();
+  const idx = users.findIndex(u => u.email === user.email);
+  if (idx >= 0) {
+    users[idx].phone = travelers[0].telefone || users[idx].phone;
+    users[idx].travelers = travelers;
+    mmSaveUsers(users);
+  }
+
+  // backend
+  try {
+    await fetch(API_MILHAS_PAX, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: user.email, phone: travelers[0].telefone, travelers })
+    });
+  } catch (_) {}
+
+  try {
+    await fetch(API_MILHAS_EVT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: user.email,
+        tipo: "selecionou_voo",
+        dados: { ...pendingFlight, pax: travelers.length }
+      })
+    });
+  } catch (_) {}
+
+  // monta WhatsApp
+  const depDate = document.getElementById("f-depart")?.value || "";
+  const retDate = document.getElementById("f-return")?.value || "";
+  const origin = selectedAirport.origin;
+  const dest = selectedAirport.destination;
+  let msg = "Olá! Quero emitir esta passagem pela Marujo's Milhas:%0A%0A";
+  msg += "*Voo*%0A";
+  msg += pendingFlight.route + "%0A";
+  msg += (pendingFlight.airline || "") + " · R$ " + Number(pendingFlight.price).toLocaleString("pt-BR") + " (PIX)%0A";
+  msg += "Horário: " + (pendingFlight.dep||"—") + " → " + (pendingFlight.arr||"—") + "%0A";
+  if (depDate) msg += "Data ida: " + depDate + "%0A";
+  if (retDate) msg += "Data volta: " + retDate + "%0A";
+  msg += "Ref: " + (pendingFlight.locator||"—") + "%0A%0A";
+  msg += "*Passageiros (" + travelers.length + ")*%0A";
+  travelers.forEach((t, i) => {
+    msg += (i+1) + ") " + t.nome + "%0A";
+    if (t.cpf) msg += "CPF: " + t.cpf + "%0A";
+    if (t.nascimento) msg += "Nasc.: " + t.nascimento + "%0A";
+    if (t.genero) msg += "Gênero: " + t.genero + "%0A";
+    if (t.telefone) msg += "Tel: " + t.telefone + "%0A";
+    if (t.email) msg += "E-mail: " + t.email + "%0A";
+    msg += "%0A";
+  });
+  msg += "*Contato da conta*%0A";
+  msg += (user.name||"") + " · " + (user.email||"") + "%0A";
+  msg += "Origem escolhida: " + origin.city + " (" + origin.code + ") → " + dest.city + " (" + dest.code + ")";
+
+  // salva viagem local se logado
+  try {
+    const trips = mmLoadTrips(user.email);
+    trips.push({
+      route: pendingFlight.route,
+      airline: pendingFlight.airline,
+      price: Number(pendingFlight.price),
+      dep: pendingFlight.dep,
+      locator: pendingFlight.locator,
+      savedAt: new Date().toISOString(),
+      travelers: travelers.map(t => t.nome)
+    });
+    mmSaveTripsList(user.email, trips);
+  } catch(_){}
+
+  closePaxModal();
+  window.open("https://wa.me/5521967026563?text=" + msg, "_blank", "noopener");
+}
+
+document.getElementById("pax-close")?.addEventListener("click", closePaxModal);
+document.getElementById("pax-overlay")?.addEventListener("click", (e) => {
+  if (e.target.id === "pax-overlay") closePaxModal();
 });
+document.getElementById("pax-submit")?.addEventListener("click", submitPaxAndWhatsApp);
 
-
-// ---- Exige login para ofertas / compra ----
 document.addEventListener("click", (e) => {
-  const select = e.target.closest("a.select-btn, .select-btn");
+  const select = e.target.closest(".select-btn");
   if (select) {
+    e.preventDefault();
+    e.stopPropagation();
     if (!mmCurrentUser()) {
-      e.preventDefault();
-      e.stopPropagation();
       mmRequireLogin("Entre com Google para solicitar essa passagem.");
       return;
     }
+    openPaxModal({
+      route: select.dataset.route || "",
+      airline: select.dataset.airline || "",
+      price: select.dataset.price || "0",
+      dep: select.dataset.dep || "",
+      arr: select.dataset.arr || "",
+      locator: select.dataset.locator || "",
+      stops: select.dataset.stops || "",
+      duration: select.dataset.duration || ""
+    });
+    return;
   }
   const flash = e.target.closest("a.flash-card, .flash-card");
   if (flash) {
@@ -2670,6 +2926,7 @@ document.addEventListener("click", (e) => {
     }
   }
 }, true);
+
 
 mmRenderHeader();
 </script>
@@ -2779,6 +3036,98 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
