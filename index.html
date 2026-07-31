@@ -57,7 +57,7 @@
   "mainEntity": [
     { "@type": "Question", "name": "Preciso ter milhas para comprar?", "acceptedAnswer": { "@type": "Answer", "text": "Não. A Marujo's usa milhas intermediadas para emitir sua passagem. Você paga em PIX e recebe o bilhete das companhias normalmente." } },
     { "@type": "Question", "name": "As passagens são das companhias oficiais?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. Emitimos com Gol, Latam e Azul. Localizador e check-in funcionam nos canais oficiais." } },
-    { "@type": "Question", "name": "Como pago?", "acceptedAnswer": { "@type": "Answer", "text": "Pagamento exclusivo via PIX. Rápido, seguro e sem taxas extras." } },
+    { "@type": "Question", "name": "Como pago?", "acceptedAnswer": { "@type": "Answer", "text": "Aceitamos PIX à vista ou parcelado em até 6x com juros. Após escolher o voo, fechamos no WhatsApp." } },
     { "@type": "Question", "name": "Os preços mudam?", "acceptedAnswer": { "@type": "Answer", "text": "Ofertas em milhas são dinâmicas. Após escolher, nossa equipe confirma e emite rápido para garantir o valor." } }
   ]
 }
@@ -252,6 +252,7 @@
 
   /* ---------- ofertas relâmpago (com foto do destino) ---------- */
   .flash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .flash-card-btn{width:100%;text-align:left;cursor:pointer;font-family:inherit;border:1px solid var(--card-line);}
   .flash-card{background:#fff;border:1px solid var(--card-line);border-radius:14px;padding:0;position:relative;overflow:hidden;transition:transform .18s ease, box-shadow .18s ease;text-decoration:none;color:inherit;display:flex;flex-direction:column;}
   .flash-card:hover{transform:translateY(-3px);box-shadow:0 16px 30px rgba(9,15,30,0.12);border-color:var(--brass);}
   .flash-card .fc-photo{height:110px;background:linear-gradient(135deg,var(--navy-2),var(--navy-3));background-size:cover;background-position:center;position:relative;}
@@ -650,6 +651,16 @@
   details.pax-more > summary::after{content:"+";font-weight:800;color:var(--slate);}
   details.pax-more[open] > summary::after{content:"–";}
   details.pax-more .pax-sec{padding-top:0;}
+  .pax-pay{background:#fff;border:1px solid var(--card-line);border-radius:14px;padding:14px;margin-bottom:14px;}
+  .pax-pay h4{margin:0 0 10px;font-size:12px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase;color:var(--brass-dark);}
+  .pax-pay-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--card-line);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:border-color .12s,background .12s;}
+  .pax-pay-opt:last-child{margin-bottom:0;}
+  .pax-pay-opt:hover,.pax-pay-opt:has(input:checked){border-color:var(--brass);background:var(--paper);}
+  .pax-pay-opt input{width:16px;height:16px;flex-shrink:0;accent-color:var(--navy);}
+  .pax-pay-opt .po-main{flex:1;min-width:0;}
+  .pax-pay-opt .po-title{font-size:14px;font-weight:700;color:var(--ink);}
+  .pax-pay-opt .po-sub{font-size:12px;color:var(--slate);margin-top:2px;}
+  .pax-pay-opt .po-val{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:var(--green);white-space:nowrap;}
   .pax-foot{padding:12px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--card-line);display:flex;flex-direction:column;gap:8px;flex-shrink:0;background:#fff;}
   .pax-foot .btn-wa{width:100%;background:#25D366;color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 20px rgba(37,211,102,.35);}
   .pax-foot .btn-wa:hover{background:#1ebe57;}
@@ -863,11 +874,16 @@
     <div class="pax-steps" id="pax-steps" aria-hidden="true"></div>
     <div class="pax-body">
       <div class="pax-trip" id="pax-trip-summary"></div>
+      <div class="pax-pay" id="pax-pay-box">
+        <h4>Forma de pagamento</h4>
+        <div id="pax-pay-options"></div>
+        <p style="font-size:11.5px;color:var(--slate);margin:10px 0 0;line-height:1.4;">Parcelamento em PIX com juros. O valor final das parcelas é confirmado no WhatsApp antes da emissão.</p>
+      </div>
       <div id="pax-forms"></div>
     </div>
     <div class="pax-foot">
       <button type="button" class="btn-wa" id="pax-submit">📱 Enviar pedido no WhatsApp</button>
-      <p class="hint">Nossa equipe confirma a tarifa e finaliza a emissão com você no WhatsApp. Pagamento via PIX.</p>
+      <p class="hint">Escolha PIX à vista ou parcelado em até 6x com juros. Confirmamos e emitimos pelo WhatsApp.</p>
     </div>
   </div>
 </div>
@@ -1014,7 +1030,7 @@
         </div>
         <div class="search-services-row">
           <div class="search-service"><div class="ssi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.3 19.1 12l-9.6-6.5-1.3.9 4.4 6.9-4.2.2-2-1.6-1 .7 2 3.1 3.7.8 4.9-.6.6 3.9 1.2.5z"/></svg></div><span>Passagens</span></div>
-          <div class="search-service"><div class="ssi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div><span>Pagamento via PIX</span></div>
+          <div class="search-service"><div class="ssi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></div><span>PIX até 6x</span></div>
           <div class="search-service"><div class="ssi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z"/><path d="m9 12 2 2 4-4"/></svg></div><span>Compra segura</span></div>
           <div class="search-service"><div class="ssi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11a9 9 0 0 1 18 0"/><path d="M21 12v5a2 2 0 0 1-2 2h-1v-7Zm-18 0h3v7H5a2 2 0 0 1-2-2Z"/></svg></div><span>Suporte humano</span></div>
         </div>
@@ -1073,7 +1089,7 @@
         <div class="search-trust-strip">
           <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>As melhores companhias</div>
           <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>Preços que cabem no bolso</div>
-          <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>Pagamento via PIX</div>
+          <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>PIX à vista ou 6x</div>
           <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>Atendimento especializado</div>
         </div>
         <div class="bp-barcode-row" aria-hidden="true">
@@ -1132,7 +1148,7 @@
 <section class="security-strip reveal">
   <div class="security-row">
     <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z"/><path d="m9 12 2 2 4-4"/></svg>Compra 100% segura</div>
-    <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>Pagamento exclusivo via PIX</div>
+    <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>PIX à vista ou em até 6x</div>
     <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Emissão pelas companhias oficiais</div>
     <div class="security-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Atendimento humano, sem robô</div>
   </div>
@@ -1193,7 +1209,7 @@
       <summary>Como pago?
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
       </summary>
-      <p>Pagamento exclusivo via PIX. Rápido, seguro e sem taxas extras. Após escolher o voo, nossa equipe envia o QR Code no WhatsApp.</p>
+      <p>Aceitamos PIX à vista ou parcelado em até 6x com juros. Após escolher o voo, nossa equipe confirma a forma de pagamento e finaliza a emissão no WhatsApp.</p>
     </details>
     <details class="faq-item">
       <summary>Os preços mudam?
@@ -1260,7 +1276,7 @@
       <div class="copy">© 2026 Marujo's Milhas — todos os direitos reservados</div>
       <div class="badges">
         <span>✓ Emissão pelas companhias oficiais</span>
-        <span>✓ Pagamento exclusivo via PIX</span>
+        <span>✓ PIX à vista ou em até 6x</span>
       </div>
     </div>
   </div>
@@ -1477,7 +1493,7 @@ function renderTicket(r, isCheapest){
       ${feeTxt}
       ${hasMarket && pct > 0 ? `<div class="save-line">✓ ${pct}% mais barato</div>` : (r.offerType === "miles" ? '<div class="save-line">✓ Preço em milhas</div>' : '')}
       <div style="font-size:12px;color:#1E8F5F;font-weight:600;margin-top:4px">PIX ${currency(r.ourValue)}</div>
-      <div style="font-size:11.5px;color:#5C7185">Pagamento via PIX · −8,87%</div>
+      <div style="font-size:11.5px;color:#5C7185">À vista ou até 6x · −8,87%</div>
       <button type="button" class="select-btn" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">Selecionar →</button>
     </div>
   </div>`;
@@ -1932,7 +1948,7 @@ function atualizarTickerOfertas(ofertas) {
   } else {
     items = [
       '<span>⚡ <b>Ofertas relâmpago</b> · confira preços do dia</span>',
-      '<span>Pagamento via <b>PIX</b></span>',
+      '<span>PIX à vista ou em até <b>6x</b></span>',
       '<span>Economia de até <b>50%</b></span>',
     ];
   }
@@ -1983,8 +1999,20 @@ function renderFlashCard(o) {
     : "";
   const air = o.companhia || o.companhiaCodigo || "";
   const logo = airlineLogoUrl(o.companhiaCodigo) || airlineLogoUrl(o.companhia);
+  const route = `${o.origem || ""} → ${o.destinoCidade || o.destino || ""}`;
+  const price = o.preco != null ? Number(o.preco) : 0;
   return `
-    <a class="flash-card" href="${o.linkCompra || '#search-card'}" target="${o.linkCompra ? '_blank' : '_self'}" rel="noopener">
+    <button type="button" class="flash-card flash-card-btn"
+      data-route="${String(route).replace(/"/g,'&quot;')}"
+      data-airline="${String(air).replace(/"/g,'&quot;')}"
+      data-price="${price}"
+      data-dep=""
+      data-arr=""
+      data-locator="FLASH"
+      data-date="${o.dataIda || ''}"
+      data-origem="${String(o.origem||'').replace(/"/g,'&quot;')}"
+      data-destino="${String(o.destinoCidade||o.destino||'').replace(/"/g,'&quot;')}"
+      data-flash="1">
       <div class="fc-photo" style="${photoStyle}">${discount}</div>
       <div class="fc-body">
         <div class="fc-air">${logo ? `<img class="fc-air-logo" src="${logo}" alt="${air}" loading="lazy" onerror="this.style.display='none'">` : ""}<span>${air || "Companhia"}</span></div>
@@ -1992,10 +2020,10 @@ function renderFlashCard(o) {
         <div class="fc-date">${o.dataIda ? "Embarque em " + fmtDataOferta(o.dataIda) : (o.pais || "")}</div>
         <div class="fc-price-row">
           <div class="fc-price">${o.precoOriginal ? `<span style="font-size:12px;color:var(--red);text-decoration:line-through;display:block;font-family:'IBM Plex Mono',monospace;font-weight:600;">${fmtPrecoOferta(o.precoOriginal, o.moeda)}</span>` : ""}${fmtPrecoOferta(o.preco, o.moeda)} <small>ida · −8,87%</small></div>
-          <div class="fc-cta">Ver oferta →</div>
+          <div class="fc-cta">Emitir →</div>
         </div>
       </div>
-    </a>`;
+    </button>`;
 }
 
 async function carregarOfertasRelampago(origemCode, origemCidade) {
@@ -2807,15 +2835,11 @@ function paxFieldHtml(idx, pref, isTitular, accountEmail){
     </div>
 
     <details class="pax-more">
-      <summary>Mais opções (fidelidade, assistência, bagagem…)</summary>
+      <summary>Mais opções (assento, assistência, bagagem…)</summary>
       <div class="pax-sec">
         <div class="pax-grid">
           <div class="pax-field full"><label>Contato de emergência (nome e telefone)</label>
             <input type="text" name="emergencia" value="${paxEsc(t.emergencia)}" placeholder="Nome — (00) 00000-0000"></div>
-          <div class="pax-field"><label>Programa de fidelidade</label>
-            <input type="text" name="fidelidadeProg" value="${paxEsc(t.fidelidadeProg)}" placeholder="LATAM Pass, Smiles…"></div>
-          <div class="pax-field"><label>Nº do programa</label>
-            <input type="text" name="fidelidadeNum" value="${paxEsc(t.fidelidadeNum)}" placeholder="Número"></div>
           <div class="pax-field"><label>Preferência de assento</label>
             <select name="assento">
               <option value="">Sem preferência</option>
@@ -2823,8 +2847,6 @@ function paxFieldHtml(idx, pref, isTitular, accountEmail){
               <option value="Corredor" ${paxOpt("Corredor", t.assento)}>Corredor</option>
               <option value="Meio" ${paxOpt("Meio", t.assento)}>Meio</option>
             </select></div>
-          <div class="pax-field"><label>Refeição especial</label>
-            <input type="text" name="refeicao" value="${paxEsc(t.refeicao)}" placeholder="Vegetariana, kosher…"></div>
           <div class="pax-field full"><label>Assistência especial</label>
             <input type="text" name="assistencia" value="${paxEsc(t.assistencia)}" placeholder="Cadeirante, visual, beliche…"></div>
           <div class="pax-field"><label>Bagagem despachada</label>
@@ -2871,9 +2893,61 @@ function splitName(full){
   return { nome: parts[0], sobrenome: parts.slice(1).join(" ") };
 }
 
+
+/** Juros estimados para exibição (confirmados no WhatsApp). 2,49% a.m. simples sobre o total. */
+const PIX_JUROS_AM = 0.0249;
+function calcPixParcelas(total, n) {
+  if (!n || n <= 1) return { parcela: total, totalComJuros: total, juros: 0 };
+  const totalComJuros = total * (1 + PIX_JUROS_AM * n);
+  return {
+    parcela: totalComJuros / n,
+    totalComJuros,
+    juros: totalComJuros - total
+  };
+}
+function renderPaxPayOptions(price) {
+  const box = document.getElementById("pax-pay-options");
+  if (!box) return;
+  const total = Number(price) || 0;
+  const opts = [{ n: 1, label: "PIX à vista", sub: "Sem juros · melhor preço" }];
+  for (let n = 2; n <= 6; n++) {
+    const c = calcPixParcelas(total, n);
+    opts.push({
+      n,
+      label: `PIX em ${n}x`,
+      sub: `com juros · total ${currency(c.totalComJuros)}`,
+      parcela: c.parcela
+    });
+  }
+  box.innerHTML = opts.map((o, i) => `
+    <label class="pax-pay-opt">
+      <input type="radio" name="pax-pagamento" value="${o.n}" ${i===0?"checked":""}>
+      <div class="po-main">
+        <div class="po-title">${o.label}</div>
+        <div class="po-sub">${o.sub}</div>
+      </div>
+      <div class="po-val">${o.n===1 ? currency(total) : (currency(o.parcela) + "/mês")}</div>
+    </label>`).join("");
+}
+function getSelectedPagamento() {
+  const el = document.querySelector('input[name="pax-pagamento"]:checked');
+  const n = el ? parseInt(el.value, 10) : 1;
+  const price = pendingFlight ? Number(pendingFlight.price) || 0 : 0;
+  const c = calcPixParcelas(price, n);
+  return {
+    parcelas: n,
+    label: n === 1 ? "PIX à vista (sem juros)" : `PIX em ${n}x com juros`,
+    parcelaValor: c.parcela,
+    totalComJuros: c.totalComJuros,
+    juros: c.juros,
+    aVista: price
+  };
+}
+
 async function openPaxModal(flight){
   if (!mmRequireLogin("Entre com Google para solicitar essa passagem.")) return;
   pendingFlight = flight;
+  renderPaxPayOptions(flight.price);
   const user = mmCurrentUser();
   const n = Math.max(1, parseInt(document.getElementById("f-pax")?.value || "1", 10) || 1);
   const depDate = document.getElementById("f-depart")?.value || "";
@@ -2962,7 +3036,7 @@ function collectPaxForms(){
     "nome","sobrenome","nascimento","sexo","nacionalidade","cpf","email","telefone",
     "docTipo","docNumero","docOrgao","docPais","docEmissao","docValidade",
     "paisResidencia","cep","endereco","cidade",
-    "emergencia","fidelidadeProg","fidelidadeNum","assento","refeicao","assistencia",
+    "emergencia","assento","assistencia",
     "bagagem","seguro","visto","respNome","respCpf","respTel","respParentesco"
   ];
   return blocks.map(b => {
@@ -3048,7 +3122,8 @@ async function submitPaxAndWhatsApp(){
   msg += `• *Rota:* ${pendingFlight.route || (origin.city + " → " + dest.city)}\n`;
   msg += `• *Companhia:* ${pendingFlight.airline || "—"}\n`;
   msg += `• *Horário:* ${pendingFlight.dep || "—"} → ${pendingFlight.arr || "—"}\n`;
-  if (depDate) msg += `• *Data ida:* ${depDate}\n`;
+  const dataIdaFinal = depDate || pendingFlight.date || "";
+  if (dataIdaFinal) msg += `• *Data ida:* ${dataIdaFinal}\n`;
   if (!isOW && retDate) msg += `• *Data volta:* ${retDate}\n`;
   msg += `• *Tipo:* ${isOW ? "Só ida" : "Ida e volta"}\n`;
   if (pendingFlight.duration) msg += `• *Duração:* ${pendingFlight.duration}\n`;
@@ -3056,7 +3131,14 @@ async function submitPaxAndWhatsApp(){
     msg += `• *Paradas:* ${Number(pendingFlight.stops) === 0 ? "Direto" : pendingFlight.stops}\n`;
   }
   if (pendingFlight.locator) msg += `• *Ref. busca:* ${pendingFlight.locator}\n`;
-  msg += `• *Valor ref. (PIX):* R$ ${Number(pendingFlight.price||0).toLocaleString("pt-BR")}\n\n`;
+  const pag = getSelectedPagamento();
+  msg += `• *Valor ref.:* R$ ${Number(pendingFlight.price||0).toLocaleString("pt-BR")}\n`;
+  msg += `• *Pagamento:* ${pag.label}\n`;
+  if (pag.parcelas > 1) {
+    msg += `• *Parcelas:* ${pag.parcelas}x de R$ ${pag.parcelaValor.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}\n`;
+    msg += `• *Total c/ juros (est.):* R$ ${pag.totalComJuros.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}\n`;
+  }
+  msg += `\n`;
 
   travelers.forEach((t, i) => {
     msg += `👤 *PASSAGEIRO ${i+1}${i===0 ? " (TITULAR)" : ""}*\n`;
@@ -3083,9 +3165,7 @@ async function submitPaxAndWhatsApp(){
     }
     const extras = [
       ["Emergência", t.emergencia],
-      ["Fidelidade", [t.fidelidadeProg, t.fidelidadeNum].filter(Boolean).join(" ")],
       ["Assento", t.assento],
-      ["Refeição", t.refeicao],
       ["Assistência", t.assistencia],
       ["Bagagem", t.bagagem],
       ["Seguro", t.seguro],
@@ -3158,14 +3238,25 @@ document.addEventListener("click", (e) => {
     });
     return;
   }
-  const flash = e.target.closest("a.flash-card, .flash-card");
+  const flash = e.target.closest(".flash-card, .flash-card-btn");
   if (flash) {
+    e.preventDefault();
+    e.stopPropagation();
     if (!mmCurrentUser()) {
-      e.preventDefault();
-      e.stopPropagation();
-      mmRequireLogin("Entre com Google para ver e aproveitar as ofertas relâmpago.");
+      mmRequireLogin("Entre com Google para aproveitar as ofertas relâmpago.");
       return;
     }
+    openPaxModal({
+      route: flash.dataset.route || "",
+      airline: flash.dataset.airline || "",
+      price: flash.dataset.price || "0",
+      dep: flash.dataset.dep || "",
+      arr: flash.dataset.arr || "",
+      locator: flash.dataset.locator || "FLASH",
+      date: flash.dataset.date || "",
+      flash: true
+    });
+    return;
   }
   const flashJump = e.target.closest("a.flash-jump-btn, .flash-jump-btn");
   if (flashJump) {
@@ -3287,6 +3378,98 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
