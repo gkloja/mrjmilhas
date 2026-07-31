@@ -770,6 +770,14 @@
   .ap-row .ap-row-value{font-size:14px;color:var(--ink);font-weight:600;}
   .ap-edit-btn{background:none;border:1px solid var(--card-line);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit;}
   .ap-trip{background:#fff;border:1px solid var(--card-line);border-radius:14px;padding:16px;margin-bottom:12px;}
+  .ap-status{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.3px;padding:4px 10px;border-radius:999px;color:#fff;margin-top:8px;}
+  .ap-timeline{margin-top:12px;padding-top:10px;border-top:1px dashed var(--card-line);}
+  .ap-timeline-item{font-size:12px;color:var(--slate);padding:4px 0 4px 14px;border-left:2px solid var(--card-line);margin-left:4px;line-height:1.35;}
+  .ap-timeline-item strong{color:var(--ink);}
+  .ap-pdf{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:var(--navy);color:#fff;text-decoration:none;font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:10px;}
+  .ap-pdf:hover{background:#0a1428;}
+  .ap-empty-orders{text-align:center;padding:28px 16px;color:var(--slate);font-size:14px;line-height:1.5;}
+
   .ap-trip-route{font-weight:700;font-size:14.5px;color:var(--ink);display:flex;align-items:center;gap:8px;}
   .ap-trip-meta{font-size:12px;color:var(--slate);margin-top:4px;}
   .ap-trip-price{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--navy);font-size:15px;margin-top:8px;}
@@ -905,7 +913,7 @@
           </button>
           <button type="button" id="menu-minhas-viagens">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 16 22 8l-7 14-2-7-7-2z"/></svg>
-            Minhas viagens
+            Meus pedidos
           </button>
           <button type="button" class="logout" id="menu-sair">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
@@ -1018,7 +1026,7 @@
     </div>
     <div class="ap-tabs">
       <button type="button" class="ap-tab active" data-ap-tab="perfil">Meus dados</button>
-      <button type="button" class="ap-tab" data-ap-tab="viagens">Minhas viagens</button>
+      <button type="button" class="ap-tab" data-ap-tab="viagens">Meus pedidos</button>
     </div>
     <div class="ap-body">
       <div id="ap-panel-perfil">
@@ -2800,18 +2808,65 @@ document.getElementById("ap-edit-phone").addEventListener("click", () => {
 function mmRenderTrips(){
   const user = mmCurrentUser();
   const el = document.getElementById("ap-trips-list");
-  if (!user) { el.innerHTML = ""; return; }
-  const trips = mmLoadTrips(user.email);
-  if (!trips.length) {
-    el.innerHTML = `<div class="ap-empty"><div class="ap-empty-icon">🧳</div>Você ainda não selecionou nenhuma viagem.<br>Busque um voo e clique em "Selecionar" pra guardar aqui.</div>`;
-    return;
-  }
-  el.innerHTML = trips.slice().reverse().map(t => `
-    <div class="ap-trip">
-      <div class="ap-trip-route">✈️ ${t.route}</div>
-      <div class="ap-trip-meta">${t.airline} · Partida ${t.dep || "--:--"} · Ref ${t.locator}</div>
-      <div class="ap-trip-price display">${currency(t.price)}</div>
-    </div>`).join("");
+  if (!el) return;
+  if (!user) { el.innerHTML = '<div class="ap-empty-orders">Entre com Google para ver seus pedidos.</div>'; return; }
+
+  el.innerHTML = '<div class="ap-empty-orders">Carregando seus pedidos…</div>';
+
+  const local = (typeof mmLoadTrips === "function") ? mmLoadTrips(user.email) : [];
+
+  fetch(API_MILHAS_PEDIDOS_GET(user.email))
+    .then(r => r.json())
+    .then(dados => {
+      const pedidos = (dados && dados.pedidos) ? dados.pedidos : [];
+      if (!pedidos.length && !local.length) {
+        el.innerHTML = '<div class="ap-empty-orders">Você ainda não tem pedidos.<br>Busque uma passagem e envie pelo WhatsApp — o andamento aparece aqui.</div>';
+        return;
+      }
+      if (pedidos.length) {
+        el.innerHTML = pedidos.map(p => {
+          const voo = p.voo || {};
+          const hist = (p.historico || []).slice().reverse().slice(0, 5);
+          const pdf = p.pdfUrl
+            ? `<a class="ap-pdf" href="${p.pdfUrl}" target="_blank" rel="noopener">📄 Ver / baixar passagem (PDF)</a>`
+            : "";
+          const loc = p.localizador ? `<div class="ap-trip-meta"><strong>Localizador:</strong> ${p.localizador}</div>` : "";
+          const timeline = hist.length
+            ? `<div class="ap-timeline">${hist.map(h => `<div class="ap-timeline-item"><strong>${h.msg || h.status}</strong><br>${h.em ? new Date(h.em).toLocaleString("pt-BR") : ""}</div>`).join("")}</div>`
+            : "";
+          return `<div class="ap-trip">
+            <div class="ap-trip-route">✈️ ${voo.route || p.codigo || "Pedido"}</div>
+            <div class="ap-trip-meta">${voo.airline || ""} · ${p.codigo || ""} · ${p.createdAtFmt || ""}</div>
+            <div class="ap-trip-price display">${typeof currency === "function" ? currency(Number(voo.price)||0) : ("R$ " + (voo.price||0))}</div>
+            <span class="ap-status" style="background:${p.statusCor || "#8B93A8"}">${p.statusLabel || p.status}</span>
+            ${loc}
+            ${pdf}
+            ${timeline}
+          </div>`;
+        }).join("");
+        return;
+      }
+      // fallback localStorage
+      el.innerHTML = local.slice().reverse().map(tr => `
+        <div class="ap-trip">
+          <div class="ap-trip-route">✈️ ${tr.route || "Viagem"}</div>
+          <div class="ap-trip-meta">${tr.airline || ""} · ${tr.savedAt ? new Date(tr.savedAt).toLocaleString("pt-BR") : ""}</div>
+          <div class="ap-trip-price display">${typeof currency === "function" ? currency(tr.price) : tr.price}</div>
+          <span class="ap-status" style="background:#8B93A8">Registrado no aparelho</span>
+        </div>`).join("");
+    })
+    .catch(() => {
+      if (!local.length) {
+        el.innerHTML = '<div class="ap-empty-orders">Não foi possível carregar os pedidos. Tente de novo em instantes.</div>';
+        return;
+      }
+      el.innerHTML = local.slice().reverse().map(tr => `
+        <div class="ap-trip">
+          <div class="ap-trip-route">✈️ ${tr.route || "Viagem"}</div>
+          <div class="ap-trip-meta">${tr.airline || ""}</div>
+          <div class="ap-trip-price display">${typeof currency === "function" ? currency(tr.price) : tr.price}</div>
+        </div>`).join("");
+    });
 }
 
 // salva a viagem quando o passageiro clica em "Selecionar" num voo, se estiver logado
@@ -2819,9 +2874,36 @@ function mmRenderTrips(){
 
 
 // ---- Exige login + modal de passageiros ----
-const API_MILHAS_BASE = "https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009/proxy?url=";
+const API_MILHAS_HOST = "https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009";
+const API_MILHAS_BASE = API_MILHAS_HOST + "/proxy?url=";
 const API_MILHAS_PAX = API_MILHAS_BASE + encodeURIComponent("http://br2.bronxyshost.com:4009/api/milhas/usuarios/passageiros");
 const API_MILHAS_EVT = API_MILHAS_BASE + encodeURIComponent("http://br2.bronxyshost.com:4009/api/milhas/usuarios/evento");
+const API_MILHAS_PEDIDOS_DIRECT = API_MILHAS_HOST + "/api/milhas/pedidos";
+const API_MILHAS_PEDIDOS = API_MILHAS_BASE + encodeURIComponent("http://br2.bronxyshost.com:4009/api/milhas/pedidos");
+const API_MILHAS_PEDIDOS_GET = (email) => API_MILHAS_BASE + encodeURIComponent("http://br2.bronxyshost.com:4009/api/milhas/pedidos?email=" + encodeURIComponent(email));
+
+async function mmPostPedido(payload) {
+  const tentativas = [API_MILHAS_PEDIDOS_DIRECT, API_MILHAS_PEDIDOS];
+  let ultimoErro = null;
+  for (const url of tentativas) {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const dados = await res.json().catch(() => ({}));
+      console.log("[Milhas] POST pedido", url, res.status, dados);
+      if (res.ok && dados && dados.sucesso) return dados;
+      ultimoErro = (dados && dados.erro) || ("HTTP " + res.status);
+    } catch (e) {
+      console.warn("[Milhas] falha em", url, e);
+      ultimoErro = e.message || String(e);
+    }
+  }
+  throw new Error(ultimoErro || "Falha ao salvar pedido");
+}
+
 let pendingFlight = null;
 
 function mmTravelersKey(email){ return "mm_travelers_" + email; }
@@ -3311,6 +3393,31 @@ async function submitPaxAndWhatsApp(){
     mmSaveTripsList(user.email, trips);
   } catch(_){}
 
+  // Salva pedido no backend para acompanhamento no site + painel
+  try {
+    const pagPedido = getSelectedPagamento();
+    const salvo = await mmPostPedido({
+      email: user.email,
+      nomeCliente: user.name || travelers[0]?.nomeCompleto || "",
+      voo: {
+        route: pendingFlight.route || rotaLabel,
+        airline: pendingFlight.airline,
+        price: Number(pendingFlight.price) || 0,
+        dep: pendingFlight.dep,
+        arr: pendingFlight.arr,
+        date: dataIdaFinal,
+        locator: pendingFlight.locator,
+        flash: !!pendingFlight.flash
+      },
+      travelers,
+      pagamento: pagPedido
+    });
+    console.log("[Milhas] pedido OK", salvo);
+  } catch (e) {
+    console.error("[Milhas] NÃO salvou pedido no servidor:", e);
+    alert("Aviso: o pedido foi montado para o WhatsApp, mas NÃO entrou no painel do site.\n\nErro: " + (e.message || e) + "\n\nEnvie mesmo assim no WhatsApp e avise a equipe.");
+  }
+
   // Guarda a mensagem e mostra o passo de confirmação (não abre WA ainda)
   window.__mmPendingWaUrl = "https://wa.me/5521967026563?text=" + encodeURIComponent(msg);
   if (btn) { btn.disabled = false; btn.textContent = "Continuar para o WhatsApp →"; }
@@ -3545,6 +3652,465 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
