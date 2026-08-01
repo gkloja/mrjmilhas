@@ -1,7 +1,7 @@
 {
   "id": "/",
   "name": "Marujo's Milhas",
-  "short_name": "Marujo's",
+  "short_name": "Marujo's Milhas",
   "description": "Passagens aéreas com milhas — até 50% mais barato. LATAM, GOL, Azul e TAP. PIX ou cartão em até 6x.",
   "start_url": "/?source=pwa",
   "scope": "/",
