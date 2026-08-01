@@ -642,6 +642,7 @@
   .mm-badge.show{display:inline-flex;}
   .ap-tab{position:relative;}
   .ap-tab .mm-badge{top:4px;right:8px;}
+  .account-dropdown button .mm-badge{position:static;margin-left:auto;flex-shrink:0;}
   .ap-trip.mm-trip-highlight{outline:2px solid var(--brass);outline-offset:2px;border-radius:12px;}
 
 
@@ -1028,9 +1029,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
             Minha conta
           </button>
-          <button type="button" id="menu-minhas-viagens">
+          <button type="button" id="menu-minhas-viagens" style="position:relative">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 16 22 8l-7 14-2-7-7-2z"/></svg>
             Meus pedidos
+            <span class="mm-badge" id="mm-menu-viagens-badge" style="position:static;margin-left:auto">0</span>
           </button>
           <button type="button" class="logout" id="menu-sair">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
@@ -1089,12 +1091,12 @@
     <div class="pax-steps" id="pax-steps" aria-hidden="true"></div>
     <div class="pax-body">
       <div class="pax-trip" id="pax-trip-summary"></div>
+      <div id="pax-forms"></div>
       <div class="pax-pay" id="pax-pay-box">
         <h4>Forma de pagamento</h4>
         <div id="pax-pay-options"></div>
         <p style="font-size:11.5px;color:var(--slate);margin:10px 0 0;line-height:1.4;">PIX é só à vista. Parcelamento (2x a 6x) é no cartão de crédito, com juros. Valores finais confirmados no WhatsApp.</p>
       </div>
-      <div id="pax-forms"></div>
     </div>
     <div class="pax-foot">
       <button type="button" class="btn-wa" id="pax-submit">Continuar para o WhatsApp →</button>
@@ -2921,7 +2923,7 @@ function mmMarkTripsSeen(){
 }
 function mmUpdateTripsBadge(n){
   const count = Math.max(0, Number(n)||0);
-  ["mm-account-badge","mm-viagens-badge"].forEach(function(id){
+  ["mm-account-badge","mm-viagens-badge","mm-menu-viagens-badge"].forEach(function(id){
     const el = document.getElementById(id);
     if (!el) return;
     if (count > 0) {
@@ -3139,10 +3141,8 @@ function paxFieldHtml(idx, pref, isTitular, accountEmail){
     <div class="pax-sec">
       <div class="pax-sec-title">Identificação <span></span></div>
       <div class="pax-grid">
-        <div class="pax-field"><label>Nome <span class="req">*</span></label>
-          <input type="text" name="nome" value="${paxEsc(t.nome)}" required autocomplete="given-name" placeholder="Primeiro nome"></div>
-        <div class="pax-field"><label>Sobrenome <span class="req">*</span></label>
-          <input type="text" name="sobrenome" value="${paxEsc(t.sobrenome)}" required autocomplete="family-name" placeholder="Como no documento"></div>
+        <div class="pax-field full"><label>Nome completo <span class="req">*</span></label>
+          <input type="text" name="nomeCompleto" value="${paxEsc(t.nomeCompleto || [t.nome, t.sobrenome].filter(Boolean).join(' '))}" required autocomplete="name" placeholder="Como no documento de identidade"></div>
         <div class="pax-field"><label>Data de nascimento <span class="req">*</span></label>
           <input type="date" name="nascimento" value="${paxEsc(t.nascimento)}" required></div>
         <div class="pax-field"><label>Sexo <span class="req">*</span></label>
@@ -3183,14 +3183,14 @@ function paxFieldHtml(idx, pref, isTitular, accountEmail){
           </select></div>
         <div class="pax-field"><label>Número do documento <span class="req">*</span></label>
           <input type="text" name="docNumero" value="${paxEsc(t.docNumero)}" required placeholder="Número"></div>
-        <div class="pax-field"><label>Órgão emissor</label>
-          <input type="text" name="docOrgao" value="${paxEsc(t.docOrgao)}" placeholder="Ex.: SSP/AM"></div>
-        <div class="pax-field"><label>País emissor</label>
-          <input type="text" name="docPais" value="${paxEsc(t.docPais||'Brasil')}" placeholder="Brasil"></div>
-        <div class="pax-field"><label>Data de emissão</label>
-          <input type="date" name="docEmissao" value="${paxEsc(t.docEmissao)}"></div>
-        <div class="pax-field"><label>Validade</label>
-          <input type="date" name="docValidade" value="${paxEsc(t.docValidade)}"></div>
+        <div class="pax-field"><label>Órgão emissor <span class="req">*</span></label>
+          <input type="text" name="docOrgao" value="${paxEsc(t.docOrgao)}" required placeholder="Ex.: SSP/AM"></div>
+        <div class="pax-field"><label>País emissor <span class="req">*</span></label>
+          <input type="text" name="docPais" value="${paxEsc(t.docPais||'Brasil')}" required placeholder="Brasil"></div>
+        <div class="pax-field"><label>Data de emissão <span class="req">*</span></label>
+          <input type="date" name="docEmissao" value="${paxEsc(t.docEmissao)}" required></div>
+        <div class="pax-field"><label>Validade <span class="req">*</span></label>
+          <input type="date" name="docValidade" value="${paxEsc(t.docValidade)}" required></div>
       </div>
     </div>
 
@@ -3359,6 +3359,7 @@ async function openPaxModal(flight){
   if (!saved.length) {
     const sp = splitName(user.name || "");
     saved = [{
+      nomeCompleto: user.name || "",
       nome: sp.nome,
       sobrenome: sp.sobrenome,
       email: user.email || "",
@@ -3368,11 +3369,12 @@ async function openPaxModal(flight){
       paisResidencia: "Brasil"
     }];
   } else {
-    // normalize legacy single "nome" full name
+    // normalize legacy nome/sobrenome → nomeCompleto
     saved = saved.map(s => {
-      if (s && s.nome && !s.sobrenome && String(s.nome).includes(" ")) {
-        const sp = splitName(s.nome);
-        return { ...s, nome: sp.nome, sobrenome: sp.sobrenome };
+      if (!s) return s;
+      if (!s.nomeCompleto) {
+        if (s.nome && s.sobrenome) s.nomeCompleto = [s.nome, s.sobrenome].filter(Boolean).join(" ");
+        else if (s.nome) s.nomeCompleto = s.nome;
       }
       return s;
     });
@@ -3409,7 +3411,7 @@ function closePaxModal(){
 function collectPaxForms(){
   const blocks = [...document.querySelectorAll("#pax-forms .pax-block")];
   const fields = [
-    "nome","sobrenome","nascimento","sexo","nacionalidade","cpf","email","telefone",
+    "nomeCompleto","nascimento","sexo","nacionalidade","cpf","email","telefone",
     "docTipo","docNumero","docOrgao","docPais","docEmissao","docValidade",
     "paisResidencia","cep","endereco","cidade",
     "emergencia","assento","assistencia",
@@ -3424,7 +3426,11 @@ function collectPaxForms(){
     o.cpf = onlyDigits(o.cpf);
     o.respCpf = onlyDigits(o.respCpf);
     o.cep = onlyDigits(o.cep);
-    o.nomeCompleto = [o.nome, o.sobrenome].filter(Boolean).join(" ");
+    o.nomeCompleto = o.nomeCompleto || "";
+    // Compatibilidade com backend / mensagens antigas
+    const sp = (typeof splitName === "function") ? splitName(o.nomeCompleto) : { nome: o.nomeCompleto, sobrenome: "" };
+    o.nome = sp.nome || "";
+    o.sobrenome = sp.sobrenome || "";
     return o;
   });
 }
@@ -3440,8 +3446,8 @@ async function submitPaxAndWhatsApp(){
   const travelers = collectPaxForms();
   for (let i = 0; i < travelers.length; i++) {
     const t = travelers[i];
-    if (!t.nome || !t.sobrenome) {
-      alert("Preencha nome e sobrenome do passageiro " + (i+1) + ".");
+    if (!t.nomeCompleto || t.nomeCompleto.trim().split(/\s+/).length < 2) {
+      alert("Preencha o nome completo do passageiro " + (i+1) + " (nome e sobrenome).");
       return;
     }
     if (!t.nascimento) { alert("Data de nascimento do passageiro " + (i+1) + "."); return; }
@@ -3449,6 +3455,10 @@ async function submitPaxAndWhatsApp(){
     if (!t.cpf || t.cpf.length < 11) { alert("CPF válido do passageiro " + (i+1) + "."); return; }
     if (!t.telefone) { alert("Telefone do passageiro " + (i+1) + "."); return; }
     if (!t.docTipo || !t.docNumero) { alert("Documento do passageiro " + (i+1) + "."); return; }
+    if (!t.docOrgao) { alert("Órgão emissor do passageiro " + (i+1) + "."); return; }
+    if (!t.docPais) { alert("País emissor do passageiro " + (i+1) + "."); return; }
+    if (!t.docEmissao) { alert("Data de emissão do documento do passageiro " + (i+1) + "."); return; }
+    if (!t.docValidade) { alert("Validade do documento do passageiro " + (i+1) + "."); return; }
   }
 
   const btn = document.getElementById("pax-submit");
