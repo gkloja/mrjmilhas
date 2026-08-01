@@ -1,0 +1,45 @@
+{
+  "id": "/",
+  "name": "Marujo's Milhas",
+  "short_name": "Marujo's",
+  "description": "Passagens aéreas com milhas — até 50% mais barato. LATAM, GOL, Azul e TAP.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0E1930",
+  "theme_color": "#0E1930",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["travel", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Meus pedidos",
+      "short_name": "Pedidos",
+      "url": "/#pedidos",
+      "description": "Ver status das suas passagens"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
