@@ -638,6 +638,12 @@
   .account-dropdown button.logout{color:var(--red);}
   .account-dropdown button.logout svg{color:var(--red);}
   .account-wrap{position:relative;}
+  .mm-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--red);color:#fff;font-size:10px;font-weight:800;font-family:'IBM Plex Mono',monospace;display:none;align-items:center;justify-content:center;line-height:1;box-shadow:0 2px 8px rgba(193,67,45,0.45);z-index:2;}
+  .mm-badge.show{display:inline-flex;}
+  .ap-tab{position:relative;}
+  .ap-tab .mm-badge{top:4px;right:8px;}
+  .ap-trip.mm-trip-highlight{outline:2px solid var(--brass);outline-offset:2px;border-radius:12px;}
+
 
   .auth-google{
     width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
@@ -868,40 +874,34 @@
 })();
 </script>
 
-<!-- OneSignal — Marujo's Milhas (app próprio) -->
+<!-- OneSignal — Marujo's Milhas (app próprio)
+     Importante: coloque OneSignalSDKWorker.js na RAIZ do site (mesmo host do index.html).
+     A permissão de push só é pedida DEPOIS do login Google. -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   window.__mmOneSignalAppId = "94ae04f7-0f0d-4c9c-88f8-51f628ef71b9";
+  window.__mmOneSignalInited = false;
 
   OneSignalDeferred.push(async function (OneSignal) {
     try {
       await OneSignal.init({
         appId: window.__mmOneSignalAppId,
-        // Service worker padrão do OneSignal (precisa estar acessível na raiz do site)
         serviceWorkerPath: "OneSignalSDKWorker.js",
         serviceWorkerParam: { scope: "/" },
         notifyButton: { enable: false },
-        allowLocalhostAsSecureOrigin: true
+        allowLocalhostAsSecureOrigin: true,
+        autoResubscribe: true
       });
+      window.__mmOneSignalInited = true;
       window.__mmOneSignalReady = true;
-      console.log("[Milhas OneSignal] init OK | permission=", OneSignal.Notifications.permissionNative);
-      try {
-        if (typeof mmCurrentUser === "function") {
-          const u = mmCurrentUser();
-          if (u && u.email) await window.mmOneSignalLogin(u.email);
-        }
-      } catch (_) {}
+      console.log("[Milhas OneSignal] init OK (sem pedir permissão ainda)");
     } catch (e) {
-      console.error("[Milhas OneSignal] init falhou", e);
+      console.error("[Milhas OneSignal] init falhou — confira se /OneSignalSDKWorker.js existe na raiz", e);
     }
   });
 
-  /**
-   * 1) Pede permissão de push no navegador
-   * 2) Faz opt-in da subscription
-   * 3) Liga external_user_id = e-mail (para o backend mirar só essa pessoa)
-   */
+  /** Só chamar depois do login Google. Pede permissão + vincula e-mail. */
   window.mmOneSignalLogin = async function (email) {
     const id = String(email || "").trim().toLowerCase();
     if (!id) return false;
@@ -910,48 +910,53 @@
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function (OneSignal) {
         try {
-          // A) permissão do browser
           let perm = OneSignal.Notifications.permissionNative;
-          if (perm !== "granted") {
-            // requestPermission abre o diálogo nativo (ou soft prompt se configurado no painel)
-            perm = await OneSignal.Notifications.requestPermission();
-          }
-          console.log("[Milhas OneSignal] permission =", perm);
+          console.log("[Milhas OneSignal] permission atual =", perm);
 
-          if (perm !== "granted" && perm !== true) {
-            console.warn("[Milhas OneSignal] usuário NÃO autorizou notificações — sem push token");
+          if (perm === "denied") {
+            console.warn("[Milhas OneSignal] bloqueado nas configs do navegador. Cadeado → Notificações → Permitir.");
             resolve(false);
             return;
           }
 
-          // B) garante inscrição de push
-          try {
-            if (OneSignal.User && OneSignal.User.PushSubscription) {
-              const opted = OneSignal.User.PushSubscription.optedIn;
-              if (!opted) {
-                await OneSignal.User.PushSubscription.optIn();
-              }
-            }
-          } catch (eOpt) {
-            console.warn("[Milhas OneSignal] optIn", eOpt);
+          if (perm !== "granted") {
+            const result = await OneSignal.Notifications.requestPermission();
+            perm = OneSignal.Notifications.permissionNative || result;
+            console.log("[Milhas OneSignal] depois do prompt =", perm, result);
           }
 
-          // C) external_user_id = e-mail (o backend usa include_external_user_ids)
+          if (perm !== "granted" && perm !== true) {
+            console.warn("[Milhas OneSignal] sem permissão → No Push Token");
+            resolve(false);
+            return;
+          }
+
+          try {
+            if (OneSignal.User && OneSignal.User.PushSubscription) {
+              await OneSignal.User.PushSubscription.optIn();
+            }
+          } catch (e1) {
+            console.warn("[Milhas OneSignal] optIn", e1);
+          }
+
           await OneSignal.login(id);
 
-          // Diagnóstico no console
-          try {
-            const sub = OneSignal.User && OneSignal.User.PushSubscription;
-            console.log("[Milhas OneSignal] login OK", {
-              email: id,
-              permission: OneSignal.Notifications.permissionNative,
-              optedIn: sub && sub.optedIn,
-              token: sub && sub.token ? String(sub.token).slice(0, 16) + "…" : null,
-              id: sub && sub.id
-            });
-          } catch (_) {}
+          const sub = OneSignal.User && OneSignal.User.PushSubscription;
+          const info = {
+            email: id,
+            permission: OneSignal.Notifications.permissionNative,
+            optedIn: sub && sub.optedIn,
+            hasToken: !!(sub && sub.token),
+            tokenPreview: sub && sub.token ? String(sub.token).slice(0, 20) + "…" : null,
+            subscriptionId: sub && sub.id,
+            externalId: OneSignal.User && OneSignal.User.externalId
+          };
+          console.log("[Milhas OneSignal] resultado final", info);
 
-          resolve(true);
+          if (!info.hasToken) {
+            console.error("[Milhas OneSignal] AINDA sem token. Checklist: 1) HTTPS 2) /OneSignalSDKWorker.js na raiz 3) Site URL no painel = este domínio 4) Notificações Permitir no cadeado");
+          }
+          resolve(!!info.hasToken);
         } catch (e) {
           console.error("[Milhas OneSignal] login falhou", e);
           resolve(false);
@@ -960,8 +965,7 @@
     });
   };
 
-  // Atalho manual no console: mmOneSignalStatus()
-  window.mmOneSignalStatus = async function () {
+  window.mmOneSignalStatus = function () {
     return new Promise(function (resolve) {
       OneSignalDeferred.push(async function (OneSignal) {
         const sub = OneSignal.User && OneSignal.User.PushSubscription;
@@ -1010,6 +1014,7 @@
       </span>
       <a class="btn-amber" style="text-decoration:none;display:inline-block;" href="https://wa.me/5521967026563?text=Ol%C3%A1!%20Quero%20cotar%20uma%20passagem%20com%20a%20Marujo's%20Milhas." target="_blank" rel="noopener">Fale conosco</a>
       <div class="account-wrap" id="account-wrap">
+        <span class="mm-badge" id="mm-account-badge" aria-label="atualizações">0</span>
         <button class="account-trigger" id="account-trigger" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
           <span id="account-trigger-label">Entrar</span>
@@ -1138,7 +1143,7 @@
     </div>
     <div class="ap-tabs">
       <button type="button" class="ap-tab active" data-ap-tab="perfil">Meus dados</button>
-      <button type="button" class="ap-tab" data-ap-tab="viagens">Meus pedidos</button>
+      <button type="button" class="ap-tab" data-ap-tab="viagens">Meus pedidos <span class="mm-badge" id="mm-viagens-badge">0</span></button>
     </div>
     <div class="ap-body">
       <div id="ap-panel-perfil">
@@ -2897,8 +2902,93 @@ function mmSwitchApTab(tab){
   document.querySelectorAll(".ap-tab").forEach(t => t.classList.toggle("active", t.dataset.apTab === tab));
   document.getElementById("ap-panel-perfil").style.display = tab === "perfil" ? "" : "none";
   document.getElementById("ap-panel-viagens").style.display = tab === "viagens" ? "" : "none";
-  if (tab === "viagens") mmRenderTrips();
+  if (tab === "viagens") {
+    mmRenderTrips();
+    mmMarkTripsSeen();
+  }
 }
+
+// ---- Badge de atualizações de pedidos + deep link da notificação ----
+function mmSeenKey(email){ return "mm_trips_seen_at_" + String(email||"").toLowerCase(); }
+function mmGetSeenAt(email){
+  try { return Number(localStorage.getItem(mmSeenKey(email)) || 0) || 0; } catch(e){ return 0; }
+}
+function mmMarkTripsSeen(){
+  const user = mmCurrentUser();
+  if (!user) return;
+  try { localStorage.setItem(mmSeenKey(user.email), String(Date.now())); } catch(e){}
+  mmUpdateTripsBadge(0);
+}
+function mmUpdateTripsBadge(n){
+  const count = Math.max(0, Number(n)||0);
+  ["mm-account-badge","mm-viagens-badge"].forEach(function(id){
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (count > 0) {
+      el.textContent = count > 9 ? "9+" : String(count);
+      el.classList.add("show");
+    } else {
+      el.classList.remove("show");
+      el.textContent = "0";
+    }
+  });
+}
+async function mmRefreshTripsBadge(){
+  const user = mmCurrentUser();
+  if (!user) { mmUpdateTripsBadge(0); return 0; }
+  try {
+    const res = await fetch(API_MILHAS_PEDIDOS_GET(user.email));
+    const dados = await res.json();
+    const pedidos = (dados && dados.pedidos) ? dados.pedidos : [];
+    const seen = mmGetSeenAt(user.email);
+    // Conta pedidos com updatedAt (ou createdAt) mais recente que a última vez que a pessoa abriu "Meus pedidos"
+    let n = 0;
+    pedidos.forEach(function(p){
+      const t = Date.parse(p.updatedAt || p.createdAt || 0);
+      if (t && t > seen) n++;
+    });
+    mmUpdateTripsBadge(n);
+    return n;
+  } catch (e) {
+    return 0;
+  }
+}
+function mmParsePedidoHash(){
+  const h = String(location.hash || "").replace(/^#/, "");
+  if (!h) return null;
+  if (h === "pedidos" || h === "viagens") return { open: true, codigo: null };
+  if (h.indexOf("pedido=") === 0) {
+    return { open: true, codigo: decodeURIComponent(h.slice(7)) };
+  }
+  return null;
+}
+function mmOpenFromNotification(){
+  const parsed = mmParsePedidoHash();
+  if (!parsed || !parsed.open) return;
+  const user = mmCurrentUser();
+  if (!user) {
+    // Guarda intenção e abre login
+    try { sessionStorage.setItem("mm_pending_hash", location.hash); } catch(e){}
+    mmOpenAuthModal("login");
+    return;
+  }
+  mmOpenAccountPanel("viagens");
+  // Destaca o pedido específico depois de renderizar
+  if (parsed.codigo) {
+    setTimeout(function(){
+      const list = document.getElementById("ap-trips-list");
+      if (!list) return;
+      const cards = list.querySelectorAll(".ap-trip");
+      cards.forEach(function(card){
+        if (card.textContent.indexOf(parsed.codigo) !== -1) {
+          card.classList.add("mm-trip-highlight");
+          card.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      });
+    }, 600);
+  }
+}
+
 document.querySelectorAll(".ap-tab").forEach(t => t.addEventListener("click", () => mmSwitchApTab(t.dataset.apTab)));
 document.getElementById("ap-close").addEventListener("click", mmCloseAccountPanel);
 document.getElementById("account-panel-overlay").addEventListener("click", (e) => { if (e.target.id === "account-panel-overlay") mmCloseAccountPanel(); });
@@ -2946,7 +3036,7 @@ function mmRenderTrips(){
           const timeline = hist.length
             ? `<div class="ap-timeline">${hist.map(h => `<div class="ap-timeline-item"><strong>${h.msg || h.status}</strong><br>${h.em ? new Date(h.em).toLocaleString("pt-BR") : ""}</div>`).join("")}</div>`
             : "";
-          return `<div class="ap-trip">
+          return `<div class="ap-trip" data-codigo="${p.codigo || p.id || ""}" id="pedido-${p.codigo || p.id || ""}">
             <div class="ap-trip-route">✈️ ${voo.route || p.codigo || "Pedido"}</div>
             <div class="ap-trip-meta">${voo.airline || ""} · ${p.codigo || ""} · ${p.createdAtFmt || ""}</div>
             <div class="ap-trip-price display">${typeof currency === "function" ? currency(Number(voo.price)||0) : ("R$ " + (voo.price||0))}</div>
@@ -3657,6 +3747,13 @@ document.addEventListener("click", (e) => {
 
 
 mmRenderHeader();
+// Badge + deep link da notificação OneSignal
+try { mmRefreshTripsBadge(); } catch(e){}
+setInterval(function(){ try { mmRefreshTripsBadge(); } catch(e){} }, 60000);
+window.addEventListener("hashchange", function(){ mmOpenFromNotification(); });
+window.addEventListener("focus", function(){ try { mmRefreshTripsBadge(); } catch(e){} });
+setTimeout(function(){ mmOpenFromNotification(); }, 400);
+
 </script>
 
 
@@ -3730,6 +3827,16 @@ function mmApplyGoogleUser(user) {
   if (typeof window.mmOneSignalLogin === "function") {
     window.mmOneSignalLogin(email).catch(function () {});
   }
+  try { mmRefreshTripsBadge(); } catch (e) {}
+  // Se veio de notificação e precisava logar, abre o pedido
+  try {
+    const pending = sessionStorage.getItem("mm_pending_hash");
+    if (pending) {
+      sessionStorage.removeItem("mm_pending_hash");
+      location.hash = pending;
+    }
+    setTimeout(function(){ mmOpenFromNotification(); }, 500);
+  } catch (e) {}
 }
 
 window.mmGoogleSignIn = async function () {
@@ -3768,6 +3875,374 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
