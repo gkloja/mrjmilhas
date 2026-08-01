@@ -2,16 +2,17 @@
   "id": "/",
   "name": "Marujo's Milhas",
   "short_name": "Marujo's",
-  "description": "Passagens aéreas com milhas — até 50% mais barato. LATAM, GOL, Azul e TAP.",
+  "description": "Passagens aéreas com milhas — até 50% mais barato. LATAM, GOL, Azul e TAP. PIX ou cartão em até 6x.",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "browser"],
   "orientation": "portrait-primary",
   "background_color": "#0E1930",
   "theme_color": "#0E1930",
   "lang": "pt-BR",
   "dir": "ltr",
-  "categories": ["travel", "lifestyle"],
+  "categories": ["travel", "lifestyle", "shopping"],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -26,10 +27,32 @@
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-phone.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Busca de passagens no celular"
+    },
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Marujo's Milhas no computador"
     }
   ],
   "shortcuts": [
@@ -37,9 +60,14 @@
       "name": "Meus pedidos",
       "short_name": "Pedidos",
       "url": "/#pedidos",
-      "description": "Ver status das suas passagens"
+      "description": "Ver status das suas passagens",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ],
   "related_applications": [],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "handle_links": "preferred"
 }
