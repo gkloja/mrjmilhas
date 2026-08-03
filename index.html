@@ -1709,6 +1709,9 @@ function renderLeg(leg, label){
   const dCode = leg.destCode || "";
   const oCity = leg.originCity || "";
   const dCity = leg.destCity || "";
+  const conn = leg.connectionText
+    ? `<div style="font-size:10px;color:var(--brass-dark);margin-top:3px;font-weight:600;">via ${leg.connectionText}</div>`
+    : "";
   return `<div class="leg-row" style="align-items:flex-start;">
     <div class="leg-label" style="padding-top:4px;">${label}</div>
     <div style="min-width:56px;">
@@ -1719,6 +1722,7 @@ function renderLeg(leg, label){
       <div style="font-size:10.5px;color:#8A98A6;margin-bottom:2px;">⏱ ${leg.duration} · ${stopsTxt}</div>
       <div style="border-top:1.5px dashed #D8D0BA;"></div>
       <div class="mono" style="font-size:11px;font-weight:700;color:var(--navy-3);margin-top:3px;">${oCode} → ${dCode}</div>
+      ${conn}
     </div>
     <div style="min-width:56px;text-align:right;">
       <div class="mono" style="font-size:17px;font-weight:600;">${leg.arr}</div>
@@ -1751,9 +1755,10 @@ function renderTicket(r, isCheapest){
           <div style="font-size:12px;color:#8A98A6;line-height:1.35;">${originLabel}</div>
         </div>
         <div style="flex:1;text-align:center;min-width:0;">
-          <div style="font-size:11px;color:#8A98A6;margin-bottom:2px;">⏱ ${r.duration}</div>
+          <div style="font-size:11px;color:#8A98A6;margin-bottom:2px;">⏱ ${r.duration}${r.stops ? " · " + r.stops + " parada" + (r.stops>1?"s":"") : " · Direto"}</div>
           <div style="border-top:1.5px dashed #D8D0BA;"></div>
           <div class="mono" style="font-size:11px;color:var(--navy-3);font-weight:700;margin-top:3px;letter-spacing:.3px;">${depCode} → ${arrCode}</div>
+          ${r.connectionText ? '<div style="font-size:10px;color:var(--brass-dark);margin-top:3px;font-weight:600;">via ' + r.connectionText + '</div>' : ''}
         </div>
         <div style="text-align:right;">
           <div class="mono" style="font-size:20px;font-weight:600;">${r.arr}</div>
@@ -1774,7 +1779,7 @@ function renderTicket(r, isCheapest){
         ${airlineChipHtml(r.airline)}
         <div style="font-size:13.5px;font-weight:700;">${r.airline.name}</div>
         ${typePill}
-        <div class="mono" style="font-size:11.5px;color:#8A98A6;margin-left:auto;">${r.stops === 0 ? "Voo direto" : r.stops + " parada" + (r.stops>1?"s":"")}</div>
+        <div class="mono" style="font-size:11.5px;color:#8A98A6;margin-left:auto;">${r.stops === 0 ? "Voo direto" : r.stops + " parada" + (r.stops>1?"s":"")}${r.connectionText ? " · via " + r.connectionText : (r.outbound && r.outbound.connectionText ? " · via " + r.outbound.connectionText : "")}</div>
       </div>
       ${legsHtml}
       <div class="ticket-meta">
@@ -2007,18 +2012,26 @@ function durationSecToText(sec){
 
 function mapLeg(leg){
   if (!leg) return null;
-  const depAp = AIRPORT_BY_CODE[leg.departure] || AIRPORT_BY_CODE[leg.depAirport] || selectedAirport.origin;
-  const arrAp = AIRPORT_BY_CODE[leg.arrival] || AIRPORT_BY_CODE[leg.arrAirport] || selectedAirport.destination;
+  const depCode = leg.departure || leg.depAirport || "";
+  const arrCode = leg.arrival || leg.arrAirport || "";
+  const depAp = AIRPORT_BY_CODE[depCode] || { code: depCode, city: depCode };
+  const arrAp = AIRPORT_BY_CODE[arrCode] || { code: arrCode, city: arrCode };
+  const stops = leg.stops != null ? leg.stops : 0;
+  const connectionText = leg.connectionText || (Array.isArray(leg.layovers) && leg.layovers.length
+    ? leg.layovers.map(l => l.airport || l.city || "").filter(Boolean).join(" · ")
+    : null);
   return {
     dep: fmtHora(leg.departureTime || leg.depTime),
     arr: fmtHora(leg.arrivalTime || leg.arrTime),
     duration: leg.durationText || durationSecToText(leg.duration) || leg.duration || "--",
     durationSec: typeof leg.duration === "number" ? leg.duration : 0,
-    stops: leg.stops || 0,
-    originCode: depAp.code,
-    destCode: arrAp.code,
-    originCity: depAp.city,
-    destCity: arrAp.city,
+    stops,
+    connectionText,
+    layovers: leg.layovers || [],
+    originCode: depAp.code || depCode,
+    destCode: arrAp.code || arrCode,
+    originCity: depAp.city || depCode,
+    destCity: arrAp.city || arrCode,
   };
 }
 
@@ -2044,6 +2057,9 @@ function mapOferta(o){
   const depAp = AIRPORT_BY_CODE[depAirport] || selectedAirport.origin;
   const arrAp = AIRPORT_BY_CODE[arrAirport] || selectedAirport.destination;
 
+  const connectionText = o.connectionText
+    || (outbound && outbound.connectionText)
+    || null;
   const stops = outbound
     ? (outbound.stops + (inbound ? inbound.stops : 0))
     : (o.stops || 0);
@@ -2089,12 +2105,13 @@ function mapOferta(o){
     destCity: arrAp.city || selectedAirport.destination.city,
     outbound,
     inbound,
+    connectionText,
+    tripType: o.tripType || (inbound ? "RT" : "OW"),
     locator: String(o.offerId || o.id || "MARUJO").replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase() || "MARUJO",
   };
 }
 
 async function runSearch(){
-  if (!mmRequireLogin("Entre com Google para buscar e ver as ofertas.")) return;
   const origin = selectedAirport.origin.code;
   const destination = selectedAirport.destination.code;
   const departureDate = document.getElementById("f-depart").value;
@@ -3192,13 +3209,37 @@ async function mmPostPedido(payload) {
 
 let pendingFlight = null;
 
-function mmTravelersKey(email){ return "mm_travelers_" + email; }
+function mmTravelersKey(email){ return "mm_travelers_" + String(email || "guest").toLowerCase(); }
 function mmLoadTravelersLocal(email){
   try { return JSON.parse(localStorage.getItem(mmTravelersKey(email))) || []; } catch(e){ return []; }
 }
 function mmSaveTravelersLocal(email, list){
   localStorage.setItem(mmTravelersKey(email), JSON.stringify(list || []));
 }
+const MM_GUEST_EMAIL_KEY = "mm_guest_email";
+const MM_GUEST_TRAVELERS_KEY = "mm_guest_travelers";
+function mmGetGuestEmail(){
+  try { return (localStorage.getItem(MM_GUEST_EMAIL_KEY) || "").trim().toLowerCase(); } catch(e){ return ""; }
+}
+function mmSetGuestEmail(email){
+  const e = String(email || "").trim().toLowerCase();
+  if (e) try { localStorage.setItem(MM_GUEST_EMAIL_KEY, e); } catch(_){}
+  return e;
+}
+function mmLoadGuestTravelers(){
+  try { return JSON.parse(localStorage.getItem(MM_GUEST_TRAVELERS_KEY)) || []; } catch(e){ return []; }
+}
+function mmSaveGuestTravelers(list){
+  try { localStorage.setItem(MM_GUEST_TRAVELERS_KEY, JSON.stringify(list || [])); } catch(_){}
+}
+function mmEffectiveUser(){
+  const u = typeof mmCurrentUser === "function" ? mmCurrentUser() : null;
+  if (u && u.email) return u;
+  const ge = mmGetGuestEmail();
+  if (ge) return { email: ge, name: "", phone: "", guest: true };
+  return { email: "", name: "", phone: "", guest: true };
+}
+
 
 function onlyDigits(s){ return String(s||"").replace(/\D/g,""); }
 function fmtCpfInput(v){
@@ -3214,131 +3255,28 @@ function paxOpt(val, cur){ return val === cur ? "selected" : ""; }
 
 function paxFieldHtml(idx, pref, isTitular, accountEmail){
   const t = pref || {};
-  const emailLocked = accountEmail || t.email || "";
+  const emailVal = (isTitular && accountEmail) ? accountEmail : (t.email || "");
+  const emailReadonly = (isTitular && accountEmail) ? "readonly" : "";
   const title = isTitular ? "Passageiro 1 — Titular" : ("Passageiro " + (idx + 1));
   const badge = isTitular ? '<span class="pax-badge">Titular</span>' : '';
   return `<div class="pax-block" data-pax-idx="${idx}">
     <div class="pax-block-head"><h4>${title}</h4>${badge}</div>
-
     <div class="pax-sec">
-      <div class="pax-sec-title">Identificação <span></span></div>
+      <div class="pax-sec-title">Dados do passageiro</div>
       <div class="pax-grid">
         <div class="pax-field full"><label>Nome completo <span class="req">*</span></label>
           <input type="text" name="nomeCompleto" value="${paxEsc(t.nomeCompleto || [t.nome, t.sobrenome].filter(Boolean).join(' '))}" required autocomplete="name" placeholder="Como no documento de identidade"></div>
         <div class="pax-field"><label>Data de nascimento <span class="req">*</span></label>
           <input type="date" name="nascimento" value="${paxEsc(t.nascimento)}" required></div>
-        <div class="pax-field"><label>Sexo <span class="req">*</span></label>
-          <select name="sexo" required>
-            <option value="">Selecione</option>
-            <option value="M" ${paxOpt("M", t.sexo||t.genero)}>Masculino</option>
-            <option value="F" ${paxOpt("F", t.sexo||t.genero)}>Feminino</option>
-            <option value="X" ${paxOpt("X", t.sexo||t.genero)}>Outro / não informar</option>
-          </select></div>
-        <div class="pax-field"><label>Nacionalidade <span class="req">*</span></label>
-          <input type="text" name="nacionalidade" value="${paxEsc(t.nacionalidade||'Brasileira')}" required placeholder="Ex.: Brasileira"></div>
         <div class="pax-field"><label>CPF <span class="req">*</span></label>
           <input type="text" name="cpf" inputmode="numeric" value="${paxEsc(fmtCpfInput(t.cpf||''))}" placeholder="000.000.000-00" maxlength="14" required></div>
-      </div>
-    </div>
-
-    <div class="pax-sec">
-      <div class="pax-sec-title">Contato <span></span></div>
-      <div class="pax-grid">
-        <div class="pax-field full"><label>E-mail ${isTitular ? '(da sua conta)' : ''}</label>
-          <input type="email" name="email" value="${paxEsc(isTitular ? emailLocked : (t.email||''))}" ${isTitular ? 'readonly' : ''} placeholder="email@exemplo.com" autocomplete="email">
-          ${isTitular ? '<div class="hint">Vinculado ao login Google — não é possível alterar aqui.</div>' : ''}</div>
+        <div class="pax-field full"><label>E-mail <span class="req">*</span></label>
+          <input type="email" name="email" value="${paxEsc(emailVal)}" ${emailReadonly} required placeholder="email@exemplo.com" autocomplete="email">
+          ${emailReadonly ? '<div class="hint">Vinculado ao login Google.</div>' : '<div class="hint">Usamos este e-mail para status do pedido e notificações.</div>'}</div>
         <div class="pax-field full"><label>Telefone / WhatsApp <span class="req">*</span></label>
           <input type="tel" name="telefone" value="${paxEsc(t.telefone)}" required placeholder="(00) 00000-0000" autocomplete="tel"></div>
       </div>
     </div>
-
-    <div class="pax-sec">
-      <div class="pax-sec-title">Documento <span></span></div>
-      <div class="pax-grid">
-        <div class="pax-field"><label>Tipo de documento <span class="req">*</span></label>
-          <select name="docTipo" required>
-            <option value="">Selecione</option>
-            <option value="RG" ${paxOpt("RG", t.docTipo)}>RG</option>
-            <option value="CNH" ${paxOpt("CNH", t.docTipo)}>CNH</option>
-            <option value="Passaporte" ${paxOpt("Passaporte", t.docTipo)}>Passaporte</option>
-            <option value="RNE" ${paxOpt("RNE", t.docTipo)}>RNE / RNM</option>
-          </select></div>
-        <div class="pax-field"><label>Número do documento <span class="req">*</span></label>
-          <input type="text" name="docNumero" value="${paxEsc(t.docNumero)}" required placeholder="Número"></div>
-        <div class="pax-field"><label>Órgão emissor <span class="req">*</span></label>
-          <input type="text" name="docOrgao" value="${paxEsc(t.docOrgao)}" required placeholder="Ex.: SSP/AM"></div>
-        <div class="pax-field"><label>País emissor <span class="req">*</span></label>
-          <input type="text" name="docPais" value="${paxEsc(t.docPais||'Brasil')}" required placeholder="Brasil"></div>
-        <div class="pax-field"><label>Data de emissão <span class="req">*</span></label>
-          <input type="date" name="docEmissao" value="${paxEsc(t.docEmissao)}" required></div>
-        <div class="pax-field"><label>Validade <span class="req">*</span></label>
-          <input type="date" name="docValidade" value="${paxEsc(t.docValidade)}" required></div>
-      </div>
-    </div>
-
-    <div class="pax-sec">
-      <div class="pax-sec-title">Residência <span></span></div>
-      <div class="pax-grid">
-        <div class="pax-field"><label>País de residência</label>
-          <input type="text" name="paisResidencia" value="${paxEsc(t.paisResidencia||'Brasil')}" placeholder="Brasil"></div>
-        <div class="pax-field"><label>CEP</label>
-          <input type="text" name="cep" inputmode="numeric" value="${paxEsc(t.cep)}" placeholder="00000-000" maxlength="9"></div>
-        <div class="pax-field full"><label>Endereço completo</label>
-          <input type="text" name="endereco" value="${paxEsc(t.endereco)}" placeholder="Rua, número, bairro" autocomplete="street-address"></div>
-        <div class="pax-field full"><label>Cidade / UF</label>
-          <input type="text" name="cidade" value="${paxEsc(t.cidade)}" placeholder="Ex.: Manaus / AM"></div>
-      </div>
-    </div>
-
-    <details class="pax-more">
-      <summary>Mais opções (assento, assistência, bagagem…)</summary>
-      <div class="pax-sec">
-        <div class="pax-grid">
-          <div class="pax-field full"><label>Contato de emergência (nome e telefone)</label>
-            <input type="text" name="emergencia" value="${paxEsc(t.emergencia)}" placeholder="Nome — (00) 00000-0000"></div>
-          <div class="pax-field"><label>Preferência de assento</label>
-            <select name="assento">
-              <option value="">Sem preferência</option>
-              <option value="Janela" ${paxOpt("Janela", t.assento)}>Janela</option>
-              <option value="Corredor" ${paxOpt("Corredor", t.assento)}>Corredor</option>
-              <option value="Meio" ${paxOpt("Meio", t.assento)}>Meio</option>
-            </select></div>
-          <div class="pax-field full"><label>Assistência especial</label>
-            <input type="text" name="assistencia" value="${paxEsc(t.assistencia)}" placeholder="Cadeirante, visual, beliche…"></div>
-          <div class="pax-field"><label>Bagagem despachada</label>
-            <select name="bagagem">
-              <option value="">Não informar</option>
-              <option value="Só mão" ${paxOpt("Só mão", t.bagagem)}>Só bagagem de mão</option>
-              <option value="1 volume" ${paxOpt("1 volume", t.bagagem)}>1 volume</option>
-              <option value="2 volumes" ${paxOpt("2 volumes", t.bagagem)}>2 volumes</option>
-            </select></div>
-          <div class="pax-field"><label>Seguro viagem</label>
-            <select name="seguro">
-              <option value="">Não informar</option>
-              <option value="Sim, quero cotar" ${paxOpt("Sim, quero cotar", t.seguro)}>Sim, quero cotar</option>
-              <option value="Não" ${paxOpt("Não", t.seguro)}>Não</option>
-            </select></div>
-          <div class="pax-field full"><label>Visto / imigração (se aplicável)</label>
-            <input type="text" name="visto" value="${paxEsc(t.visto)}" placeholder="Número do visto, validade…"></div>
-        </div>
-      </div>
-    </details>
-
-    <details class="pax-more">
-      <summary>Menor de idade — dados do responsável</summary>
-      <div class="pax-sec">
-        <div class="pax-grid">
-          <div class="pax-field full"><label>Nome do responsável</label>
-            <input type="text" name="respNome" value="${paxEsc(t.respNome)}" placeholder="Nome completo"></div>
-          <div class="pax-field"><label>CPF do responsável</label>
-            <input type="text" name="respCpf" value="${paxEsc(fmtCpfInput(t.respCpf||''))}" placeholder="000.000.000-00" maxlength="14"></div>
-          <div class="pax-field"><label>Telefone do responsável</label>
-            <input type="tel" name="respTel" value="${paxEsc(t.respTel)}" placeholder="(00) 00000-0000"></div>
-          <div class="pax-field full"><label>Parentesco</label>
-            <input type="text" name="respParentesco" value="${paxEsc(t.respParentesco)}" placeholder="Pai, mãe, tutor…"></div>
-        </div>
-      </div>
-    </details>
   </div>`;
 }
 
@@ -3406,23 +3344,18 @@ let __mmPaxSavedTravelers = null;
 let __mmPaxCount = 1;
 
 function mmBindPaxFormMasks() {
-  document.getElementById("pax-forms")?.querySelectorAll('input[name="cpf"], input[name="respCpf"]').forEach(inp => {
+  document.getElementById("pax-forms")?.querySelectorAll('input[name="cpf"]').forEach(inp => {
     inp.addEventListener("input", () => { inp.value = fmtCpfInput(inp.value); });
-  });
-  document.getElementById("pax-forms")?.querySelectorAll('input[name="cep"]').forEach(inp => {
-    inp.addEventListener("input", () => {
-      let d = onlyDigits(inp.value).slice(0,8);
-      inp.value = d.length > 5 ? d.slice(0,5)+"-"+d.slice(5) : d;
-    });
   });
 }
 
 function mmRenderPaxForms(n, user) {
   const saved = __mmPaxSavedTravelers || [];
+  const accountEmail = (user && user.email && !user.guest) ? user.email : "";
   let html = "";
   for (let i = 0; i < n; i++) {
     const base = saved[i] || (i === 0 ? saved[0] : {}) || {};
-    html += paxFieldHtml(i, base, i === 0, user.email);
+    html += paxFieldHtml(i, base, i === 0, accountEmail);
   }
   document.getElementById("pax-forms").innerHTML = html;
   mmBindPaxFormMasks();
@@ -3473,8 +3406,8 @@ function mmUpdatePaxTripSummary(flight, n) {
           }
         } catch (_) {}
         __mmPaxCount = next;
-        const u = mmCurrentUser();
-        if (!u || !pendingFlight) return;
+        if (!pendingFlight) return;
+        const u = mmEffectiveUser();
         mmUpdatePaxTripSummary(pendingFlight, next);
         mmRenderPaxForms(next, u);
         renderPaxPayOptions(Number(pendingFlight.price) || 0);
@@ -3484,27 +3417,31 @@ function mmUpdatePaxTripSummary(flight, n) {
 }
 
 async function openPaxModal(flight){
-  if (!mmRequireLogin("Entre com Google para solicitar essa passagem.")) return;
   pendingFlight = flight;
-  const user = mmCurrentUser();
+  const user = mmEffectiveUser();
   const isFlash = !!flight.flash;
-  // Ofertas relâmpago: sempre começa em 1; busca normal usa o seletor do formulário
   __mmPaxCount = isFlash
     ? 1
     : Math.max(1, parseInt(document.getElementById("f-pax")?.value || "1", 10) || 1);
   const n = __mmPaxCount;
   renderPaxPayOptions(flight.price);
 
-  let saved = mmLoadTravelersLocal(user.email);
-  try {
-    const target = "http://br2.bronxyshost.com:4009/api/milhas/usuarios/passageiros?email=" + encodeURIComponent(user.email);
-    const res = await fetch(API_MILHAS_BASE + encodeURIComponent(target));
-    const dados = await res.json();
-    if (dados.sucesso && Array.isArray(dados.travelers) && dados.travelers.length) {
-      saved = dados.travelers;
-      mmSaveTravelersLocal(user.email, saved);
+  let saved = [];
+  if (user.email) {
+    saved = mmLoadTravelersLocal(user.email);
+    if (!user.guest) {
+      try {
+        const target = "http://br2.bronxyshost.com:4009/api/milhas/usuarios/passageiros?email=" + encodeURIComponent(user.email);
+        const res = await fetch(API_MILHAS_BASE + encodeURIComponent(target));
+        const dados = await res.json();
+        if (dados.sucesso && Array.isArray(dados.travelers) && dados.travelers.length) {
+          saved = dados.travelers;
+          mmSaveTravelersLocal(user.email, saved);
+        }
+      } catch (_) {}
     }
-  } catch (_) {}
+  }
+  if (!saved.length) saved = mmLoadGuestTravelers();
 
   if (!saved.length) {
     const sp = splitName(user.name || "");
@@ -3513,10 +3450,7 @@ async function openPaxModal(flight){
       nome: sp.nome,
       sobrenome: sp.sobrenome,
       email: user.email || "",
-      telefone: user.phone || "",
-      nacionalidade: "Brasileira",
-      docPais: "Brasil",
-      paisResidencia: "Brasil"
+      telefone: user.phone || ""
     }];
   } else {
     saved = saved.map(s => {
@@ -3547,13 +3481,7 @@ function closePaxModal(){
 
 function collectPaxForms(){
   const blocks = [...document.querySelectorAll("#pax-forms .pax-block")];
-  const fields = [
-    "nomeCompleto","nascimento","sexo","nacionalidade","cpf","email","telefone",
-    "docTipo","docNumero","docOrgao","docPais","docEmissao","docValidade",
-    "paisResidencia","cep","endereco","cidade",
-    "emergencia","assento","assistencia",
-    "bagagem","seguro","visto","respNome","respCpf","respTel","respParentesco"
-  ];
+  const fields = ["nomeCompleto","nascimento","cpf","email","telefone"];
   return blocks.map(b => {
     const o = {};
     fields.forEach(name => {
@@ -3561,10 +3489,7 @@ function collectPaxForms(){
       o[name] = el ? String(el.value || "").trim() : "";
     });
     o.cpf = onlyDigits(o.cpf);
-    o.respCpf = onlyDigits(o.respCpf);
-    o.cep = onlyDigits(o.cep);
     o.nomeCompleto = o.nomeCompleto || "";
-    // Compatibilidade com backend / mensagens antigas
     const sp = (typeof splitName === "function") ? splitName(o.nomeCompleto) : { nome: o.nomeCompleto, sobrenome: "" };
     o.nome = sp.nome || "";
     o.sobrenome = sp.sobrenome || "";
@@ -3578,8 +3503,7 @@ function waLine(label, value){
 }
 
 async function submitPaxAndWhatsApp(){
-  const user = mmCurrentUser();
-  if (!user || !pendingFlight) return;
+  if (!pendingFlight) return;
   const travelers = collectPaxForms();
   for (let i = 0; i < travelers.length; i++) {
     const t = travelers[i];
@@ -3588,33 +3512,45 @@ async function submitPaxAndWhatsApp(){
       return;
     }
     if (!t.nascimento) { alert("Data de nascimento do passageiro " + (i+1) + "."); return; }
-    if (!t.sexo) { alert("Selecione o sexo do passageiro " + (i+1) + "."); return; }
     if (!t.cpf || t.cpf.length < 11) { alert("CPF válido do passageiro " + (i+1) + "."); return; }
+    if (!t.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t.email)) {
+      alert("E-mail válido do passageiro " + (i+1) + ".");
+      return;
+    }
     if (!t.telefone) { alert("Telefone do passageiro " + (i+1) + "."); return; }
-    if (!t.docTipo || !t.docNumero) { alert("Documento do passageiro " + (i+1) + "."); return; }
-    if (!t.docOrgao) { alert("Órgão emissor do passageiro " + (i+1) + "."); return; }
-    if (!t.docPais) { alert("País emissor do passageiro " + (i+1) + "."); return; }
-    if (!t.docEmissao) { alert("Data de emissão do documento do passageiro " + (i+1) + "."); return; }
-    if (!t.docValidade) { alert("Validade do documento do passageiro " + (i+1) + "."); return; }
   }
 
   const btn = document.getElementById("pax-submit");
   if (btn) { btn.disabled = true; btn.textContent = "Preparando WhatsApp…"; }
 
-  mmSaveTravelersLocal(user.email, travelers);
-  const users = mmLoadUsers();
-  const idx = users.findIndex(u => u.email === user.email);
-  if (idx >= 0) {
-    users[idx].phone = travelers[0].telefone || users[idx].phone;
-    users[idx].travelers = travelers;
-    mmSaveUsers(users);
+  const logged = (typeof mmCurrentUser === "function") ? mmCurrentUser() : null;
+  const contactEmail = (logged && logged.email) || travelers[0].email;
+  const contactName = (logged && logged.name) || travelers[0].nomeCompleto || "";
+  mmSetGuestEmail(contactEmail);
+  mmSaveTravelersLocal(contactEmail, travelers);
+  mmSaveGuestTravelers(travelers);
+
+  try {
+    if (typeof window.mmOneSignalLogin === "function" && contactEmail) {
+      window.mmOneSignalLogin(contactEmail).catch(function () {});
+    }
+  } catch (_) {}
+
+  if (logged && logged.email) {
+    const users = mmLoadUsers();
+    const idx = users.findIndex(u => u.email === logged.email);
+    if (idx >= 0) {
+      users[idx].phone = travelers[0].telefone || users[idx].phone;
+      users[idx].travelers = travelers;
+      mmSaveUsers(users);
+    }
   }
 
   try {
     await fetch(API_MILHAS_PAX, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: user.email, phone: travelers[0].telefone, travelers })
+      body: JSON.stringify({ email: contactEmail, phone: travelers[0].telefone, travelers })
     });
   } catch (_) {}
 
@@ -3623,12 +3559,14 @@ async function submitPaxAndWhatsApp(){
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: user.email,
+        email: contactEmail,
         tipo: "selecionou_voo",
         dados: { route: pendingFlight.route, price: pendingFlight.price, pax: travelers.length, airline: pendingFlight.airline }
       })
     });
   } catch (_) {}
+
+  const user = { email: contactEmail, name: contactName, guest: !(logged && logged.email) };
 
   const depDate = document.getElementById("f-depart")?.value || "";
   const retDate = document.getElementById("f-return")?.value || "";
@@ -3645,8 +3583,6 @@ async function submitPaxAndWhatsApp(){
           ? (pendingFlight.originLabel + " → " + pendingFlight.destLabel)
           : (selectedAirport.origin.city + " (" + selectedAirport.origin.code + ") → " + selectedAirport.destination.city + " (" + selectedAirport.destination.code + ")")
       );
-  const sexoMap = { M: "Masculino", F: "Feminino", X: "Outro" };
-
   let msg = "";
   msg += "✈️ *PEDIDO DE EMISSÃO — Marujo's Milhas*\n";
   msg += "━━━━━━━━━━━━━━━━━━━━\n\n";
@@ -3680,44 +3616,9 @@ async function submitPaxAndWhatsApp(){
     msg += `👤 *PASSAGEIRO ${i+1}${i===0 ? " (TITULAR)" : ""}*\n`;
     msg += waLine("Nome completo", t.nomeCompleto);
     msg += waLine("Nascimento", t.nascimento);
-    msg += waLine("Sexo", sexoMap[t.sexo] || t.sexo);
-    msg += waLine("Nacionalidade", t.nacionalidade);
     msg += waLine("CPF", t.cpf);
     msg += waLine("E-mail", t.email);
     msg += waLine("Telefone", t.telefone);
-    msg += "\n📄 *Documento*\n";
-    msg += waLine("Tipo", t.docTipo);
-    msg += waLine("Número", t.docNumero);
-    msg += waLine("Órgão", t.docOrgao);
-    msg += waLine("País emissor", t.docPais);
-    msg += waLine("Emissão", t.docEmissao);
-    msg += waLine("Validade", t.docValidade);
-    if (t.endereco || t.cidade || t.cep) {
-      msg += "\n🏠 *Residência*\n";
-      msg += waLine("País", t.paisResidencia);
-      msg += waLine("Endereço", t.endereco);
-      msg += waLine("Cidade", t.cidade);
-      msg += waLine("CEP", t.cep);
-    }
-    const extras = [
-      ["Emergência", t.emergencia],
-      ["Assento", t.assento],
-      ["Assistência", t.assistencia],
-      ["Bagagem", t.bagagem],
-      ["Seguro", t.seguro],
-      ["Visto", t.visto],
-    ].filter(([,v]) => v);
-    if (extras.length) {
-      msg += "\n✨ *Preferências*\n";
-      extras.forEach(([k,v]) => { msg += waLine(k, v); });
-    }
-    if (t.respNome) {
-      msg += "\n👨‍👩‍👧 *Responsável (menor)*\n";
-      msg += waLine("Nome", t.respNome);
-      msg += waLine("CPF", t.respCpf);
-      msg += waLine("Telefone", t.respTel);
-      msg += waLine("Parentesco", t.respParentesco);
-    }
     msg += "\n";
   });
 
@@ -3836,10 +3737,6 @@ document.addEventListener("click", (e) => {
   if (select) {
     e.preventDefault();
     e.stopPropagation();
-    if (!mmCurrentUser()) {
-      mmRequireLogin("Entre com Google para solicitar essa passagem.");
-      return;
-    }
     openPaxModal({
       route: select.dataset.route || "",
       airline: select.dataset.airline || "",
@@ -3862,10 +3759,6 @@ document.addEventListener("click", (e) => {
   if (flash) {
     e.preventDefault();
     e.stopPropagation();
-    if (!mmCurrentUser()) {
-      mmRequireLogin("Entre com Google para aproveitar as ofertas relâmpago.");
-      return;
-    }
     openPaxModal({
       route: flash.dataset.route || "",
       airline: flash.dataset.airline || "",
@@ -3883,12 +3776,7 @@ document.addEventListener("click", (e) => {
   }
   const flashJump = e.target.closest("a.flash-jump-btn, .flash-jump-btn");
   if (flashJump) {
-    if (!mmCurrentUser()) {
-      e.preventDefault();
-      e.stopPropagation();
-      mmRequireLogin("Entre com Google para ver as ofertas relâmpago.");
-      return;
-    }
+    // ofertas relâmpago sem login
   }
 }, true);
 
@@ -4148,4 +4036,5 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
 
