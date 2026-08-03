@@ -1690,10 +1690,10 @@
 </div>
 <script>
 const AIRLINES = [
-  { name: "LATAM", code: "LA", multiplier: 27, color: "#7A2331" },
-  { name: "GOL", code: "G3", multiplier: 24, color: "#C46A1B" },
-  { name: "Azul", code: "AD", multiplier: 30, color: "#0F5A94" },
-  { name: "TAP", code: "TP", multiplier: 32, color: "#7A2331" },
+  { name: "LATAM", code: "LA", multiplier: 28, color: "#7A2331" },
+  { name: "GOL", code: "G3", multiplier: 18.5, color: "#C46A1B" },
+  { name: "Azul", code: "AD", multiplier: 18, color: "#0F5A94" },
+  { name: "TAP", code: "TP", multiplier: 22, color: "#7A2331" },
 ];
 
 const DESTINATIONS = [
@@ -1730,8 +1730,43 @@ const TESTIMONIALS = [
 
 const AVATAR_COLORS = ["#3972DB", "#D9A23B", "#0E1930", "#C1432D", "#1E8F5F", "#7A4FC4", "#D8792A", "#2B8FA8"];
 function currency(v){ return v.toLocaleString("pt-BR", { style:"currency", currency:"BRL" }); }
-// Desconto comercial Marujo's sobre a tarifa de mercado (você vende com esse preço)
-const MARUJO_DISCOUNT = 0.0887; // 8,87%
+// Preço Marujo's = milhas × CPM da companhia
+// Latam 0,028 | Gol 0,0185 | Azul 0,018  (R$ por milha)
+const MILHAS_CPM = {
+  latam: 0.028, la: 0.028, jj: 0.028,
+  gol: 0.0185, g3: 0.0185,
+  azul: 0.018, ad: 0.018,
+  default: 0.022
+};
+const REFERENCIA_RS_POR_MILHA = 0.035;
+
+function airlineCpmKey(airline) {
+  const s = String(airline || "").toLowerCase().trim();
+  if (!s) return "default";
+  if (s.indexOf("latam") >= 0 || s === "la" || s === "jj") return "latam";
+  if (s.indexOf("gol") >= 0 || s === "g3") return "gol";
+  if (s.indexOf("azul") >= 0 || s === "ad") return "azul";
+  return "default";
+}
+function cpmForAirline(airline) {
+  const k = airlineCpmKey(airline);
+  return MILHAS_CPM[k] != null ? MILHAS_CPM[k] : MILHAS_CPM.default;
+}
+/** Preço = milhas × CPM. Se só tiver R$ de mercado, estima milhas e aplica CPM. */
+function precoMarujo(valorMercadoOuMilhas, airline, opts) {
+  const v = Number(valorMercadoOuMilhas) || 0;
+  if (v <= 0) return 0;
+  const o = opts || {};
+  if (o.milhas != null && Number(o.milhas) > 0) return Math.round(Number(o.milhas) * cpmForAirline(airline));
+  if (o.isMiles === true) return Math.round(v * cpmForAirline(airline));
+  const milhasEst = v / REFERENCIA_RS_POR_MILHA;
+  return Math.round(milhasEst * cpmForAirline(airline));
+}
+function discountPctFor(market, our) {
+  const m = Number(market) || 0, u = Number(our) || 0;
+  if (m <= 0 || u >= m) return 0;
+  return Math.round(((m - u) / m) * 1000) / 10;
+}
 
 // Logos oficiais das companhias (mesmos do Google Flights)
 const AIRLINE_LOGOS = {
@@ -1777,10 +1812,6 @@ function airlineChipHtml(airline){
   return `<div class="airline-chip fallback" style="background:${(airline&&airline.color)||"#0E1930"}">${(code||"?").slice(0,2)}</div>`;
 }
 
-function precoMarujo(valorMercado){
-  const v = Number(valorMercado) || 0;
-  return Math.round(v * (1 - MARUJO_DISCOUNT));
-}
 function initials(name){ return (name||"?").split(" ").map(n=>n[0]).slice(0,2).join("").toUpperCase(); }
 
 function makeFlight(seed, origin, destination){
@@ -1944,7 +1975,7 @@ function renderTicket(r, isCheapest){
       ${feeTxt}
       ${hasMarket && pct > 0 ? `<div class="save-line">✓ ${pct}% mais barato</div>` : (r.offerType === "miles" ? '<div class="save-line">✓ Preço em milhas</div>' : '')}
       <div style="font-size:12px;color:#1E8F5F;font-weight:600;margin-top:4px">PIX ${currency(r.ourValue)}</div>
-      <div style="font-size:11.5px;color:#5C7185">PIX ou cartão 6x · −8,87%</div>
+      <div style="font-size:11.5px;color:#5C7185">PIX ou cartão 6x · preço em milhas</div>
       <button type="button" class="select-btn" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">Selecionar →</button>
     </div>
   </div>`;
@@ -2190,13 +2221,20 @@ function mapLeg(leg){
 }
 
 function mapOferta(o){
-  const airlineSlug = (o.airline || o.carrier || "").toLowerCase();
-  const airline = AIRLINE_BY_SLUG[airlineSlug] || AIRLINES[0];
+  const airlineRaw = (o.airline || o.carrier || "").toLowerCase();
+  let airlineSlug = airlineRaw;
+  if (airlineRaw.indexOf("latam") >= 0) airlineSlug = "latam";
+  else if (airlineRaw.indexOf("gol") >= 0) airlineSlug = "gol";
+  else if (airlineRaw.indexOf("azul") >= 0) airlineSlug = "azul";
+  else if (airlineRaw.indexOf("tap") >= 0) airlineSlug = "tap";
+  const airline = AIRLINE_BY_SLUG[airlineSlug] || AIRLINES.find(a => a.name.toLowerCase() === airlineSlug) || AIRLINES[0];
   const offerType = (o.type || o.offerType || "miles").toLowerCase();
   const bruto = Math.round(Number(o.totalPrice) || 0);
-  // Se o backend já mandou marketPrice, usa; senão a tarifa bruta vira o "de" e nosso preço leva o desconto
+  // Se o backend já mandou marketPrice, usa; senão a tarifa bruta vira o "de" e nosso preço leva o CPM
   const market = o.marketPrice != null ? Math.round(Number(o.marketPrice)) : (bruto > 0 ? bruto : null);
-  const total = o.discountApplied ? bruto : precoMarujo(bruto);
+  const airlineKey = airlineSlug || airlineRaw || (airline && airline.name) || "";
+  // Backend já aplica CPM → totalPrice vem pronto (discountApplied). Senão calcula aqui.
+  const total = o.discountApplied ? bruto : precoMarujo(bruto, airlineKey, o.miles ? { milhas: o.miles } : {});
   const fees = o.fees != null ? Math.round(Number(o.fees)) : null;
 
   // Formato MaxMilhas combo (outbound/inbound) OU formato plano do backend
@@ -2242,6 +2280,8 @@ function mapOferta(o){
     ourValue: total,
     marketValue: market,
     savings: market != null ? Math.max(0, market - total) : 0,
+    milesRate: o.milesRate != null ? o.milesRate : cpmForAirline(airlineKey || (airline && airline.name) || airlineSlug),
+    discountPct: o.discountPct != null ? o.discountPct : discountPctFor(market, total),
     fees,
     serviceCharge: o.serviceCharge != null ? Math.round(Number(o.serviceCharge)) : null,
     boardingFees: o.boardingFees != null ? Math.round(Number(o.boardingFees)) : null,
@@ -2540,7 +2580,7 @@ function renderFlashCard(o) {
         <div class="fc-route">${o.origem || ""} <span class="fc-arrow">→</span> ${o.destinoCidade || o.destino || ""}</div>
         <div class="fc-date">${o.dataIda ? "Embarque em " + fmtDataOferta(o.dataIda) : (o.pais || "")}</div>
         <div class="fc-price-row">
-          <div class="fc-price">${o.precoOriginal ? `<span style="font-size:12px;color:var(--red);text-decoration:line-through;display:block;font-family:'IBM Plex Mono',monospace;font-weight:600;">${fmtPrecoOferta(o.precoOriginal, o.moeda)}</span>` : ""}${fmtPrecoOferta(o.preco, o.moeda)} <small>ida · −8,87%</small></div>
+          <div class="fc-price">${o.precoOriginal ? `<span style="font-size:12px;color:var(--red);text-decoration:line-through;display:block;font-family:'IBM Plex Mono',monospace;font-weight:600;">${fmtPrecoOferta(o.precoOriginal, o.moeda)}</span>` : ""}${fmtPrecoOferta(o.preco, o.moeda)} <small>ida · preço em milhas</small></div>
           <div class="fc-cta">Emitir →</div>
         </div>
       </div>
@@ -2571,7 +2611,7 @@ async function carregarOfertasRelampago(origemCode, origemCidade) {
       .map(o => {
       const bruto = Math.round(Number(o.preco) || 0);
       if (o.discountApplied || !bruto) return o;
-      return { ...o, precoOriginal: bruto, preco: precoMarujo(bruto), discountApplied: true };
+      return { ...o, precoOriginal: bruto, preco: precoMarujo(bruto, o.companhia || o.airline || o.airline_name || ""), discountApplied: true };
     });
     grid.innerHTML = ofertasComDesconto.map(renderFlashCard).join("");
     atualizarTickerOfertas(ofertasComDesconto);
@@ -4357,6 +4397,20 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
