@@ -1243,6 +1243,14 @@
         </div>
       </div>
       <div id="ap-panel-viagens" style="display:none;">
+        <div id="ap-guest-bar" style="display:none;margin-bottom:14px;padding:12px 14px;background:#fff;border:1px dashed var(--card-line);border-radius:12px;">
+          <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:8px;">Consultar pedidos pelo e-mail</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <input type="email" id="ap-guest-email-input" placeholder="email@exemplo.com" style="flex:1;min-width:160px;border:1px solid var(--card-line);border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;background:var(--paper);">
+            <button type="button" id="ap-guest-lookup-btn" class="btn-amber" style="padding:10px 14px;">Ver pedidos</button>
+          </div>
+          <div style="font-size:11.5px;color:var(--slate);margin-top:8px;">Use o mesmo e-mail informado na solicitação da passagem. Sem precisar de login Google.</div>
+        </div>
         <div id="ap-trips-list"></div>
       </div>
     </div>
@@ -2893,15 +2901,15 @@ function mmInitials(name){ return (name||"?").trim().split(/\s+/).map(n=>n[0]).s
 
 function mmRenderHeader(){
   const user = mmCurrentUser();
+  const guestEmail = (typeof mmGetGuestEmail === "function") ? mmGetGuestEmail() : "";
   const label = document.getElementById("account-trigger-label");
   const trigger = document.getElementById("account-trigger");
-  const icon = trigger.querySelector("svg");
+  const icon = trigger && trigger.querySelector("svg");
   const mobileLink = document.getElementById("mobile-account-link");
-  // limpa avatar anterior, se houver
-  const oldAvatar = trigger.querySelector(".account-avatar");
+  const oldAvatar = trigger && trigger.querySelector(".account-avatar");
   if (oldAvatar) oldAvatar.remove();
-  if (icon) icon.style.display = user ? "none" : "";
   if (user) {
+    if (icon) icon.style.display = "none";
     const firstName = (user.name || "").split(" ")[0] || "Você";
     const avatar = document.createElement("span");
     avatar.className = "account-avatar";
@@ -2913,16 +2921,29 @@ function mmRenderHeader(){
     } else {
       avatar.textContent = mmInitials(user.name);
     }
-    trigger.insertBefore(avatar, label);
-    label.textContent = firstName;
-    label.className = "account-name";
-    document.getElementById("adh-name").textContent = user.name;
-    document.getElementById("adh-email").textContent = user.email;
+    if (trigger && label) trigger.insertBefore(avatar, label);
+    if (label) { label.textContent = firstName; label.className = "account-name"; }
+    const adhName = document.getElementById("adh-name");
+    const adhEmail = document.getElementById("adh-email");
+    if (adhName) adhName.textContent = user.name;
+    if (adhEmail) adhEmail.textContent = user.email;
     if (mobileLink) mobileLink.textContent = "Minha conta (" + firstName + ")";
+  } else if (guestEmail) {
+    if (icon) icon.style.display = "none";
+    const avatar = document.createElement("span");
+    avatar.className = "account-avatar";
+    avatar.textContent = (guestEmail[0] || "V").toUpperCase();
+    if (trigger && label) trigger.insertBefore(avatar, label);
+    if (label) { label.textContent = "Visitante"; label.className = "account-name"; }
+    const adhName = document.getElementById("adh-name");
+    const adhEmail = document.getElementById("adh-email");
+    if (adhName) adhName.textContent = "Conta visitante";
+    if (adhEmail) adhEmail.textContent = guestEmail;
+    if (mobileLink) mobileLink.textContent = "Meus pedidos (visitante)";
   } else {
-    label.textContent = "Entrar";
-    label.className = "";
-    if (mobileLink) mobileLink.textContent = "Entrar / Minha conta";
+    if (icon) icon.style.display = "";
+    if (label) { label.textContent = "Entrar"; label.className = ""; }
+    if (mobileLink) mobileLink.textContent = "Entrar / Meus pedidos";
   }
 }
 
@@ -2978,20 +2999,39 @@ document.getElementById("menu-minhas-viagens").addEventListener("click", () => {
 document.getElementById("mobile-account-link").addEventListener("click", (e) => {
   e.preventDefault();
   closeMobileMenu();
-  if (mmCurrentUser()) mmOpenAccountPanel("perfil"); else mmOpenAuthModal("login");
+  if (mmCurrentUser()) mmOpenAccountPanel("perfil");
+  else mmOpenAccountPanel("viagens");
 });
 
 // ---------- painel "minha conta" ----------
 function mmOpenAccountPanel(tab){
   const user = mmCurrentUser();
-  if (!user) { mmOpenAuthModal("login"); return; }
-  document.getElementById("ap-avatar").textContent = mmInitials(user.name);
-  document.getElementById("ap-name").textContent = user.name;
-  document.getElementById("ap-email").textContent = user.email;
-  document.getElementById("ap-field-name").textContent = user.name;
-  document.getElementById("ap-field-email").textContent = user.email;
-  document.getElementById("ap-field-phone").textContent = user.phone || "Não informado";
-  mmSwitchApTab(tab || "perfil");
+  const guestEmail = (typeof mmGetGuestEmail === "function") ? mmGetGuestEmail() : "";
+
+  if (user) {
+    document.getElementById("ap-avatar").textContent = mmInitials(user.name);
+    document.getElementById("ap-name").textContent = user.name;
+    document.getElementById("ap-email").textContent = user.email;
+    document.getElementById("ap-field-name").textContent = user.name;
+    document.getElementById("ap-field-email").textContent = user.email;
+    document.getElementById("ap-field-phone").textContent = user.phone || "Não informado";
+  } else {
+    document.getElementById("ap-avatar").textContent = guestEmail ? (guestEmail[0] || "V").toUpperCase() : "?";
+    document.getElementById("ap-name").textContent = "Conta visitante";
+    document.getElementById("ap-email").textContent = guestEmail || "Informe o e-mail do pedido";
+    document.getElementById("ap-field-name").textContent = "Visitante (sem login Google)";
+    document.getElementById("ap-field-email").textContent = guestEmail || "—";
+    document.getElementById("ap-field-phone").textContent = "—";
+  }
+
+  const guestBar = document.getElementById("ap-guest-bar");
+  if (guestBar) {
+    guestBar.style.display = user ? "none" : "";
+    const inp = document.getElementById("ap-guest-email-input");
+    if (inp && guestEmail) inp.value = guestEmail;
+  }
+
+  mmSwitchApTab(tab || (user ? "perfil" : "viagens"));
   document.getElementById("account-panel-overlay").classList.add("show");
   document.body.classList.add("picker-open");
 }
@@ -3015,9 +3055,10 @@ function mmGetSeenAt(email){
   try { return Number(localStorage.getItem(mmSeenKey(email)) || 0) || 0; } catch(e){ return 0; }
 }
 function mmMarkTripsSeen(){
-  const user = mmCurrentUser();
-  if (!user) return;
-  try { localStorage.setItem(mmSeenKey(user.email), String(Date.now())); } catch(e){}
+  const logged = mmCurrentUser();
+  const email = (logged && logged.email) || ((typeof mmGetGuestEmail === "function") ? mmGetGuestEmail() : "");
+  if (!email) return;
+  try { localStorage.setItem(mmSeenKey(email), String(Date.now())); } catch(e){}
   mmUpdateTripsBadge(0);
 }
 function mmUpdateTripsBadge(n){
@@ -3035,13 +3076,14 @@ function mmUpdateTripsBadge(n){
   });
 }
 async function mmRefreshTripsBadge(){
-  const user = mmCurrentUser();
-  if (!user) { mmUpdateTripsBadge(0); return 0; }
+  const logged = mmCurrentUser();
+  const email = (logged && logged.email) || ((typeof mmGetGuestEmail === "function") ? mmGetGuestEmail() : "");
+  if (!email) { mmUpdateTripsBadge(0); return 0; }
   try {
-    const res = await fetch(API_MILHAS_PEDIDOS_GET(user.email));
+    const res = await fetch(API_MILHAS_PEDIDOS_GET(email));
     const dados = await res.json();
     const pedidos = (dados && dados.pedidos) ? dados.pedidos : [];
-    const seen = mmGetSeenAt(user.email);
+    const seen = mmGetSeenAt(email);
     // Conta pedidos com updatedAt (ou createdAt) mais recente que a última vez que a pessoa abriu "Meus pedidos"
     let n = 0;
     pedidos.forEach(function(p){
@@ -3067,10 +3109,10 @@ function mmOpenFromNotification(){
   const parsed = mmParsePedidoHash();
   if (!parsed || !parsed.open) return;
   const user = mmCurrentUser();
-  if (!user) {
-    // Guarda intenção e abre login
+  const guestEmail = (typeof mmGetGuestEmail === "function") ? mmGetGuestEmail() : "";
+  if (!user && !guestEmail) {
     try { sessionStorage.setItem("mm_pending_hash", location.hash); } catch(e){}
-    mmOpenAuthModal("login");
+    mmOpenAccountPanel("viagens");
     return;
   }
   mmOpenAccountPanel("viagens");
@@ -3091,6 +3133,24 @@ function mmOpenFromNotification(){
 }
 
 document.querySelectorAll(".ap-tab").forEach(t => t.addEventListener("click", () => mmSwitchApTab(t.dataset.apTab)));
+document.getElementById("ap-guest-lookup-btn")?.addEventListener("click", () => {
+  const inp = document.getElementById("ap-guest-email-input");
+  const email = (inp && inp.value || "").trim().toLowerCase();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Informe um e-mail válido.");
+    return;
+  }
+  mmSetGuestEmail(email);
+  try { mmRenderHeader(); } catch(_){}
+  document.getElementById("ap-email").textContent = email;
+  document.getElementById("ap-field-email").textContent = email;
+  document.getElementById("ap-avatar").textContent = (email[0] || "V").toUpperCase();
+  mmRenderTrips();
+  try { mmRefreshTripsBadge(); } catch(_){}
+});
+document.getElementById("ap-guest-email-input")?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") document.getElementById("ap-guest-lookup-btn")?.click();
+});
 document.getElementById("ap-close").addEventListener("click", mmCloseAccountPanel);
 document.getElementById("account-panel-overlay").addEventListener("click", (e) => { if (e.target.id === "account-panel-overlay") mmCloseAccountPanel(); });
 
@@ -3109,16 +3169,22 @@ document.getElementById("ap-edit-phone").addEventListener("click", () => {
 });
 
 function mmRenderTrips(){
-  const user = mmCurrentUser();
+  const logged = mmCurrentUser();
+  const guestEmail = (typeof mmGetGuestEmail === "function") ? mmGetGuestEmail() : "";
+  const email = (logged && logged.email) || guestEmail || "";
   const el = document.getElementById("ap-trips-list");
   if (!el) return;
-  if (!user) { el.innerHTML = '<div class="ap-empty-orders">Entre com Google para ver seus pedidos.</div>'; return; }
+
+  if (!email) {
+    el.innerHTML = '<div class="ap-empty-orders">Digite acima o e-mail usado no pedido para ver o andamento.<br>Ou faça um novo pedido — salvamos o e-mail automaticamente.</div>';
+    return;
+  }
 
   el.innerHTML = '<div class="ap-empty-orders">Carregando seus pedidos…</div>';
 
-  const local = (typeof mmLoadTrips === "function") ? mmLoadTrips(user.email) : [];
+  const local = (typeof mmLoadTrips === "function") ? mmLoadTrips(email) : [];
 
-  fetch(API_MILHAS_PEDIDOS_GET(user.email))
+  fetch(API_MILHAS_PEDIDOS_GET(email))
     .then(r => r.json())
     .then(dados => {
       const pedidos = (dados && dados.pedidos) ? dados.pedidos : [];
@@ -3242,6 +3308,49 @@ function mmEffectiveUser(){
 
 
 function onlyDigits(s){ return String(s||"").replace(/\D/g,""); }
+/** Aceita YYYY-MM-DD ou DD/MM/AAAA e devolve DD/MM/AAAA para o input */
+function fmtNascimentoDisplay(v){
+  const s = String(v||"").trim();
+  if (!s) return "";
+  // já em DD/MM/AAAA
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) return s;
+  // ISO YYYY-MM-DD
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return m[3] + "/" + m[2] + "/" + m[1];
+  // só dígitos
+  const d = onlyDigits(s).slice(0, 8);
+  if (d.length === 8) return d.slice(0,2)+"/"+d.slice(2,4)+"/"+d.slice(4);
+  return s;
+}
+/** Normaliza nascimento para YYYY-MM-DD (API/WhatsApp) ou null se inválido */
+function normalizeNascimento(v){
+  const s = String(v||"").trim();
+  if (!s) return "";
+  let dd, mm, yyyy;
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) { yyyy = m[1]; mm = m[2]; dd = m[3]; }
+  else {
+    m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+    if (m) { dd = m[1].padStart(2,"0"); mm = m[2].padStart(2,"0"); yyyy = m[3]; }
+    else {
+      const dig = onlyDigits(s);
+      if (dig.length === 8) { dd = dig.slice(0,2); mm = dig.slice(2,4); yyyy = dig.slice(4); }
+      else return "";
+    }
+  }
+  const di = parseInt(dd,10), mi = parseInt(mm,10), yi = parseInt(yyyy,10);
+  if (mi < 1 || mi > 12 || di < 1 || di > 31 || yi < 1900 || yi > 2100) return "";
+  // validação básica de data real
+  const dt = new Date(yi, mi - 1, di);
+  if (dt.getFullYear() !== yi || dt.getMonth() !== mi - 1 || dt.getDate() !== di) return "";
+  return yyyy + "-" + mm + "-" + dd;
+}
+function fmtNascimentoInput(v){
+  const d = onlyDigits(v).slice(0, 8);
+  if (d.length <= 2) return d;
+  if (d.length <= 4) return d.slice(0,2) + "/" + d.slice(2);
+  return d.slice(0,2) + "/" + d.slice(2,4) + "/" + d.slice(4);
+}
 function fmtCpfInput(v){
   const d = onlyDigits(v).slice(0,11);
   if (d.length <= 3) return d;
@@ -3267,7 +3376,8 @@ function paxFieldHtml(idx, pref, isTitular, accountEmail){
         <div class="pax-field full"><label>Nome completo <span class="req">*</span></label>
           <input type="text" name="nomeCompleto" value="${paxEsc(t.nomeCompleto || [t.nome, t.sobrenome].filter(Boolean).join(' '))}" required autocomplete="name" placeholder="Como no documento de identidade"></div>
         <div class="pax-field"><label>Data de nascimento <span class="req">*</span></label>
-          <input type="date" name="nascimento" value="${paxEsc(t.nascimento)}" required></div>
+          <input type="text" name="nascimento" inputmode="numeric" autocomplete="bday" placeholder="DD/MM/AAAA" maxlength="10" value="${paxEsc(fmtNascimentoDisplay(t.nascimento))}" required>
+          <div class="hint">Digite ou cole a data (ex.: 15/03/1990)</div></div>
         <div class="pax-field"><label>CPF <span class="req">*</span></label>
           <input type="text" name="cpf" inputmode="numeric" value="${paxEsc(fmtCpfInput(t.cpf||''))}" placeholder="000.000.000-00" maxlength="14" required></div>
         <div class="pax-field full"><label>E-mail <span class="req">*</span></label>
@@ -3346,6 +3456,9 @@ let __mmPaxCount = 1;
 function mmBindPaxFormMasks() {
   document.getElementById("pax-forms")?.querySelectorAll('input[name="cpf"]').forEach(inp => {
     inp.addEventListener("input", () => { inp.value = fmtCpfInput(inp.value); });
+  });
+  document.getElementById("pax-forms")?.querySelectorAll('input[name="nascimento"]').forEach(inp => {
+    inp.addEventListener("input", () => { inp.value = fmtNascimentoInput(inp.value); });
   });
 }
 
@@ -3490,6 +3603,7 @@ function collectPaxForms(){
     });
     o.cpf = onlyDigits(o.cpf);
     o.nomeCompleto = o.nomeCompleto || "";
+    o.nascimento = normalizeNascimento(o.nascimento) || String(o.nascimento || "").trim();
     const sp = (typeof splitName === "function") ? splitName(o.nomeCompleto) : { nome: o.nomeCompleto, sobrenome: "" };
     o.nome = sp.nome || "";
     o.sobrenome = sp.sobrenome || "";
@@ -3511,7 +3625,11 @@ async function submitPaxAndWhatsApp(){
       alert("Preencha o nome completo do passageiro " + (i+1) + " (nome e sobrenome).");
       return;
     }
-    if (!t.nascimento) { alert("Data de nascimento do passageiro " + (i+1) + "."); return; }
+    if (!t.nascimento || !normalizeNascimento(t.nascimento)) {
+      alert("Data de nascimento válida do passageiro " + (i+1) + " (use DD/MM/AAAA).");
+      return;
+    }
+    t.nascimento = normalizeNascimento(t.nascimento);
     if (!t.cpf || t.cpf.length < 11) { alert("CPF válido do passageiro " + (i+1) + "."); return; }
     if (!t.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t.email)) {
       alert("E-mail válido do passageiro " + (i+1) + ".");
@@ -3529,6 +3647,8 @@ async function submitPaxAndWhatsApp(){
   mmSetGuestEmail(contactEmail);
   mmSaveTravelersLocal(contactEmail, travelers);
   mmSaveGuestTravelers(travelers);
+  try { mmRenderHeader(); } catch(_){}
+  try { mmRefreshTripsBadge(); } catch(_){}
 
   try {
     if (typeof window.mmOneSignalLogin === "function" && contactEmail) {
@@ -4036,5 +4156,8 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
 
 
