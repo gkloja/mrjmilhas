@@ -548,6 +548,16 @@
   .type-pill.miles{background:#E8F7EF;color:var(--green);}
   .type-pill.revenue{background:var(--paper);color:var(--navy-3);}
   .leg-row{display:flex;align-items:center;gap:12px;margin-top:6px;}
+  .leg-path{position:relative;padding:2px 0 0;}
+  .leg-path-track{position:relative;height:14px;display:flex;align-items:center;}
+  .leg-path-track::before{content:"";position:absolute;left:0;right:0;top:50%;height:1.5px;border-top:1.5px dashed #D8D0BA;transform:translateY(-50%);}
+  .leg-path-dot{position:absolute;top:50%;width:9px;height:9px;border-radius:50%;background:var(--brass);border:2px solid #fff;box-shadow:0 0 0 1px var(--brass-dark);transform:translate(-50%,-50%);z-index:1;}
+  .leg-path-end{position:absolute;top:50%;width:7px;height:7px;border-radius:50%;background:var(--navy-3);transform:translate(-50%,-50%);z-index:1;}
+  .leg-path-end.left{left:0;transform:translate(0,-50%);}
+  .leg-path-end.right{right:0;left:auto;transform:translate(0,-50%);}
+  .leg-stop-list{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;margin-top:5px;}
+  .leg-stop-chip{font-size:10px;font-weight:700;color:var(--brass-dark);background:rgba(217,162,59,0.12);border:1px solid rgba(217,162,59,0.35);border-radius:999px;padding:2px 8px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+  .leg-stop-chip span{font-weight:500;color:var(--slate);margin-left:3px;}
   .leg-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--brass-dark);letter-spacing:.5px;width:36px;flex-shrink:0;}
   .fee-line{font-size:11.5px;color:var(--slate);margin-top:2px;}
   .ticket-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;}
@@ -1710,6 +1720,47 @@ function makeFlight(seed, origin, destination){
   };
 }
 
+function fmtHoraCurta(v){
+  if (!v) return "";
+  if (typeof fmtHora === "function") {
+    const t = fmtHora(v);
+    return t && t !== "--" ? t : "";
+  }
+  const s = String(v);
+  const m = s.match(/(\d{2}:\d{2})/);
+  return m ? m[1] : "";
+}
+
+/** Linha traçada com pontos de parada + chips (aeroporto + horários) */
+function renderStopPath(leg){
+  const lays = Array.isArray(leg.layovers) ? leg.layovers : [];
+  const n = lays.length;
+  let dots = "";
+  for (let i = 0; i < n; i++) {
+    const pct = ((i + 1) / (n + 1)) * 100;
+    dots += `<span class="leg-path-dot" style="left:${pct.toFixed(1)}%" title="${lays[i].airport || lays[i].city || "Parada"}"></span>`;
+  }
+  const chips = lays.map(function(l){
+    const code = l.airport || l.city || "?";
+    const arrT = fmtHoraCurta(l.arrTime);
+    const depT = fmtHoraCurta(l.depTime);
+    let hor = "";
+    if (arrT && depT) hor = arrT + "→" + depT;
+    else if (arrT) hor = "cheg. " + arrT;
+    else if (depT) hor = "sai " + depT;
+    else if (l.durationText) hor = l.durationText;
+    return `<span class="leg-stop-chip">${code}${hor ? "<span>" + hor + "</span>" : ""}${l.durationText && (arrT || depT) ? "<span>· " + l.durationText + "</span>" : ""}</span>`;
+  }).join("");
+  return `<div class="leg-path">
+    <div class="leg-path-track">
+      <span class="leg-path-end left"></span>
+      ${dots}
+      <span class="leg-path-end right"></span>
+    </div>
+    ${chips ? `<div class="leg-stop-list">${chips}</div>` : ""}
+  </div>`;
+}
+
 function renderLeg(leg, label){
   if(!leg) return "";
   const stopsTxt = leg.stops === 0 ? "Direto" : (leg.stops + " parada" + (leg.stops>1?"s":""));
@@ -1717,9 +1768,7 @@ function renderLeg(leg, label){
   const dCode = leg.destCode || "";
   const oCity = leg.originCity || "";
   const dCity = leg.destCity || "";
-  const conn = leg.connectionText
-    ? `<div style="font-size:10px;color:var(--brass-dark);margin-top:3px;font-weight:600;">via ${leg.connectionText}</div>`
-    : "";
+  const path = renderStopPath(leg);
   return `<div class="leg-row" style="align-items:flex-start;">
     <div class="leg-label" style="padding-top:4px;">${label}</div>
     <div style="min-width:56px;">
@@ -1728,9 +1777,8 @@ function renderLeg(leg, label){
     </div>
     <div style="flex:1;text-align:center;min-width:0;padding-top:2px;">
       <div style="font-size:10.5px;color:#8A98A6;margin-bottom:2px;">⏱ ${leg.duration} · ${stopsTxt}</div>
-      <div style="border-top:1.5px dashed #D8D0BA;"></div>
+      ${path}
       <div class="mono" style="font-size:11px;font-weight:700;color:var(--navy-3);margin-top:3px;">${oCode} → ${dCode}</div>
-      ${conn}
     </div>
     <div style="min-width:56px;text-align:right;">
       <div class="mono" style="font-size:17px;font-weight:600;">${leg.arr}</div>
@@ -1757,22 +1805,20 @@ function renderTicket(r, isCheapest){
   if (isRT) {
     legsHtml = renderLeg(r.outbound, "IDA") + renderLeg(r.inbound, "VOLTA");
   } else {
-    legsHtml = `<div style="display:flex;align-items:center;gap:16px;">
-        <div>
-          <div class="mono" style="font-size:20px;font-weight:600;">${r.dep}</div>
-          <div style="font-size:12px;color:#8A98A6;line-height:1.35;">${originLabel}</div>
-        </div>
-        <div style="flex:1;text-align:center;min-width:0;">
-          <div style="font-size:11px;color:#8A98A6;margin-bottom:2px;">⏱ ${r.duration}${r.stops ? " · " + r.stops + " parada" + (r.stops>1?"s":"") : " · Direto"}</div>
-          <div style="border-top:1.5px dashed #D8D0BA;"></div>
-          <div class="mono" style="font-size:11px;color:var(--navy-3);font-weight:700;margin-top:3px;letter-spacing:.3px;">${depCode} → ${arrCode}</div>
-          ${r.connectionText ? '<div style="font-size:10px;color:var(--brass-dark);margin-top:3px;font-weight:600;">via ' + r.connectionText + '</div>' : ''}
-        </div>
-        <div style="text-align:right;">
-          <div class="mono" style="font-size:20px;font-weight:600;">${r.arr}</div>
-          <div style="font-size:12px;color:#8A98A6;line-height:1.35;">${destLabel}</div>
-        </div>
-      </div>`;
+    // Só ida: reutiliza renderLeg com o mesmo visual de paradas
+    const owLeg = {
+      dep: r.dep,
+      arr: r.arr,
+      duration: r.duration,
+      stops: r.stops || 0,
+      originCode: depCode,
+      destCode: arrCode,
+      originCity: originCity,
+      destCity: destCity,
+      layovers: r.layovers || [],
+      connectionText: r.connectionText || null
+    };
+    legsHtml = renderLeg(owLeg, "");
   }
   const feeTxt = r.fees ? `<div class="fee-line">Taxas inclusas: ${currency(r.fees)}</div>` : "";
   const waText = encodeURIComponent(
@@ -1787,7 +1833,12 @@ function renderTicket(r, isCheapest){
         ${airlineChipHtml(r.airline)}
         <div style="font-size:13.5px;font-weight:700;">${r.airline.name}</div>
         ${typePill}
-        <div class="mono" style="font-size:11.5px;color:#8A98A6;margin-left:auto;">${r.stops === 0 ? "Voo direto" : r.stops + " parada" + (r.stops>1?"s":"")}${r.connectionText ? " · via " + r.connectionText : (r.outbound && r.outbound.connectionText ? " · via " + r.outbound.connectionText : "")}</div>
+        <div class="mono" style="font-size:11.5px;color:#8A98A6;margin-left:auto;">${
+          isRT
+            ? ("Ida: " + ((r.outbound && r.outbound.stops) ? (r.outbound.stops + " parada" + (r.outbound.stops>1?"s":"")) : "direto")
+               + " · Volta: " + ((r.inbound && r.inbound.stops) ? (r.inbound.stops + " parada" + (r.inbound.stops>1?"s":"")) : "direto"))
+            : (r.stops === 0 ? "Voo direto" : r.stops + " parada" + (r.stops>1?"s":""))
+        }</div>
       </div>
       ${legsHtml}
       <div class="ticket-meta">
@@ -2025,8 +2076,9 @@ function mapLeg(leg){
   const depAp = AIRPORT_BY_CODE[depCode] || { code: depCode, city: depCode };
   const arrAp = AIRPORT_BY_CODE[arrCode] || { code: arrCode, city: arrCode };
   const stops = leg.stops != null ? leg.stops : 0;
-  const connectionText = leg.connectionText || (Array.isArray(leg.layovers) && leg.layovers.length
-    ? leg.layovers.map(l => l.airport || l.city || "").filter(Boolean).join(" · ")
+  const lays = Array.isArray(leg.layovers) ? leg.layovers : [];
+  const connectionText = leg.connectionText || (lays.length
+    ? lays.map(l => l.airport || l.city || "").filter(Boolean).join(" · ")
     : null);
   return {
     dep: fmtHora(leg.departureTime || leg.depTime),
@@ -2035,7 +2087,8 @@ function mapLeg(leg){
     durationSec: typeof leg.duration === "number" ? leg.duration : 0,
     stops,
     connectionText,
-    layovers: leg.layovers || [],
+    layovers: lays,
+    segments: leg.segments || [],
     originCode: depAp.code || depCode,
     destCode: arrAp.code || arrCode,
     originCity: depAp.city || depCode,
@@ -2114,6 +2167,8 @@ function mapOferta(o){
     outbound,
     inbound,
     connectionText,
+    layovers: o.layovers || (outbound && outbound.layovers) || [],
+    segments: o.segments || (outbound && outbound.segments) || [],
     tripType: o.tripType || (inbound ? "RT" : "OW"),
     locator: String(o.offerId || o.id || "MARUJO").replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase() || "MARUJO",
   };
@@ -2983,8 +3038,12 @@ const accountWrap = document.getElementById("account-wrap");
 const accountDropdown = document.getElementById("account-dropdown");
 document.getElementById("account-trigger").addEventListener("click", (e) => {
   e.stopPropagation();
-  if (!mmCurrentUser()) { mmOpenAuthModal("login"); return; }
-  accountDropdown.classList.toggle("show");
+  if (mmCurrentUser()) {
+    accountDropdown.classList.toggle("show");
+    return;
+  }
+  // Visitante / sem login: abre painel de pedidos (consulta por e-mail)
+  mmOpenAccountPanel("viagens");
 });
 document.addEventListener("click", (e) => { if (!accountWrap.contains(e.target)) accountDropdown.classList.remove("show"); });
 
@@ -4156,6 +4215,9 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
 
 
 
