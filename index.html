@@ -251,6 +251,16 @@
   .results-bar{background:var(--navy);border-radius:16px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
   .results-bar .route{color:#fff;font-size:18px;font-weight:600;}
   .results-bar .count{color:#93AAD1;font-size:13px;margin-left:10px;}
+  .load-more-wrap{display:none;flex-direction:column;align-items:center;padding:8px 0 24px;gap:8px;}
+  .load-more-wrap.show{display:flex;}
+  .load-more-btn{
+    background:#fff;border:1.5px solid var(--navy);color:var(--navy);
+    border-radius:12px;padding:14px 28px;font-size:14.5px;font-weight:700;
+    cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(14,25,48,0.08);
+    transition:background .12s, color .12s, transform .12s;
+  }
+  .load-more-btn:hover{background:var(--navy);color:#fff;transform:translateY(-1px);}
+  .load-more-meta{font-size:12.5px;color:var(--slate);text-align:center;}
   .sort-btn{background:transparent;color:#CBD8EC;border:1px solid #2C4468;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;}
   .sort-btn.active{background:var(--brass);color:var(--navy);border-color:var(--brass);}
 
@@ -1452,6 +1462,10 @@
     <div class="pib-range" id="pib-range"></div>
   </div>
   <div id="tickets-container"></div>
+  <div class="load-more-wrap" id="load-more-wrap">
+    <button type="button" class="load-more-btn" id="load-more-btn">Ver mais voos</button>
+    <div class="load-more-meta" id="load-more-meta"></div>
+  </div>
 </section>
 
 <section class="block reveal" id="como-funciona">
@@ -1876,6 +1890,11 @@ function renderTicket(r, isCheapest){
 
 let currentResults = [];
 let currentSort = "price";
+/** Quantos tickets mostrar por vez (Ver mais carrega o próximo lote). */
+const RESULTS_PAGE_SIZE = 10;
+let resultsVisibleCount = RESULTS_PAGE_SIZE;
+/** Lista já filtrada/ordenada (para paginar sem reprocessar). */
+let sortedResultsCache = [];
 
 const AIRLINE_BY_SLUG = { latam: AIRLINES[0], gol: AIRLINES[1], azul: AIRLINES[2] };
 
@@ -2240,8 +2259,9 @@ async function runSearch(){
 
     currentResults = lista.map(mapOferta);
     currentFilter = "all";
+    resultsVisibleCount = RESULTS_PAGE_SIZE;
     document.querySelectorAll(".filter-chip").forEach(b => b.classList.toggle("active", b.dataset.filter === "all"));
-    applySortAndRender();
+    applySortAndRender(true);
     // Insight de preço (1 crédito / 6h — cache no backend; falha silenciosa)
     carregarPriceInsights(origin, destination, departureDate, returnDate || null);
   } catch (e) {
@@ -2256,7 +2276,34 @@ async function runSearch(){
 
 let currentFilter = "all";
 
-function applySortAndRender(){
+function formatResultsCount(n){
+  const num = Number(n) || 0;
+  if (num === 0) return "0 voos encontrados";
+  if (num === 1) return "1 voo encontrado";
+  // número real, sem teto (ex.: 147 voos encontrados)
+  return num.toLocaleString("pt-BR") + " voos encontrados";
+}
+
+function updateLoadMoreUI(total, shown){
+  const wrap = document.getElementById("load-more-wrap");
+  const btn = document.getElementById("load-more-btn");
+  const meta = document.getElementById("load-more-meta");
+  if (!wrap || !btn) return;
+  const remaining = Math.max(0, total - shown);
+  if (remaining <= 0 || total === 0) {
+    wrap.classList.remove("show");
+    return;
+  }
+  wrap.classList.add("show");
+  const next = Math.min(RESULTS_PAGE_SIZE, remaining);
+  btn.textContent = "Ver mais " + next + " voo" + (next === 1 ? "" : "s");
+  if (meta) meta.textContent = "Mostrando " + shown + " de " + total.toLocaleString("pt-BR");
+}
+
+function applySortAndRender(resetPage){
+  if (resetPage !== false) {
+    resultsVisibleCount = RESULTS_PAGE_SIZE;
+  }
   let list = [...currentResults];
   if (currentFilter === "miles") list = list.filter(r => r.offerType === "miles");
   else if (currentFilter === "direct") list = list.filter(r => r.stops === 0);
@@ -2268,14 +2315,33 @@ function applySortAndRender(){
   else if (currentSort === "departure") list.sort((a,b)=>(a.depTs||0)-(b.depTs||0));
   else list.sort((a,b)=>(a.durationSec||0)-(b.durationSec||0) || String(a.duration).localeCompare(String(b.duration)));
 
-  const cheapest = list.length ? Math.min(...list.map(r=>r.ourValue)) : 0;
+  sortedResultsCache = list;
+  const total = list.length;
+  const shown = Math.min(resultsVisibleCount, total);
+  const visible = list.slice(0, shown);
+
+  const cheapest = total ? Math.min(...list.map(r => r.ourValue)) : 0;
   document.getElementById("route-label").textContent = selectedAirport.origin.city + " → " + selectedAirport.destination.city;
-  document.getElementById("route-count").textContent = list.length + " voo" + (list.length===1?"":"s") + " encontrado" + (list.length===1?"":"s");
-  if (!list.length) {
+  // Contagem TOTAL real (não só os visíveis)
+  document.getElementById("route-count").textContent = formatResultsCount(total);
+
+  if (!total) {
     document.getElementById("tickets-container").innerHTML = '<div class="airport-empty">Nenhuma oferta com esse filtro. Tente outro filtro ✈️</div>';
+    updateLoadMoreUI(0, 0);
     return;
   }
-  document.getElementById("tickets-container").innerHTML = list.map(r => renderTicket(r, r.ourValue === cheapest)).join("");
+  document.getElementById("tickets-container").innerHTML = visible.map(r => renderTicket(r, r.ourValue === cheapest)).join("");
+  updateLoadMoreUI(total, shown);
+}
+
+function loadMoreResults(){
+  if (!sortedResultsCache.length) return;
+  resultsVisibleCount = Math.min(
+    resultsVisibleCount + RESULTS_PAGE_SIZE,
+    sortedResultsCache.length
+  );
+  applySortAndRender(false);
+  // leve feedback: rola até o primeiro ticket novo se quiser
 }
 
 let tripType = "RT";
@@ -2310,7 +2376,7 @@ document.querySelectorAll(".sort-btn").forEach(btn => {
     document.querySelectorAll(".sort-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
     currentSort = btn.dataset.sort;
-    applySortAndRender();
+    applySortAndRender(true);
   });
 });
 document.querySelectorAll(".filter-chip").forEach(btn => {
@@ -2318,9 +2384,11 @@ document.querySelectorAll(".filter-chip").forEach(btn => {
     document.querySelectorAll(".filter-chip").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
     currentFilter = btn.dataset.filter;
-    applySortAndRender();
+    applySortAndRender(true);
   });
 });
+document.getElementById("load-more-btn")?.addEventListener("click", loadMoreResults);
+
 
 // Ticker do topo: começa com placeholders e é preenchido com as ofertas relâmpago reais
 function atualizarTickerOfertas(ofertas) {
@@ -4226,6 +4294,8 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
 
 
 
