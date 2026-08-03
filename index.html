@@ -261,6 +261,25 @@
   }
   .load-more-btn:hover{background:var(--navy);color:#fff;transform:translateY(-1px);}
   .load-more-meta{font-size:12.5px;color:var(--slate);text-align:center;}
+  .rt-step-bar{
+    background:#fff;border:1px solid var(--card-line);border-radius:14px;
+    padding:12px 16px;margin-bottom:14px;display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  }
+  .rt-step-bar.show{display:flex;}
+  .rt-step-bar .rt-step-text{font-size:13.5px;color:var(--ink);font-weight:600;line-height:1.35;}
+  .rt-step-bar .rt-step-text span{display:block;font-size:12px;font-weight:500;color:var(--slate);margin-top:2px;}
+  .rt-step-bar .rt-back-btn{
+    background:var(--paper);border:1px solid var(--card-line);border-radius:10px;
+    padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--navy);white-space:nowrap;
+  }
+  .rt-step-bar .rt-back-btn:hover{border-color:var(--brass);background:var(--brass-soft);}
+  .rt-phase-pill{
+    display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;
+    font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+    padding:4px 10px;border-radius:999px;background:rgba(57,114,219,0.12);color:var(--blue);
+  }
+  .rt-phase-pill.return{background:rgba(30,143,95,0.12);color:var(--green);}
+
   .sort-btn{background:transparent;color:#CBD8EC;border:1px solid #2C4468;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;}
   .sort-btn.active{background:var(--brass);color:var(--navy);border-color:var(--brass);}
 
@@ -1521,6 +1540,10 @@
     <div class="pib-text" id="pib-text"></div>
     <div class="pib-range" id="pib-range"></div>
   </div>
+  <div class="rt-step-bar" id="rt-step-bar">
+    <div class="rt-step-text" id="rt-step-text">Escolha o voo de <strong>ida</strong></div>
+    <button type="button" class="rt-back-btn" id="rt-back-btn" style="display:none;">← Trocar ida</button>
+  </div>
   <div id="tickets-container"></div>
   <div class="load-more-wrap" id="load-more-wrap">
     <button type="button" class="load-more-btn" id="load-more-btn">Ver mais voos</button>
@@ -1919,7 +1942,9 @@ function renderTicket(r, isCheapest){
     ? '<span class="type-pill miles">✦ Em milhas</span>'
     : (r.offerType === "revenue" ? '<span class="type-pill revenue">Tarifa</span>' : "");
   const bagTxt = r.baggage ? ("🧳 " + r.baggage) : "Só bagagem de mão";
-  const isRT = !!(r.outbound && r.inbound);
+  const isRT = r.tripType === "RT" || !!(r.outbound && r.inbound)
+    || (typeof tripType !== "undefined" && tripType === "RT")
+    || r.selectionPhase === "outbound" || r.selectionPhase === "return";
   let legsHtml = "";
   if (isRT) {
     legsHtml = renderLeg(r.outbound, "IDA") + renderLeg(r.inbound, "VOLTA");
@@ -1952,6 +1977,8 @@ function renderTicket(r, isCheapest){
         ${airlineChipHtml(r.airline)}
         <div style="font-size:13.5px;font-weight:700;">${r.airline.name}</div>
         ${typePill}
+        ${isRT && (r.selectionPhase === "outbound" || (!r.inbound && rtSearchPhase === "outbound")) ? '<span class="rt-phase-pill">1 · Ida</span>' : ""}
+        ${isRT && (r.selectionPhase === "return" || rtSearchPhase === "return") ? '<span class="rt-phase-pill return">2 · Volta</span>' : ""}
         <div class="mono" style="font-size:11.5px;color:#8A98A6;margin-left:auto;">${
           isRT
             ? ("Ida: " + ((r.outbound && r.outbound.stops) ? (r.outbound.stops + " parada" + (r.outbound.stops>1?"s":"")) : "direto")
@@ -1976,7 +2003,13 @@ function renderTicket(r, isCheapest){
       ${hasMarket && pct > 0 ? `<div class="save-line">✓ ${pct}% mais barato</div>` : (r.offerType === "miles" ? '<div class="save-line">✓ Preço em milhas</div>' : '')}
       <div style="font-size:12px;color:#1E8F5F;font-weight:600;margin-top:4px">PIX ${currency(r.ourValue)}</div>
       <div style="font-size:11.5px;color:#5C7185">PIX ou cartão 6x · preço em milhas</div>
-      <button type="button" class="select-btn" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">Selecionar →</button>
+      <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${
+        (isRT && (r.selectionPhase === "outbound" || rtSearchPhase === "outbound") && !r.inbound)
+          ? "Escolher esta ida →"
+          : (isRT && (r.selectionPhase === "return" || rtSearchPhase === "return")
+              ? "Escolher esta volta →"
+              : "Selecionar →")
+      }</button>
     </div>
   </div>`;
 }
@@ -1989,6 +2022,12 @@ const RESULTS_PAGE_SIZE = 10;
 let resultsVisibleCount = RESULTS_PAGE_SIZE;
 /** Lista já filtrada/ordenada (para paginar sem reprocessar). */
 let sortedResultsCache = [];
+/** Ida e volta em 2 passos */
+let rtSearchPhase = "outbound"; // outbound | return
+let rtOutboundSelected = null;  // oferta de ida escolhida
+let rtOutboundCache = [];       // lista de idas (para voltar sem rebuscar)
+let lastSearchParams = null;    // { from, to, departureDate, returnDate, numAdults }
+
 
 const AIRLINE_BY_SLUG = { latam: AIRLINES[0], gol: AIRLINES[1], azul: AIRLINES[2] };
 
@@ -2303,7 +2342,10 @@ function mapOferta(o){
     layovers: o.layovers || (outbound && outbound.layovers) || [],
     segments: o.segments || (outbound && outbound.segments) || [],
     tripType: o.tripType || (inbound ? "RT" : "OW"),
+    selectionPhase: o.selectionPhase || (inbound ? "return" : "outbound"),
+    departureToken: o.departureToken || o.departure_token || null,
     locator: String(o.offerId || o.id || "MARUJO").replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase() || "MARUJO",
+    rawOfferId: o.offerId || o.id || null,
   };
 }
 
@@ -2360,10 +2402,22 @@ async function runSearch(){
       return;
     }
 
+    // Reset fluxo ida→volta
+    rtSearchPhase = "outbound";
+    rtOutboundSelected = null;
+    lastSearchParams = {
+      from: origin,
+      to: destination,
+      departureDate,
+      returnDate: returnDate || null,
+      numAdults
+    };
     currentResults = lista.map(mapOferta);
+    rtOutboundCache = (tripType === "RT") ? currentResults.slice() : [];
     currentFilter = "all";
     resultsVisibleCount = RESULTS_PAGE_SIZE;
     document.querySelectorAll(".filter-chip").forEach(b => b.classList.toggle("active", b.dataset.filter === "all"));
+    updateRtStepBar();
     applySortAndRender(true);
     // Insight de preço (1 crédito / 6h — cache no backend; falha silenciosa)
     carregarPriceInsights(origin, destination, departureDate, returnDate || null);
@@ -2403,6 +2457,153 @@ function updateLoadMoreUI(total, shown){
   if (meta) meta.textContent = "Mostrando " + shown + " de " + total.toLocaleString("pt-BR");
 }
 
+
+function updateRtStepBar(){
+  const bar = document.getElementById("rt-step-bar");
+  const text = document.getElementById("rt-step-text");
+  const back = document.getElementById("rt-back-btn");
+  if (!bar || !text) return;
+  const isRT = typeof tripType !== "undefined" && tripType === "RT";
+  if (!isRT || !currentResults.length) {
+    bar.classList.remove("show");
+    return;
+  }
+  bar.classList.add("show");
+  if (rtSearchPhase === "return" && rtOutboundSelected) {
+    const o = rtOutboundSelected;
+    text.innerHTML = 'Escolha o voo de <strong>volta</strong><span>Ida escolhida: ' +
+      (o.dep || "") + " → " + (o.arr || "") + " · " + (o.airline && o.airline.name ? o.airline.name : "") +
+      (o.duration ? " · " + o.duration : "") + "</span>";
+    if (back) back.style.display = "";
+  } else {
+    text.innerHTML = 'Passo 1 de 2 — escolha o voo de <strong>ida</strong><span>Depois você escolhe a volta</span>';
+    if (back) back.style.display = "none";
+  }
+}
+
+async function loadReturnFlights(outboundOffer){
+  if (!outboundOffer || !lastSearchParams || !lastSearchParams.returnDate) {
+    alert("Dados da busca incompletos. Faça a busca novamente.");
+    return;
+  }
+  const token = outboundOffer.departureToken;
+  if (!token) {
+    // Sem token: segue só com a ida (parcial)
+    openPaxModal({
+      route: (outboundOffer.originCity || "") + " → " + (outboundOffer.destCity || ""),
+      airline: outboundOffer.airline && outboundOffer.airline.name,
+      price: outboundOffer.ourValue,
+      dep: outboundOffer.dep,
+      arr: outboundOffer.arr,
+      locator: outboundOffer.locator,
+      stops: outboundOffer.stops,
+      duration: outboundOffer.duration,
+      originLabel: (selectedAirport.origin.city || "") + " (" + selectedAirport.origin.code + ")",
+      destLabel: (selectedAirport.destination.city || "") + " (" + selectedAirport.destination.code + ")",
+      originCode: selectedAirport.origin.code,
+      destCode: selectedAirport.destination.code,
+      flash: false,
+      tripType: "RT",
+      outbound: outboundOffer.outbound || null,
+      inbound: null
+    });
+    return;
+  }
+
+  const container = document.getElementById("tickets-container");
+  const countEl = document.getElementById("route-count");
+  if (container) container.innerHTML = Array.from({length:3}).map(() => '<div class="ticket-skel"></div>').join("");
+  if (countEl) countEl.textContent = "Buscando voos de volta...";
+  updateRtStepBar();
+
+  try {
+    const resposta = await fetch("https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009/proxy?url=" +
+      encodeURIComponent("http://br2.bronxyshost.com:4009/api/buscar-volta"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: lastSearchParams.from,
+        to: lastSearchParams.to,
+        departureDate: lastSearchParams.departureDate,
+        returnDate: lastSearchParams.returnDate,
+        departureToken: token,
+        numAdults: lastSearchParams.numAdults || 1
+      })
+    });
+    const dados = await resposta.json();
+    let lista = (dados && Array.isArray(dados.passagens)) ? dados.passagens : [];
+    if (!lista.length) {
+      if (countEl) countEl.textContent = "Nenhuma volta encontrada para esta ida";
+      if (container) container.innerHTML = '<div class="airport-empty">Não achamos voos de volta para esta ida. Tente outra ida. ✈️</div>';
+      return;
+    }
+    // Anexa dados da ida em cada opção de volta para o modal
+    currentResults = lista.map(function(o){
+      const mapped = mapOferta(o);
+      mapped.selectionPhase = "return";
+      mapped.tripType = "RT";
+      // preço da API já é total ida+volta
+      if (rtOutboundSelected) {
+        mapped.outbound = rtOutboundSelected.outbound || {
+          originCode: rtOutboundSelected.depAirport || selectedAirport.origin.code,
+          destCode: rtOutboundSelected.arrAirport || selectedAirport.destination.code,
+          dep: rtOutboundSelected.dep,
+          arr: rtOutboundSelected.arr,
+          duration: rtOutboundSelected.duration,
+          stops: rtOutboundSelected.stops,
+          layovers: rtOutboundSelected.layovers,
+          originCity: rtOutboundSelected.originCity,
+          destCity: rtOutboundSelected.destCity
+        };
+        // Se a volta veio só como inbound, monta pernas para renderLeg
+        if (!mapped.inbound && (o.inbound || mapped)) {
+          mapped.inbound = mapLeg(o.inbound) || {
+            dep: mapped.dep,
+            arr: mapped.arr,
+            duration: mapped.duration,
+            stops: mapped.stops,
+            originCode: mapped.depAirport || selectedAirport.destination.code,
+            destCode: mapped.arrAirport || selectedAirport.origin.code,
+            originCity: mapped.originCity,
+            destCity: mapped.destCity,
+            layovers: mapped.layovers
+          };
+        }
+      }
+      return mapped;
+    });
+    rtSearchPhase = "return";
+    resultsVisibleCount = RESULTS_PAGE_SIZE;
+    currentFilter = "all";
+    document.querySelectorAll(".filter-chip").forEach(b => b.classList.toggle("active", b.dataset.filter === "all"));
+    updateRtStepBar();
+    applySortAndRender(true);
+    document.getElementById("results-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (e) {
+    console.error("Erro ao buscar volta:", e);
+    if (countEl) countEl.textContent = "Erro ao buscar volta";
+    if (container) container.innerHTML = '<div class="airport-empty">Erro ao buscar voos de volta. Tente de novo.</div>';
+  }
+}
+
+function backToOutboundFlights(){
+  if (!rtOutboundCache.length) {
+    // re-run search
+    if (typeof runSearch === "function") runSearch();
+    return;
+  }
+  rtSearchPhase = "outbound";
+  rtOutboundSelected = null;
+  currentResults = rtOutboundCache.slice();
+  resultsVisibleCount = RESULTS_PAGE_SIZE;
+  currentFilter = "all";
+  document.querySelectorAll(".filter-chip").forEach(b => b.classList.toggle("active", b.dataset.filter === "all"));
+  updateRtStepBar();
+  applySortAndRender(true);
+  document.getElementById("results-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+
 function applySortAndRender(resetPage){
   if (resetPage !== false) {
     resultsVisibleCount = RESULTS_PAGE_SIZE;
@@ -2424,9 +2625,17 @@ function applySortAndRender(resetPage){
   const visible = list.slice(0, shown);
 
   const cheapest = total ? Math.min(...list.map(r => r.ourValue)) : 0;
-  document.getElementById("route-label").textContent = selectedAirport.origin.city + " → " + selectedAirport.destination.city;
-  // Contagem TOTAL real (não só os visíveis)
+  let routeTitle = selectedAirport.origin.city + " → " + selectedAirport.destination.city;
+  if (typeof tripType !== "undefined" && tripType === "RT") {
+    if (rtSearchPhase === "return") {
+      routeTitle = selectedAirport.destination.city + " → " + selectedAirport.origin.city + " (volta)";
+    } else {
+      routeTitle = selectedAirport.origin.city + " → " + selectedAirport.destination.city + " (idas)";
+    }
+  }
+  document.getElementById("route-label").textContent = routeTitle;
   document.getElementById("route-count").textContent = formatResultsCount(total);
+  try { updateRtStepBar(); } catch (_) {}
 
   if (!total) {
     document.getElementById("tickets-container").innerHTML = '<div class="airport-empty">Nenhuma oferta com esse filtro. Tente outro filtro ✈️</div>';
@@ -2491,6 +2700,7 @@ document.querySelectorAll(".filter-chip").forEach(btn => {
   });
 });
 document.getElementById("load-more-btn")?.addEventListener("click", loadMoreResults);
+document.getElementById("rt-back-btn")?.addEventListener("click", backToOutboundFlights);
 
 
 // Ticker do topo: começa com placeholders e é preenchido com as ofertas relâmpago reais
@@ -4098,6 +4308,55 @@ document.addEventListener("click", (e) => {
   if (select) {
     e.preventDefault();
     e.stopPropagation();
+    const offerId = select.dataset.offerId || "";
+    const offer = (currentResults || []).find(function(r){ return r.id === offerId; })
+      || (sortedResultsCache || []).find(function(r){ return r.id === offerId; })
+      || null;
+
+    // Ida e volta passo 1: escolheu a IDA → carrega voltas
+    const isRT = (typeof tripType !== "undefined" && tripType === "RT")
+      || (offer && offer.tripType === "RT");
+    if (isRT && rtSearchPhase === "outbound") {
+      rtOutboundSelected = offer || {
+        dep: select.dataset.dep,
+        arr: select.dataset.arr,
+        airline: { name: select.dataset.airline },
+        ourValue: Number(select.dataset.price) || 0,
+        locator: select.dataset.locator,
+        stops: select.dataset.stops,
+        duration: select.dataset.duration,
+        departureToken: offer && offer.departureToken,
+        outbound: offer && offer.outbound
+      };
+      loadReturnFlights(rtOutboundSelected);
+      return;
+    }
+
+    // Ida e volta passo 2: escolheu a VOLTA → modal com ida+volta
+    if (isRT && rtSearchPhase === "return") {
+      const ida = rtOutboundSelected || {};
+      openPaxModal({
+        route: select.dataset.route || "",
+        airline: select.dataset.airline || (offer && offer.airline && offer.airline.name) || "",
+        price: select.dataset.price || "0",
+        dep: ida.dep || select.dataset.dep || "",
+        arr: (offer && offer.arr) || select.dataset.arr || "",
+        locator: select.dataset.locator || "",
+        stops: select.dataset.stops || "",
+        duration: select.dataset.duration || "",
+        originLabel: (selectedAirport.origin.city || "") + " (" + selectedAirport.origin.code + ")",
+        destLabel: (selectedAirport.destination.city || "") + " (" + selectedAirport.destination.code + ")",
+        originCode: selectedAirport.origin.code,
+        destCode: selectedAirport.destination.code,
+        flash: false,
+        tripType: "RT",
+        outbound: ida.outbound || ida,
+        inbound: (offer && (offer.inbound || offer)) || null
+      });
+      return;
+    }
+
+    // Só ida (ou fallback)
     openPaxModal({
       route: select.dataset.route || "",
       airline: select.dataset.airline || "",
@@ -4112,7 +4371,7 @@ document.addEventListener("click", (e) => {
       originCode: selectedAirport.origin.code,
       destCode: selectedAirport.destination.code,
       flash: false,
-      tripType: (typeof tripType !== "undefined" ? tripType : "RT")
+      tripType: (typeof tripType !== "undefined" ? tripType : "OW")
     });
     return;
   }
@@ -4397,34 +4656,6 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
