@@ -283,16 +283,40 @@
   .sort-btn{background:transparent;color:#CBD8EC;border:1px solid #2C4468;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;}
   .sort-btn.active{background:var(--brass);color:var(--navy);border-color:var(--brass);}
 
-  .ticket{position:relative;background:#fff;border-radius:18px;box-shadow:0 10px 28px rgba(20,30,55,0.09);display:grid;grid-template-columns:1fr auto 1fr;margin-bottom:18px;transition:transform .18s ease, box-shadow .18s ease;}
-  .ticket:hover{transform:translateY(-3px);box-shadow:0 16px 36px rgba(20,30,55,0.16);}
-  .ticket-notch{position:absolute;width:24px;height:24px;background:var(--paper);border-radius:50%;top:50%;transform:translateY(-50%);z-index:2;}
-  .ticket-notch.left{left:-12px;}
-  .ticket-notch.right{right:-12px;}
-  .ticket-divider{border-left:2px dashed var(--card-line);}
-  .ticket-left{padding:22px 26px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:hidden;}
-  .ticket-right{padding:20px 26px;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:0;width:100%;max-width:240px;}
+  .ticket{
+    position:relative;background:#fff;border-radius:16px;
+    box-shadow:0 4px 20px rgba(20,30,55,0.07);border:1px solid var(--card-line);
+    display:grid;grid-template-columns:1fr minmax(160px,220px);
+    margin-bottom:14px;overflow:visible;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .15s;
+  }
+  .ticket:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(20,30,55,0.12);border-color:#d4c9a8;}
+  .ticket.is-best{border-color:var(--brass);box-shadow:0 6px 24px rgba(217,162,59,0.22);}
+  .ticket-notch{display:none;}
+  .ticket-divider{border-left:1.5px dashed var(--card-line);}
+  .ticket-left{padding:16px 18px 14px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:hidden;}
+  .ticket-right{
+    padding:16px 16px 14px;display:flex;flex-direction:column;justify-content:center;align-items:stretch;
+    gap:4px;min-width:0;background:linear-gradient(180deg,#FFFEFA 0%, var(--paper) 100%);
+    border-left:1.5px dashed var(--card-line);
+  }
+  .ticket-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .ticket-top .airline-name{font-size:14px;font-weight:700;color:var(--ink);}
+  .best-chip{
+    display:inline-flex;align-items:center;gap:4px;
+    background:var(--brass);color:var(--navy);font-size:10px;font-weight:800;
+    padding:4px 10px;border-radius:999px;letter-spacing:.3px;
+    font-family:'IBM Plex Mono',monospace;flex-shrink:0;
+    box-shadow:0 2px 8px rgba(217,162,59,0.35);
+  }
+  .ticket .final-price{font-size:22px;font-weight:800;color:var(--ink);line-height:1.15;letter-spacing:-.3px;}
+  .ticket .market-price{font-size:12.5px;color:var(--red);text-decoration:line-through;font-weight:600;}
+  .ticket .save-line{font-size:12px;color:var(--green);font-weight:700;margin-top:2px;}
+  .ticket .pix-line{font-size:12px;color:var(--green);font-weight:600;margin-top:2px;}
+  .ticket .pay-hint{font-size:11px;color:var(--slate);margin-top:2px;}
+  .ticket-right .select-btn{margin-top:10px;}
   @media (min-width:881px){
-    .ticket-right{min-width:180px;max-width:240px;}
+    .ticket-right{min-width:170px;max-width:220px;}
   }
   .airline-chip{width:34px;height:34px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;overflow:hidden;background:#fff;border:1px solid var(--card-line);flex-shrink:0;}
   .airline-chip img{width:100%;height:100%;object-fit:contain;display:block;padding:3px;}
@@ -305,7 +329,7 @@
   .flash-jump-btn .fj-pulse{width:8px;height:8px;border-radius:50%;background:#2ecc71;box-shadow:0 0 0 0 rgba(46,204,113,.6);animation:fj-pulse 1.6s ease-out infinite;}
   @keyframes fj-pulse{0%{box-shadow:0 0 0 0 rgba(46,204,113,.55);}70%{box-shadow:0 0 0 10px rgba(46,204,113,0);}100%{box-shadow:0 0 0 0 rgba(46,204,113,0);}}
   @media (prefers-reduced-motion: reduce){ .flash-jump-btn .fj-pulse{animation:none;} }
-  .best-badge{position:absolute;top:-16px;left:20px;background:var(--brass);color:var(--navy);font-size:10.5px;font-weight:800;padding:7px 13px;border-radius:999px;letter-spacing:.4px;box-shadow:0 4px 12px rgba(0,0,0,0.18);transform:rotate(-3deg);border:1.5px dashed rgba(14,25,48,0.35);}
+  .best-badge{display:none;} /* substituído por .best-chip dentro do card */
   .strike{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--red);text-decoration:line-through;}
   .final-price{font-family:'Bricolage Grotesque',sans-serif;font-size:27px;font-weight:700;color:var(--ink);line-height:1;}
   .save-line{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--green);font-weight:700;}
@@ -537,8 +561,14 @@
     .results-bar .route{font-size:15px;}
     .results-bar .count{font-size:12px;margin-left:6px;}
     /* Bilhete: evita estourar para o lado */
+    .ticket{grid-template-columns:1fr !important;}
     .ticket-left{padding:14px 12px 10px;gap:10px;min-width:0;}
-    .ticket-right{padding:12px;min-width:0 !important;}
+    .ticket-right{
+      padding:12px 14px 14px;min-width:0 !important;max-width:none !important;width:100%;
+      border-left:none !important;border-top:1.5px dashed var(--card-line);
+      background:linear-gradient(180deg,#FFFEFA,var(--paper));
+    }
+    .ticket .final-price{font-size:20px;}
     .leg-row{
       display:grid !important;
       grid-template-columns:minmax(52px,auto) minmax(0,1fr) minmax(52px,auto);
@@ -1761,7 +1791,14 @@ const MILHAS_CPM = {
   azul: 0.018, ad: 0.018,
   default: 0.022
 };
-const REFERENCIA_RS_POR_MILHA = 0.035;
+// Referência R$/milha "no dinheiro" p/ estimar milhas a partir do Google.
+// Ex.: Smiles 54.900 milhas · Google ~R$1.100 → 1100/0,02 ≈ 55k milhas → ×0,0185 ≈ R$1.017
+const REFERENCIA_RS_POR_MILHA = {
+  gol: 0.020, g3: 0.020,
+  latam: 0.022, la: 0.022, jj: 0.022,
+  azul: 0.020, ad: 0.020,
+  default: 0.020
+};
 
 function airlineCpmKey(airline) {
   const s = String(airline || "").toLowerCase().trim();
@@ -1775,14 +1812,18 @@ function cpmForAirline(airline) {
   const k = airlineCpmKey(airline);
   return MILHAS_CPM[k] != null ? MILHAS_CPM[k] : MILHAS_CPM.default;
 }
-/** Preço = milhas × CPM. Se só tiver R$ de mercado, estima milhas e aplica CPM. */
+function referenciaPorAirline(airline) {
+  const k = airlineCpmKey(airline);
+  return REFERENCIA_RS_POR_MILHA[k] != null ? REFERENCIA_RS_POR_MILHA[k] : REFERENCIA_RS_POR_MILHA.default;
+}
+/** Preço = milhas × CPM. Se só tiver R$ Google, estima milhas e aplica CPM. */
 function precoMarujo(valorMercadoOuMilhas, airline, opts) {
   const v = Number(valorMercadoOuMilhas) || 0;
   if (v <= 0) return 0;
   const o = opts || {};
   if (o.milhas != null && Number(o.milhas) > 0) return Math.round(Number(o.milhas) * cpmForAirline(airline));
   if (o.isMiles === true) return Math.round(v * cpmForAirline(airline));
-  const milhasEst = v / REFERENCIA_RS_POR_MILHA;
+  const milhasEst = v / referenciaPorAirline(airline);
   return Math.round(milhasEst * cpmForAirline(airline));
 }
 function discountPctFor(market, our) {
@@ -1970,39 +2011,36 @@ function renderTicket(r, isCheapest){
   );
   const selectHref = `https://wa.me/5521967026563?text=${waText}`;
   return `
-  <div class="ticket${isRT ? " rt" : ""}">
-    ${isCheapest ? '<div class="best-badge">MELHOR PREÇO</div>' : ''}
+  <div class="ticket${isRT ? " rt" : ""}${isCheapest ? " is-best" : ""}">
     <div class="ticket-left">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div class="ticket-top">
         ${airlineChipHtml(r.airline)}
-        <div style="font-size:13.5px;font-weight:700;">${r.airline.name}</div>
+        <span class="airline-name">${r.airline.name}</span>
         ${typePill}
+        ${isCheapest ? '<span class="best-chip">★ Melhor preço</span>' : ""}
         ${isRT && (r.selectionPhase === "outbound" || (!r.inbound && rtSearchPhase === "outbound")) ? '<span class="rt-phase-pill">1 · Ida</span>' : ""}
         ${isRT && (r.selectionPhase === "return" || rtSearchPhase === "return") ? '<span class="rt-phase-pill return">2 · Volta</span>' : ""}
-        <div class="mono" style="font-size:11.5px;color:#8A98A6;margin-left:auto;">${
-          isRT
-            ? ("Ida: " + ((r.outbound && r.outbound.stops) ? (r.outbound.stops + " parada" + (r.outbound.stops>1?"s":"")) : "direto")
-               + " · Volta: " + ((r.inbound && r.inbound.stops) ? (r.inbound.stops + " parada" + (r.inbound.stops>1?"s":"")) : "direto"))
-            : (r.stops === 0 ? "Voo direto" : r.stops + " parada" + (r.stops>1?"s":""))
-        }</div>
+        <span class="mono" style="font-size:11px;color:var(--slate-soft);margin-left:auto;">${
+          isRT && r.inbound
+            ? ("Ida " + ((r.outbound && r.outbound.stops) ? r.outbound.stops + " par." : "direto")
+               + " · Volta " + ((r.inbound.stops) ? r.inbound.stops + " par." : "direto"))
+            : (r.stops === 0 ? "Voo direto" : (r.stops || 0) + " parada" + ((r.stops||0)>1?"s":""))
+        }</span>
       </div>
       ${legsHtml}
       <div class="ticket-meta">
-        <span class="mono" style="font-size:10px;color:#B7C4DC;letter-spacing:1.5px;">REF ${r.locator}</span>
+        <span class="mono" style="font-size:10px;color:#B7C4DC;letter-spacing:1.2px;">REF ${r.locator}</span>
         <span class="mono" style="font-size:11px;font-weight:700;color:var(--navy-3);background:var(--paper);border:1px solid var(--card-line);border-radius:6px;padding:2px 8px;">${depCode} → ${arrCode}</span>
         <span style="font-size:11.5px;color:#8A98A6;">${bagTxt}</span>
       </div>
     </div>
-    <div class="ticket-divider"></div>
-    <div class="ticket-notch left"></div>
-    <div class="ticket-notch right"></div>
     <div class="ticket-right">
-      ${hasMarket ? `<div class="strike">${currency(r.marketValue)}</div>` : `<div class="mono" style="font-size:11.5px;color:#8A98A6;">Por adulto</div>`}
+      ${hasMarket ? `<div class="market-price">${currency(r.marketValue)}</div>` : `<div class="pay-hint">Por adulto</div>`}
       <div class="final-price display">${currency(r.ourValue)}</div>
       ${feeTxt}
-      ${hasMarket && pct > 0 ? `<div class="save-line">✓ ${pct}% mais barato</div>` : (r.offerType === "miles" ? '<div class="save-line">✓ Preço em milhas</div>' : '')}
-      <div style="font-size:12px;color:#1E8F5F;font-weight:600;margin-top:4px">PIX ${currency(r.ourValue)}</div>
-      <div style="font-size:11.5px;color:#5C7185">PIX ou cartão 6x · preço em milhas</div>
+      ${hasMarket && pct > 0 ? `<div class="save-line">✓ ${pct}% mais barato</div>` : (r.offerType === "miles" ? '<div class="save-line">✓ Preço em milhas</div>' : "")}
+      <div class="pix-line">PIX ${currency(r.ourValue)}</div>
+      <div class="pay-hint">PIX ou cartão em até 6x</div>
       <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${
         (isRT && (r.selectionPhase === "outbound" || rtSearchPhase === "outbound") && !r.inbound)
           ? "Escolher esta ida →"
@@ -2031,9 +2069,25 @@ let lastSearchParams = null;    // { from, to, departureDate, returnDate, numAdu
 
 const AIRLINE_BY_SLUG = { latam: AIRLINES[0], gol: AIRLINES[1], azul: AIRLINES[2] };
 
+/** Horários do Google Flights / SerpApi já vêm no fuso LOCAL do aeroporto
+ *  (ex.: "2026-08-15 14:30"). NÃO converter com timeZone — isso adianta/atrasa
+ *  1h em Manaus, Brasília, etc. Só extrai HH:MM. */
 function fmtHora(iso){
-  if(!iso) return "--:--";
-  return new Date(iso).toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit", timeZone:"America/Sao_Paulo" });
+  if (!iso) return "--:--";
+  const s = String(iso).trim();
+  // "2026-08-15 14:30" | "2026-08-15T14:30:00" | "14:30"
+  const m = s.match(/(\d{1,2}):(\d{2})/);
+  if (m) return String(m[1]).padStart(2, "0") + ":" + m[2];
+  // fallback raro
+  try {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      const hh = String(d.getHours()).padStart(2, "0");
+      const mm = String(d.getMinutes()).padStart(2, "0");
+      return hh + ":" + mm;
+    }
+  } catch (_) {}
+  return "--:--";
 }
 
 // =========================================================
@@ -2412,7 +2466,7 @@ async function runSearch(){
       returnDate: returnDate || null,
       numAdults
     };
-    currentResults = lista.map(mapOferta);
+    currentResults = lista.map(mapOferta).filter(function(r){ return r && Number(r.ourValue) > 0; });
     rtOutboundCache = (tripType === "RT") ? currentResults.slice() : [];
     currentFilter = "all";
     resultsVisibleCount = RESULTS_PAGE_SIZE;
@@ -2532,6 +2586,7 @@ async function loadReturnFlights(outboundOffer){
     });
     const dados = await resposta.json();
     let lista = (dados && Array.isArray(dados.passagens)) ? dados.passagens : [];
+    lista = lista.filter(function(o){ return o && Number(o.totalPrice || o.price || 0) > 0; });
     if (!lista.length) {
       if (countEl) countEl.textContent = "Nenhuma volta encontrada para esta ida";
       if (container) container.innerHTML = '<div class="airport-empty">Não achamos voos de volta para esta ida. Tente outra ida. ✈️</div>';
@@ -2608,7 +2663,7 @@ function applySortAndRender(resetPage){
   if (resetPage !== false) {
     resultsVisibleCount = RESULTS_PAGE_SIZE;
   }
-  let list = [...currentResults];
+  let list = [...currentResults].filter(function(r){ return r && Number(r.ourValue) > 0; });
   if (currentFilter === "miles") list = list.filter(r => r.offerType === "miles");
   else if (currentFilter === "direct") list = list.filter(r => r.stops === 0);
   else if (currentFilter === "gol" || currentFilter === "latam" || currentFilter === "azul") {
@@ -4656,6 +4711,34 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
