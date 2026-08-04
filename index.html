@@ -284,40 +284,41 @@
   .sort-btn.active{background:var(--brass);color:var(--navy);border-color:var(--brass);}
 
   .ticket{
-    position:relative;background:#fff;border-radius:16px;
-    box-shadow:0 4px 20px rgba(20,30,55,0.07);border:1px solid var(--card-line);
-    display:grid;grid-template-columns:1fr minmax(160px,220px);
-    margin-bottom:14px;overflow:visible;
-    transition:transform .18s ease, box-shadow .18s ease, border-color .15s;
+    position:relative;background:#fff;border-radius:14px;
+    border:1px solid var(--card-line);
+    box-shadow:0 2px 12px rgba(20,30,55,0.06);
+    display:grid;grid-template-columns:minmax(0,1fr) 168px;
+    margin-bottom:12px;overflow:hidden;
+    transition:box-shadow .15s ease, border-color .15s ease;
   }
-  .ticket:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(20,30,55,0.12);border-color:#d4c9a8;}
-  .ticket.is-best{border-color:var(--brass);box-shadow:0 6px 24px rgba(217,162,59,0.22);}
-  .ticket-notch{display:none;}
-  .ticket-divider{border-left:1.5px dashed var(--card-line);}
-  .ticket-left{padding:16px 18px 14px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:hidden;}
+  .ticket:hover{box-shadow:0 8px 24px rgba(20,30,55,0.1);border-color:#d0c6a8;}
+  .ticket.is-best{border-color:var(--brass);box-shadow:0 4px 18px rgba(217,162,59,0.2);}
+  .ticket-notch,.ticket-divider{display:none;}
+  .ticket-left{padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;}
   .ticket-right{
-    padding:16px 16px 14px;display:flex;flex-direction:column;justify-content:center;align-items:stretch;
-    gap:4px;min-width:0;background:linear-gradient(180deg,#FFFEFA 0%, var(--paper) 100%);
-    border-left:1.5px dashed var(--card-line);
+    padding:14px 14px 12px;display:flex;flex-direction:column;justify-content:center;align-items:stretch;
+    gap:2px;min-width:0;background:#FAF8F2;border-left:1px solid var(--card-line);
   }
-  .ticket-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-  .ticket-top .airline-name{font-size:14px;font-weight:700;color:var(--ink);}
+  .ticket-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:28px;}
+  .ticket-top .airline-name{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.2;}
+  .ticket-top .ticket-stops-hint{font-size:11px;color:var(--slate-soft);margin-left:auto;font-weight:500;white-space:nowrap;}
   .best-chip{
-    display:inline-flex;align-items:center;gap:4px;
-    background:var(--brass);color:var(--navy);font-size:10px;font-weight:800;
-    padding:4px 10px;border-radius:999px;letter-spacing:.3px;
+    display:inline-flex;align-items:center;gap:3px;
+    background:var(--brass);color:var(--navy);font-size:9.5px;font-weight:800;
+    padding:3px 8px;border-radius:999px;letter-spacing:.2px;
     font-family:'IBM Plex Mono',monospace;flex-shrink:0;
-    box-shadow:0 2px 8px rgba(217,162,59,0.35);
   }
-  .ticket .final-price{font-size:22px;font-weight:800;color:var(--ink);line-height:1.15;letter-spacing:-.3px;}
-  .ticket .market-price{font-size:12.5px;color:var(--red);text-decoration:line-through;font-weight:600;}
-  .ticket .save-line{font-size:12px;color:var(--green);font-weight:700;margin-top:2px;}
-  .ticket .pix-line{font-size:12px;color:var(--green);font-weight:600;margin-top:2px;}
-  .ticket .pay-hint{font-size:11px;color:var(--slate);margin-top:2px;}
-  .ticket-right .select-btn{margin-top:10px;}
+  .ticket .final-price{font-size:20px;font-weight:800;color:var(--ink);line-height:1.15;letter-spacing:-.3px;margin:2px 0;}
+  .ticket .market-price{font-size:12px;color:var(--red);text-decoration:line-through;font-weight:600;}
+  .ticket .save-line{font-size:11.5px;color:var(--green);font-weight:700;margin-top:1px;}
+  .ticket .pix-line{font-size:11.5px;color:var(--green);font-weight:600;margin-top:2px;}
+  .ticket .pay-hint{font-size:10.5px;color:var(--slate-soft);margin-top:1px;}
+  .ticket-right .select-btn{margin-top:10px;padding:10px 0;font-size:13px;border-radius:10px;}
+  .ticket-meta{display:none;} /* limpa meta confusa — info já está nas pernas */
   @media (min-width:881px){
-    .ticket-right{min-width:170px;max-width:220px;}
+    .ticket{grid-template-columns:minmax(0,1fr) 180px;}
   }
+
   .airline-chip{width:34px;height:34px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;overflow:hidden;background:#fff;border:1px solid var(--card-line);flex-shrink:0;}
   .airline-chip img{width:100%;height:100%;object-fit:contain;display:block;padding:3px;}
   .airline-chip.fallback{color:#fff;border:none;}
@@ -562,13 +563,18 @@
     .results-bar .count{font-size:12px;margin-left:6px;}
     /* Bilhete: evita estourar para o lado */
     .ticket{grid-template-columns:1fr !important;}
-    .ticket-left{padding:14px 12px 10px;gap:10px;min-width:0;}
+    .ticket-left{padding:12px 12px 8px;gap:8px;min-width:0;}
     .ticket-right{
-      padding:12px 14px 14px;min-width:0 !important;max-width:none !important;width:100%;
-      border-left:none !important;border-top:1.5px dashed var(--card-line);
-      background:linear-gradient(180deg,#FFFEFA,var(--paper));
+      padding:12px 12px 12px;min-width:0 !important;max-width:none !important;width:100%;
+      border-left:none !important;border-top:1px solid var(--card-line);
+      background:#FAF8F2;
+      display:grid !important;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;
     }
-    .ticket .final-price{font-size:20px;}
+    .ticket-right .select-btn{grid-column:1 / -1;margin-top:6px;}
+    .ticket .final-price{font-size:18px;margin:0;}
+    .leg-row{grid-template-columns:64px minmax(0,1fr) 64px !important;gap:4px 6px;}
+    .leg-time{font-size:14px !important;}
+    .leg-city{font-size:10px !important;}
     .leg-row{
       display:grid !important;
       grid-template-columns:minmax(52px,auto) minmax(0,1fr) minmax(52px,auto);
@@ -663,17 +669,38 @@
   .type-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.2px;}
   .type-pill.miles{background:#E8F7EF;color:var(--green);}
   .type-pill.revenue{background:var(--paper);color:var(--navy-3);}
-  .leg-row{display:flex;align-items:flex-start;gap:10px;margin-top:6px;width:100%;max-width:100%;min-width:0;box-sizing:border-box;}
-  .leg-row .leg-side{min-width:0;flex:0 1 auto;max-width:32%;}
+  .leg-block{padding:8px 0 4px;border-top:1px solid #F0EBE0;}
+  .leg-block:first-of-type{border-top:none;padding-top:0;}
+  .leg-block .leg-tag{
+    display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+    color:var(--blue);background:rgba(57,114,219,0.1);padding:2px 7px;border-radius:5px;margin-bottom:6px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .leg-block .leg-tag.volta{color:var(--green);background:rgba(30,143,95,0.1);}
+  .leg-row{
+    display:grid;grid-template-columns:72px minmax(0,1fr) 72px;
+    gap:6px 8px;align-items:start;width:100%;min-width:0;
+  }
+  .leg-row .leg-side{min-width:0;}
   .leg-row .leg-side.right{text-align:right;}
-  .leg-row .leg-mid{flex:1 1 0;min-width:0;text-align:center;padding-top:2px;overflow:hidden;}
-  .leg-path{position:relative;padding:2px 0 0;width:100%;max-width:100%;overflow:hidden;}
-  .leg-path-track{position:relative;height:14px;display:flex;align-items:center;}
-  .leg-path-track::before{content:"";position:absolute;left:0;right:0;top:50%;height:1.5px;border-top:1.5px dashed #D8D0BA;transform:translateY(-50%);}
-  .leg-path-dot{position:absolute;top:50%;width:9px;height:9px;border-radius:50%;background:var(--brass);border:2px solid #fff;box-shadow:0 0 0 1px var(--brass-dark);transform:translate(-50%,-50%);z-index:1;}
-  .leg-path-end{position:absolute;top:50%;width:7px;height:7px;border-radius:50%;background:var(--navy-3);transform:translate(-50%,-50%);z-index:1;}
+  .leg-row .leg-mid{min-width:0;text-align:center;padding-top:2px;}
+  .leg-time{font-size:16px;font-weight:700;line-height:1.15;color:var(--ink);font-family:'IBM Plex Mono',monospace;}
+  .leg-city{font-size:11px;color:var(--slate);margin-top:2px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .leg-city b{color:var(--ink);font-weight:700;}
+  .leg-dur{font-size:10.5px;color:var(--slate-soft);font-weight:600;margin-bottom:2px;}
+  .leg-path{position:relative;padding:0;width:100%;overflow:hidden;}
+  .leg-path-track{position:relative;height:12px;display:flex;align-items:center;}
+  .leg-path-track::before{content:"";position:absolute;left:4px;right:4px;top:50%;height:0;border-top:1.5px dashed #D0C8B0;transform:translateY(-50%);}
+  .leg-path-dot{position:absolute;top:50%;width:8px;height:8px;border-radius:50%;background:var(--brass);border:2px solid #fff;box-shadow:0 0 0 1px var(--brass-dark);transform:translate(-50%,-50%);z-index:1;}
+  .leg-path-end{position:absolute;top:50%;width:6px;height:6px;border-radius:50%;background:var(--navy-3);transform:translate(-50%,-50%);z-index:1;}
   .leg-path-end.left{left:0;transform:translate(0,-50%);}
   .leg-path-end.right{right:0;left:auto;transform:translate(0,-50%);}
+  .leg-stop-list{display:flex;flex-wrap:wrap;justify-content:center;gap:3px 5px;margin-top:4px;}
+  .leg-stop-chip{
+    font-size:9.5px;padding:2px 6px;border-radius:999px;background:var(--paper);
+    border:1px solid var(--card-line);color:var(--slate);font-weight:600;line-height:1.25;
+    max-width:100%;
+  }
   .leg-stop-list{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;margin-top:5px;}
   .leg-stop-chip{font-size:10px;font-weight:700;color:var(--brass-dark);background:rgba(217,162,59,0.12);border:1px solid rgba(217,162,59,0.35);border-radius:999px;padding:2px 8px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
   .leg-stop-chip span{font-weight:500;color:var(--slate);margin-left:3px;}
@@ -1949,23 +1976,23 @@ function renderLeg(leg, label){
   const oCity = (leg.originCity || "").split(" /")[0];
   const dCity = (leg.destCity || "").split(" /")[0];
   const path = renderStopPath(leg);
-  const labelHtml = label
-    ? `<div class="leg-label" style="padding-top:4px;">${label}</div>`
-    : "";
-  return `<div class="leg-row">
-    ${labelHtml}
-    <div class="leg-side">
-      <div class="mono leg-time" style="font-size:17px;font-weight:600;line-height:1.1;">${leg.dep || "--:--"}</div>
-      <div class="leg-city" style="font-size:11px;color:#5B6478;margin-top:2px;"><b class="mono" style="color:var(--ink);">${oCode}</b>${oCity ? " · " + oCity : ""}</div>
-    </div>
-    <div class="leg-mid">
-      <div style="font-size:10.5px;color:#8A98A6;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">⏱ ${leg.duration || "—"} · ${stopsTxt}</div>
-      ${path}
-      <div class="mono" style="font-size:11px;font-weight:700;color:var(--navy-3);margin-top:3px;">${oCode} → ${dCode}</div>
-    </div>
-    <div class="leg-side right">
-      <div class="mono leg-time" style="font-size:17px;font-weight:600;line-height:1.1;">${leg.arr || "--:--"}</div>
-      <div class="leg-city" style="font-size:11px;color:#5B6478;margin-top:2px;">${dCity ? dCity + " · " : ""}<b class="mono" style="color:var(--ink);">${dCode}</b></div>
+  const tagClass = (label === "VOLTA") ? "leg-tag volta" : "leg-tag";
+  const tagHtml = label ? `<span class="${tagClass}">${label}</span>` : "";
+  return `<div class="leg-block">
+    ${tagHtml}
+    <div class="leg-row">
+      <div class="leg-side">
+        <div class="leg-time mono">${leg.dep || "--:--"}</div>
+        <div class="leg-city"><b class="mono">${oCode}</b>${oCity ? " · " + oCity : ""}</div>
+      </div>
+      <div class="leg-mid">
+        <div class="leg-dur">${leg.duration || "—"} · ${stopsTxt}</div>
+        ${path}
+      </div>
+      <div class="leg-side right">
+        <div class="leg-time mono">${leg.arr || "--:--"}</div>
+        <div class="leg-city">${dCity ? dCity + " · " : ""}<b class="mono">${dCode}</b></div>
+      </div>
     </div>
   </div>`;
 }
@@ -2016,36 +2043,30 @@ function renderTicket(r, isCheapest){
       <div class="ticket-top">
         ${airlineChipHtml(r.airline)}
         <span class="airline-name">${r.airline.name}</span>
-        ${typePill}
         ${isCheapest ? '<span class="best-chip">★ Melhor preço</span>' : ""}
         ${isRT && (r.selectionPhase === "outbound" || (!r.inbound && rtSearchPhase === "outbound")) ? '<span class="rt-phase-pill">1 · Ida</span>' : ""}
         ${isRT && (r.selectionPhase === "return" || rtSearchPhase === "return") ? '<span class="rt-phase-pill return">2 · Volta</span>' : ""}
-        <span class="mono" style="font-size:11px;color:var(--slate-soft);margin-left:auto;">${
+        <span class="ticket-stops-hint">${
           isRT && r.inbound
-            ? ("Ida " + ((r.outbound && r.outbound.stops) ? r.outbound.stops + " par." : "direto")
-               + " · Volta " + ((r.inbound.stops) ? r.inbound.stops + " par." : "direto"))
-            : (r.stops === 0 ? "Voo direto" : (r.stops || 0) + " parada" + ((r.stops||0)>1?"s":""))
+            ? (((r.outbound && r.outbound.stops) ? r.outbound.stops + " par." : "direto")
+               + " · "
+               + ((r.inbound.stops) ? r.inbound.stops + " par." : "direto"))
+            : (r.stops === 0 ? "Direto" : (r.stops || 0) + " parada" + ((r.stops||0)>1?"s":""))
         }</span>
       </div>
       ${legsHtml}
-      <div class="ticket-meta">
-        <span class="mono" style="font-size:10px;color:#B7C4DC;letter-spacing:1.2px;">REF ${r.locator}</span>
-        <span class="mono" style="font-size:11px;font-weight:700;color:var(--navy-3);background:var(--paper);border:1px solid var(--card-line);border-radius:6px;padding:2px 8px;">${depCode} → ${arrCode}</span>
-        <span style="font-size:11.5px;color:#8A98A6;">${bagTxt}</span>
-      </div>
     </div>
     <div class="ticket-right">
       ${hasMarket ? `<div class="market-price">${currency(r.marketValue)}</div>` : `<div class="pay-hint">Por adulto</div>`}
       <div class="final-price display">${currency(r.ourValue)}</div>
-      ${feeTxt}
-      ${hasMarket && pct > 0 ? `<div class="save-line">✓ ${pct}% mais barato</div>` : (r.offerType === "miles" ? '<div class="save-line">✓ Preço em milhas</div>' : "")}
+      ${hasMarket && pct > 0 ? `<div class="save-line">✓ ${pct}% menos</div>` : ""}
       <div class="pix-line">PIX ${currency(r.ourValue)}</div>
-      <div class="pay-hint">PIX ou cartão em até 6x</div>
+      <div class="pay-hint">ou cartão em até 6x</div>
       <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${
         (isRT && (r.selectionPhase === "outbound" || rtSearchPhase === "outbound") && !r.inbound)
-          ? "Escolher esta ida →"
+          ? "Escolher ida →"
           : (isRT && (r.selectionPhase === "return" || rtSearchPhase === "return")
-              ? "Escolher esta volta →"
+              ? "Escolher volta →"
               : "Selecionar →")
       }</button>
     </div>
@@ -4711,6 +4732,48 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
