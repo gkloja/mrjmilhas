@@ -1820,17 +1820,19 @@ const MILHAS_CPM = {
 };
 // Referência R$/milha "no dinheiro" p/ estimar milhas a partir do Google.
 // Ex.: Smiles 54.900 milhas · Google ~R$1.100 → 1100/0,02 ≈ 55k milhas → ×0,0185 ≈ R$1.017
+// REF = R$ de mercado por milha (converter Google → milhas). Deve ser > CPM.
+// GOL 0,020 · Azul 0,020 · LATAM 0,032  → sempre fica mais barato que o Google
 const REFERENCIA_RS_POR_MILHA = {
   gol: 0.020, g3: 0.020,
-  latam: 0.022, la: 0.022, jj: 0.022,
+  latam: 0.032, la: 0.032, jj: 0.032,
   azul: 0.020, ad: 0.020,
-  default: 0.020
+  default: 0.022
 };
 
 function airlineCpmKey(airline) {
   const s = String(airline || "").toLowerCase().trim();
   if (!s) return "default";
-  if (s.indexOf("latam") >= 0 || s === "la" || s === "jj") return "latam";
+  if (s.indexOf("latam") >= 0 || s === "la" || s === "jj" || s.indexOf("latam airlines") >= 0) return "latam";
   if (s.indexOf("gol") >= 0 || s === "g3") return "gol";
   if (s.indexOf("azul") >= 0 || s === "ad") return "azul";
   return "default";
@@ -4732,6 +4734,90 @@ document.getElementById("auth-google-btn")?.addEventListener("click", () => wind
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
