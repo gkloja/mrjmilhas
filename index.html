@@ -284,15 +284,18 @@
   .sort-btn.active{background:var(--brass);color:var(--navy);border-color:var(--brass);}
 
   .ticket{
-    position:relative;background:#fff;border-radius:14px;
+    position:relative;background:#fff;border-radius:16px;
     border:1px solid var(--card-line);
-    box-shadow:0 2px 12px rgba(20,30,55,0.06);
-    display:grid;grid-template-columns:minmax(0,1fr) 168px;
-    margin-bottom:12px;overflow:hidden;
-    transition:box-shadow .15s ease, border-color .15s ease;
+    box-shadow:0 4px 18px rgba(20,30,55,0.07);
+    display:grid;grid-template-columns:minmax(0,1fr) 178px;
+    margin-bottom:14px;overflow:hidden;
+    transition:box-shadow .18s ease, border-color .18s ease, transform .15s ease;
   }
-  .ticket:hover{box-shadow:0 8px 24px rgba(20,30,55,0.1);border-color:#d0c6a8;}
-  .ticket.is-best{border-color:var(--brass);box-shadow:0 4px 18px rgba(217,162,59,0.2);}
+  .ticket:hover{box-shadow:0 12px 32px rgba(20,30,55,0.12);border-color:#d0c6a8;transform:translateY(-1px);}
+  .ticket.is-best{border-color:var(--brass);box-shadow:0 6px 24px rgba(217,162,59,0.22);}
+  .ticket.is-best::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--brass);
+  }
   .ticket-notch,.ticket-divider{display:none;}
   .ticket-left{padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;}
   .ticket-right{
@@ -315,34 +318,123 @@
   .ticket .pay-hint{font-size:10.5px;color:var(--slate-soft);margin-top:1px;}
   .ticket-right .select-btn{margin-top:10px;padding:10px 0;font-size:13px;border-radius:10px;}
   .ticket-meta{
-    display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;padding-top:8px;
+    display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;padding-top:10px;
     border-top:1px dashed var(--card-line);
   }
   .meta-chip{
-    display:inline-flex;align-items:center;gap:4px;
+    display:inline-flex;align-items:center;gap:5px;
     font-size:11px;font-weight:600;color:var(--ink);
     background:var(--paper);border:1px solid var(--card-line);
-    border-radius:999px;padding:4px 9px;line-height:1.2;max-width:100%;
+    border-radius:999px;padding:5px 10px;line-height:1.2;max-width:100%;
   }
-  .meta-chip .meta-ico{font-size:11px;line-height:1;opacity:.9;}
+  .meta-chip .meta-ico{font-size:11px;line-height:1;opacity:.85;}
   .meta-chip.meta-direct{background:#E8F7EF;border-color:#B7E4C7;color:var(--green);}
+  .meta-chip.meta-stop{background:#FFF6E5;border-color:#E8D4A8;color:var(--brass-dark);}
   .meta-chip.meta-fee{color:var(--slate);}
   .meta-chip.meta-ref{font-size:10px;color:var(--slate-soft);font-weight:600;letter-spacing:.3px;}
+
+  /* ---- timeline profissional (escalas) ---- */
+  .leg-block{padding:10px 0 6px;}
+  .leg-block + .leg-block{border-top:1px dashed var(--card-line);margin-top:4px;}
+  .leg-block .leg-tag{
+    display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+    color:var(--blue);background:rgba(57,114,219,0.1);padding:3px 8px;border-radius:6px;margin-bottom:8px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .leg-block .leg-tag.volta{color:var(--green);background:rgba(30,143,95,0.1);}
+  .leg-row{
+    display:grid;grid-template-columns:minmax(72px,auto) minmax(0,1fr) minmax(72px,auto);
+    gap:8px 12px;align-items:start;width:100%;min-width:0;
+  }
+  .leg-time{font-size:20px;font-weight:800;line-height:1.1;color:var(--ink);font-family:'IBM Plex Mono',monospace;letter-spacing:-.5px;}
+  .leg-city{font-size:12px;color:var(--slate);margin-top:3px;line-height:1.35;}
+  .leg-city b{color:var(--ink);font-weight:800;font-size:12.5px;}
+  .leg-airport-name{font-size:11px;color:var(--slate-soft);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;}
+  .leg-side.right .leg-airport-name{margin-left:auto;}
+  .leg-mid{text-align:center;min-width:0;padding-top:2px;}
+  .leg-dur{
+    display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;
+    font-size:11.5px;font-weight:700;color:var(--navy);background:var(--paper);
+    border:1px solid var(--card-line);border-radius:999px;padding:3px 10px;margin-bottom:6px;
+  }
+  .leg-dur .ld-sep{color:var(--slate-soft);font-weight:500;}
+  .leg-path{position:relative;width:100%;padding:2px 0 0;}
+  .leg-path-track{position:relative;height:14px;display:flex;align-items:center;margin:0 4px;}
+  .leg-path-track::before{
+    content:"";position:absolute;left:6px;right:6px;top:50%;height:0;
+    border-top:2px solid #D4CBB0;transform:translateY(-50%);
+  }
+  .leg-path-end{
+    position:absolute;top:50%;width:8px;height:8px;border-radius:50%;
+    background:var(--navy);transform:translateY(-50%);z-index:1;box-shadow:0 0 0 2px #fff;
+  }
+  .leg-path-end.left{left:0;}
+  .leg-path-end.right{right:0;left:auto;}
+  .leg-path-dot{
+    position:absolute;top:50%;width:10px;height:10px;border-radius:50%;
+    background:var(--brass);border:2px solid #fff;box-shadow:0 0 0 1.5px var(--brass-dark);
+    transform:translate(-50%,-50%);z-index:2;
+  }
+  .leg-path-plane{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-size:11px;z-index:2;background:#fff;padding:0 3px;line-height:1;color:var(--brass-dark);
+  }
+  /* cards de escala — destaque profissional */
+  .layovers-box{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+  .layover-card{
+    display:grid;grid-template-columns:auto 1fr auto;gap:8px 10px;align-items:center;
+    background:linear-gradient(135deg,#FFFBF0,#F7F2E4);
+    border:1px solid #E8D9B0;border-radius:10px;padding:8px 12px;
+  }
+  .layover-card .lo-icon{
+    width:28px;height:28px;border-radius:8px;background:rgba(217,162,59,0.2);
+    display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;
+  }
+  .layover-card .lo-main{min-width:0;}
+  .layover-card .lo-title{font-size:12.5px;font-weight:800;color:var(--ink);line-height:1.25;}
+  .layover-card .lo-title b{font-family:'IBM Plex Mono',monospace;color:var(--brass-dark);}
+  .layover-card .lo-sub{font-size:11px;color:var(--slate);margin-top:1px;line-height:1.3;}
+  .layover-card .lo-wait{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:800;
+    color:var(--brass-dark);background:rgba(217,162,59,0.18);
+    border-radius:8px;padding:5px 9px;white-space:nowrap;text-align:center;line-height:1.2;
+  }
+  .layover-card .lo-wait small{display:block;font-size:9px;font-weight:600;color:var(--slate);letter-spacing:.3px;text-transform:uppercase;}
+  .leg-direct-badge{
+    display:inline-flex;align-items:center;gap:5px;margin-top:8px;
+    font-size:11.5px;font-weight:700;color:var(--green);
+    background:#E8F7EF;border:1px solid #B7E4C7;border-radius:8px;padding:5px 10px;
+  }
   .leg-flights{
-    margin-top:6px;font-size:11px;color:var(--slate);display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;
+    margin-top:8px;display:flex;flex-wrap:wrap;align-items:center;gap:5px 8px;
+    font-size:11.5px;color:var(--slate);
   }
   .leg-flights-label{
-    font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.4px;
+    font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.5px;
     text-transform:uppercase;color:var(--slate-soft);
   }
-  .leg-flights b{color:var(--ink);font-weight:700;}
-  .leg-overnight{
-    display:inline-block;margin-left:5px;font-size:9.5px;font-weight:800;font-family:'IBM Plex Mono',monospace;
-    color:var(--brass-dark);background:rgba(217,162,59,0.18);border-radius:4px;padding:1px 5px;
-    vertical-align:middle;letter-spacing:.2px;
+  .leg-flight-pill{
+    display:inline-flex;align-items:center;gap:4px;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:var(--ink);
+    background:#fff;border:1px solid var(--card-line);border-radius:6px;padding:3px 8px;
   }
-  .leg-time{font-size:18px;}
-  .leg-dur{font-size:11px;color:var(--slate);font-weight:700;}
+  .leg-flight-pill span{font-weight:500;color:var(--slate);font-size:10px;}
+  .leg-overnight{
+    display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;font-family:'IBM Plex Mono',monospace;
+    color:#fff;background:var(--navy-3);border-radius:4px;padding:2px 6px;vertical-align:middle;
+  }
+  .ticket-left{padding:16px 18px;gap:8px;}
+  .ticket .final-price{font-size:22px;}
+  .ticket-right{padding:16px 14px;}
+  .seg-list{display:flex;flex-direction:column;gap:4px;margin-top:8px;padding-left:2px;}
+  .seg-row{
+    display:grid;grid-template-columns:auto 1fr auto;gap:6px 8px;align-items:center;
+    font-size:11px;color:var(--slate);padding:4px 0;
+  }
+  .seg-row .seg-num{font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--ink);font-size:11px;}
+  .seg-row .seg-route{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .seg-row .seg-dur{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--slate-soft);}
+
   @media (min-width:881px){
     .ticket{grid-template-columns:minmax(0,1fr) 180px;}
   }
@@ -601,7 +693,7 @@
     .ticket-right .select-btn{grid-column:1 / -1;margin-top:6px;}
     .ticket .final-price{font-size:18px;margin:0;}
     .leg-row{grid-template-columns:64px minmax(0,1fr) 64px !important;gap:4px 6px;}
-    .leg-time{font-size:14px !important;}
+    .leg-time{font-size:17px !important;}
     .leg-city{font-size:10px !important;}
     .leg-row{
       display:grid !important;
@@ -614,7 +706,7 @@
     }
     .leg-row > div{min-width:0;}
     .leg-label{width:auto;font-size:9px;padding-top:2px;}
-    .leg-time{font-size:15px !important;}
+    .leg-time{font-size:17px !important;}
     .leg-city{font-size:10px !important;line-height:1.25;overflow:hidden;text-overflow:ellipsis;}
     .leg-path{max-width:100%;overflow:hidden;}
     .leg-path-track{margin:0 2px;}
@@ -632,10 +724,13 @@
       text-align:center;
       line-height:1.3;
     }
-    .ticket-meta{gap:5px;margin-top:8px;padding-top:8px;}
-    .meta-chip{font-size:10.5px;padding:3px 8px;}
-    .leg-flights{font-size:10.5px;}
-    .leg-time{font-size:16px !important;}
+    .ticket-meta{gap:5px;margin-top:8px;}
+    .meta-chip{font-size:10.5px;padding:4px 8px;}
+    .leg-time{font-size:17px !important;}
+    .layover-card{grid-template-columns:auto 1fr;gap:6px 8px;padding:8px 10px;}
+    .layover-card .lo-wait{grid-column:1 / -1;justify-self:start;margin-top:2px;}
+    .leg-airport-name{max-width:90px;font-size:10px;}
+    .leg-flight-pill{font-size:10px;}
     .best-badge{left:12px;font-size:9.5px;padding:5px 10px;}
   }
   /* Segurança geral: ticket nunca estoura horizontal */
@@ -700,41 +795,9 @@
   .type-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.2px;}
   .type-pill.miles{background:#E8F7EF;color:var(--green);}
   .type-pill.revenue{background:var(--paper);color:var(--navy-3);}
-  .leg-block{padding:8px 0 4px;border-top:1px solid #F0EBE0;}
-  .leg-block:first-of-type{border-top:none;padding-top:0;}
-  .leg-block .leg-tag{
-    display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
-    color:var(--blue);background:rgba(57,114,219,0.1);padding:2px 7px;border-radius:5px;margin-bottom:6px;
-    font-family:'IBM Plex Mono',monospace;
-  }
-  .leg-block .leg-tag.volta{color:var(--green);background:rgba(30,143,95,0.1);}
-  .leg-row{
-    display:grid;grid-template-columns:72px minmax(0,1fr) 72px;
-    gap:6px 8px;align-items:start;width:100%;min-width:0;
-  }
   .leg-row .leg-side{min-width:0;}
   .leg-row .leg-side.right{text-align:right;}
-  .leg-row .leg-mid{min-width:0;text-align:center;padding-top:2px;}
-  .leg-time{font-size:16px;font-weight:700;line-height:1.15;color:var(--ink);font-family:'IBM Plex Mono',monospace;}
-  .leg-city{font-size:11px;color:var(--slate);margin-top:2px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .leg-city b{color:var(--ink);font-weight:700;}
-  .leg-dur{font-size:10.5px;color:var(--slate-soft);font-weight:600;margin-bottom:2px;}
-  .leg-path{position:relative;padding:0;width:100%;overflow:hidden;}
-  .leg-path-track{position:relative;height:12px;display:flex;align-items:center;}
-  .leg-path-track::before{content:"";position:absolute;left:4px;right:4px;top:50%;height:0;border-top:1.5px dashed #D0C8B0;transform:translateY(-50%);}
-  .leg-path-dot{position:absolute;top:50%;width:8px;height:8px;border-radius:50%;background:var(--brass);border:2px solid #fff;box-shadow:0 0 0 1px var(--brass-dark);transform:translate(-50%,-50%);z-index:1;}
-  .leg-path-end{position:absolute;top:50%;width:6px;height:6px;border-radius:50%;background:var(--navy-3);transform:translate(-50%,-50%);z-index:1;}
-  .leg-path-end.left{left:0;transform:translate(0,-50%);}
-  .leg-path-end.right{right:0;left:auto;transform:translate(0,-50%);}
-  .leg-stop-list{display:flex;flex-wrap:wrap;justify-content:center;gap:3px 5px;margin-top:4px;}
-  .leg-stop-chip{
-    font-size:9.5px;padding:2px 6px;border-radius:999px;background:var(--paper);
-    border:1px solid var(--card-line);color:var(--slate);font-weight:600;line-height:1.25;
-    max-width:100%;
-  }
-  .leg-stop-list{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;margin-top:5px;}
-  .leg-stop-chip{font-size:10px;font-weight:700;color:var(--brass-dark);background:rgba(217,162,59,0.12);border:1px solid rgba(217,162,59,0.35);border-radius:999px;padding:2px 8px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
-  .leg-stop-chip span{font-weight:500;color:var(--slate);margin-left:3px;}
+  .leg-row .leg-mid{min-width:0;text-align:center;}
   .leg-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--brass-dark);letter-spacing:.5px;width:36px;flex-shrink:0;}
   .fee-line{font-size:11.5px;color:var(--slate);margin-top:2px;}
   .ticket-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;}
@@ -1971,67 +2034,118 @@ function fmtHoraCurta(v){
   return m ? m[1] : "";
 }
 
-/** Linha traçada com pontos de parada + chips (aeroporto + horários) */
+/** Timeline visual + cards de escala com cidade, aeroporto e tempo de conexão */
 function renderStopPath(leg){
   const lays = Array.isArray(leg.layovers) ? leg.layovers : [];
   const n = lays.length;
   let dots = "";
   for (let i = 0; i < n; i++) {
     const pct = ((i + 1) / (n + 1)) * 100;
-    dots += `<span class="leg-path-dot" style="left:${pct.toFixed(1)}%" title="${lays[i].airport || lays[i].city || "Parada"}"></span>`;
+    const tip = (lays[i].airport || "") + (lays[i].city ? " · " + lays[i].city : "");
+    dots += `<span class="leg-path-dot" style="left:${pct.toFixed(1)}%" title="${String(tip).replace(/"/g,"&quot;")}"></span>`;
   }
-  const chips = lays.map(function(l){
-    const code = l.airport || l.city || "?";
-    const arrT = fmtHoraCurta(l.arrTime);
-    const depT = fmtHoraCurta(l.depTime);
-    let hor = "";
-    if (arrT && depT) hor = arrT + "→" + depT;
-    else if (arrT) hor = "cheg. " + arrT;
-    else if (depT) hor = "sai " + depT;
-    else if (l.durationText) hor = l.durationText;
-    return `<span class="leg-stop-chip">${code}${hor ? "<span>" + hor + "</span>" : ""}${l.durationText && (arrT || depT) ? "<span>· " + l.durationText + "</span>" : ""}</span>`;
-  }).join("");
+  const plane = n === 0 ? '<span class="leg-path-plane" aria-hidden="true">✈</span>' : "";
   return `<div class="leg-path">
     <div class="leg-path-track">
       <span class="leg-path-end left"></span>
-      ${dots}
+      ${dots}${plane}
       <span class="leg-path-end right"></span>
     </div>
-    ${chips ? `<div class="leg-stop-list">${chips}</div>` : ""}
   </div>`;
+}
+
+function cityFromAirportCode(code){
+  if (!code) return "";
+  try {
+    const a = (typeof AIRPORT_BY_CODE !== "undefined") ? AIRPORT_BY_CODE[code] : null;
+    if (a && a.city) return String(a.city).split(" /")[0];
+  } catch (_) {}
+  return "";
+}
+
+function renderLayoversBox(leg){
+  const lays = Array.isArray(leg.layovers) ? leg.layovers : [];
+  if (!lays.length) {
+    return `<div class="leg-direct-badge">✦ Voo direto · sem escalas</div>`;
+  }
+  const cards = lays.map(function(l, idx){
+    const code = (l.airport || "").toUpperCase() || "?";
+    let city = (l.city || "").split(",")[0].trim();
+    // Se city veio como nome do aeroporto longo, tenta mapear pelo código
+    if (!city || city === code || city.length > 40) {
+      city = cityFromAirportCode(code) || city || code;
+    }
+    // Encurta nomes tipo "São Paulo–Guarulhos International Airport"
+    if (city.length > 28) city = city.slice(0, 26) + "…";
+    const arrT = fmtHoraCurta(l.arrTime);
+    const depT = fmtHoraCurta(l.depTime);
+    let horario = "";
+    if (arrT && depT) horario = "Chega " + arrT + " · sai " + depT;
+    else if (arrT) horario = "Chegada " + arrT;
+    else if (depT) horario = "Saída " + depT;
+    const wait = l.durationText || (l.durationMin != null ? (Math.floor(l.durationMin/60) + "h" + String(l.durationMin%60).padStart(2,"0") + "m") : "");
+    return `<div class="layover-card">
+      <div class="lo-icon">⏱</div>
+      <div class="lo-main">
+        <div class="lo-title">Escala em <b>${code}</b>${city && city !== code ? " · " + city : ""}</div>
+        <div class="lo-sub">${horario || ("Conexão " + (idx + 1) + (lays.length > 1 ? " de " + lays.length : ""))}</div>
+      </div>
+      ${wait ? `<div class="lo-wait"><small>espera</small>${wait}</div>` : `<div class="lo-wait"><small>escala</small>—</div>`}
+    </div>`;
+  }).join("");
+  return `<div class="layovers-box">${cards}</div>`;
+}
+
+function renderSegmentsLine(leg){
+  const segs = Array.isArray(leg.segments) ? leg.segments : [];
+  if (!segs.length) return "";
+  const pills = segs.map(function(s){
+    const num = s.flightNumber || s.flight_number || s.number || "";
+    if (!num) return "";
+    const carrier = (s.airline || s.carrier || "").toString().toUpperCase();
+    const dep = s.depAirport || "";
+    const arr = s.arrAirport || "";
+    const route = (dep && arr) ? (dep + "→" + arr) : "";
+    const label = (carrier && String(num).toUpperCase().indexOf(carrier) !== 0)
+      ? (carrier + " " + num)
+      : String(num);
+    return `<span class="leg-flight-pill">${label}${route ? "<span>" + route + "</span>" : ""}</span>`;
+  }).filter(Boolean);
+  if (!pills.length) return "";
+  return `<div class="leg-flights"><span class="leg-flights-label">Trechos</span>${pills.join("")}</div>`;
 }
 
 function renderLeg(leg, label){
   if(!leg) return "";
-  const stopsTxt = leg.stops === 0 ? "Direto" : (leg.stops + " parada" + (leg.stops>1?"s":""));
+  const nStops = leg.stops != null ? Number(leg.stops) : (Array.isArray(leg.layovers) ? leg.layovers.length : 0);
+  const stopsTxt = nStops === 0 ? "Direto" : (nStops + " escala" + (nStops > 1 ? "s" : ""));
   const oCode = leg.originCode || "";
   const dCode = leg.destCode || "";
-  const oCity = (leg.originCity || "").split(" /")[0];
-  const dCity = (leg.destCity || "").split(" /")[0];
+  const oCity = (leg.originCity || cityFromAirportCode(oCode) || "").split(" /")[0];
+  const dCity = (leg.destCity || cityFromAirportCode(dCode) || "").split(" /")[0];
+  // Nome do aeroporto (quando temos no catálogo)
+  let oName = "", dName = "";
+  try {
+    if (typeof AIRPORT_BY_CODE !== "undefined") {
+      if (AIRPORT_BY_CODE[oCode] && AIRPORT_BY_CODE[oCode].name && !AIRPORT_BY_CODE[oCode].metro)
+        oName = AIRPORT_BY_CODE[oCode].name;
+      if (AIRPORT_BY_CODE[dCode] && AIRPORT_BY_CODE[dCode].name && !AIRPORT_BY_CODE[dCode].metro)
+        dName = AIRPORT_BY_CODE[dCode].name;
+    }
+  } catch (_) {}
   const path = renderStopPath(leg);
   const tagClass = (label === "VOLTA") ? "leg-tag volta" : "leg-tag";
-  const tagHtml = label ? `<span class="${tagClass}">${label}</span>` : "";
-
-  const segs = Array.isArray(leg.segments) ? leg.segments : [];
-  let flightNums = segs.map(function(s){
-    const num = s.flightNumber || s.flight_number || s.number || s.flight || "";
-    const carrier = s.airline || s.carrier || s.operatingCarrier || "";
-    const code = String(num).trim();
-    if (!code) return "";
-    if (carrier && code.toUpperCase().indexOf(String(carrier).toUpperCase()) === 0) return code;
-    return (carrier ? String(carrier).toUpperCase() + " " : "") + code;
-  }).filter(Boolean);
-  flightNums = flightNums.filter(function(v, i, a){ return a.indexOf(v) === i; });
-  const flightLine = flightNums.length
-    ? `<div class="leg-flights"><span class="leg-flights-label">Voo</span> ${flightNums.slice(0, 3).map(function(n){ return '<b class="mono">' + n + '</b>'; }).join(" · ")}${flightNums.length > 3 ? " +" + (flightNums.length - 3) : ""}</div>`
-    : "";
+  const tagHtml = label ? `<span class="${tagClass}">${label === "IDA" ? "→ Ida" : (label === "VOLTA" ? "← Volta" : label)}</span>` : "";
 
   let overnight = "";
   try {
     const depH = parseInt(String(leg.dep || "").split(":")[0], 10);
     const arrH = parseInt(String(leg.arr || "").split(":")[0], 10);
-    if (!isNaN(depH) && !isNaN(arrH) && arrH < depH) overnight = '<span class="leg-overnight" title="Chegada no dia seguinte">+1 dia</span>';
+    if (!isNaN(depH) && !isNaN(arrH) && arrH < depH)
+      overnight = '<span class="leg-overnight" title="Chegada no dia seguinte">+1 dia</span>';
   } catch (_) {}
+
+  const durBadge = `<div class="leg-dur"><span>${leg.duration || "—"}</span><span class="ld-sep">·</span><span>${stopsTxt}</span></div>`;
 
   return `<div class="leg-block">
     ${tagHtml}
@@ -2039,17 +2153,20 @@ function renderLeg(leg, label){
       <div class="leg-side">
         <div class="leg-time mono">${leg.dep || "--:--"}</div>
         <div class="leg-city"><b class="mono">${oCode}</b>${oCity ? " · " + oCity : ""}</div>
+        ${oName ? `<div class="leg-airport-name">${oName}</div>` : ""}
       </div>
       <div class="leg-mid">
-        <div class="leg-dur">${leg.duration || "—"} · ${stopsTxt}</div>
+        ${durBadge}
         ${path}
       </div>
       <div class="leg-side right">
         <div class="leg-time mono">${leg.arr || "--:--"}${overnight}</div>
         <div class="leg-city">${dCity ? dCity + " · " : ""}<b class="mono">${dCode}</b></div>
+        ${dName ? `<div class="leg-airport-name">${dName}</div>` : ""}
       </div>
     </div>
-    ${flightLine}
+    ${renderLayoversBox(leg)}
+    ${renderSegmentsLine(leg)}
   </div>`;
 }
 
@@ -2094,26 +2211,32 @@ function renderTicket(r, isCheapest){
     `Olá! Quero emitir essa passagem:\n${originCity} (${depCode}) → ${destCity} (${arrCode})\n${r.airline.name} · ${currency(r.ourValue)}\n${r.dep || ""} / ${r.arr || ""}\nRef: ${r.locator}`
   );
   const selectHref = `https://wa.me/5521967026563?text=${waText}`;
-  const stopsLabel = isRT && r.inbound
-    ? (((r.outbound && r.outbound.stops) ? r.outbound.stops + " par. ida" : "Direto ida")
-       + " · "
-       + ((r.inbound.stops) ? r.inbound.stops + " par. volta" : "Direto volta"))
-    : (r.stops === 0 ? "Voo direto" : (r.stops || 0) + " parada" + ((r.stops||0)>1?"s":""));
-  const durLabel = r.duration
-    || (r.outbound && r.outbound.duration)
-    || "";
-  const bagLabel = r.baggage
-    ? String(r.baggage)
-    : "Bagagem de mão";
+  // Resumo das escalas (texto curto no topo)
+  let stopsHint = "";
+  const lays = r.layovers || (r.outbound && r.outbound.layovers) || [];
+  if (isRT && r.inbound) {
+    const oS = (r.outbound && r.outbound.stops) || 0;
+    const iS = r.inbound.stops || 0;
+    stopsHint = (oS === 0 ? "Ida direta" : oS + " esc. ida") + " · " + (iS === 0 ? "volta direta" : iS + " esc. volta");
+  } else if ((r.stops || 0) === 0) {
+    stopsHint = "Voo direto";
+  } else if (lays.length) {
+    stopsHint = "Via " + lays.map(function(l){ return (l.airport || "").toUpperCase(); }).filter(Boolean).join(" · ");
+  } else {
+    stopsHint = (r.stops || 0) + " escala" + ((r.stops || 0) > 1 ? "s" : "");
+  }
+
+  const bagLabel = r.baggage ? String(r.baggage) : "Bagagem de mão";
   const feeLabel = r.fees ? ("Taxas " + currency(r.fees)) : "";
+  const durLabel = r.duration || (r.outbound && r.outbound.duration) || "";
+  const isDirect = (r.stops || 0) === 0 && !(r.inbound && r.inbound.stops);
   const metaChips = `
     <div class="ticket-meta">
       ${typePill}
-      ${durLabel ? `<span class="meta-chip"><span class="meta-ico">⏱</span>${durLabel}</span>` : ""}
-      <span class="meta-chip ${r.stops === 0 && !(r.inbound && r.inbound.stops) ? "meta-direct" : ""}"><span class="meta-ico">✈</span>${stopsLabel}</span>
+      ${durLabel ? `<span class="meta-chip"><span class="meta-ico">⏱</span>${durLabel} total</span>` : ""}
+      <span class="meta-chip ${isDirect ? "meta-direct" : "meta-stop"}"><span class="meta-ico">${isDirect ? "✦" : "↻"}</span>${stopsHint}</span>
       <span class="meta-chip"><span class="meta-ico">🧳</span>${bagLabel}</span>
       ${feeLabel ? `<span class="meta-chip meta-fee"><span class="meta-ico">🧾</span>${feeLabel}</span>` : ""}
-      ${r.locator ? `<span class="meta-chip meta-ref mono">Ref ${r.locator}</span>` : ""}
     </div>`;
 
   return `
@@ -2125,6 +2248,7 @@ function renderTicket(r, isCheapest){
         ${isCheapest ? '<span class="best-chip">★ Melhor preço</span>' : ""}
         ${isRT && (r.selectionPhase === "outbound" || (!r.inbound && rtSearchPhase === "outbound")) ? '<span class="rt-phase-pill">1 · Ida</span>' : ""}
         ${isRT && (r.selectionPhase === "return" || rtSearchPhase === "return") ? '<span class="rt-phase-pill return">2 · Volta</span>' : ""}
+        <span class="ticket-stops-hint">${stopsHint}</span>
       </div>
       ${legsHtml}
       ${metaChips}
