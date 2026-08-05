@@ -2063,6 +2063,27 @@ function cityFromAirportCode(code){
   return "";
 }
 
+/** Converte nome longo de aeroporto em cidade legível */
+function shortCityName(raw, code){
+  let s = String(raw || "").trim();
+  if (!s || s === code) {
+    return cityFromAirportCode(code) || code || "";
+  }
+  // "Aeroporto Internacional de Brasília - Presidente..." → tenta extrair cidade
+  const m = s.match(/de\s+([A-Za-zÀ-ú\s]+?)(?:\s*-|\s*\(|$)/i)
+         || s.match(/Internacional\s+([A-Za-zÀ-ú\s]+?)(?:\s*-|\s*\(|$)/i);
+  if (m && m[1]) {
+    s = m[1].trim();
+  }
+  // Remove sufixos comuns
+  s = s.replace(/\s*-\s*.*$/, "").replace(/\s*\(.*?\)\s*$/, "").trim();
+  if (s.length > 22) s = s.slice(0, 20) + "…";
+  // Preferir catálogo local se existir
+  const fromCode = cityFromAirportCode(code);
+  if (fromCode) return fromCode;
+  return s || code || "";
+}
+
 function renderLayoversBox(leg){
   const lays = Array.isArray(leg.layovers) ? leg.layovers : [];
   if (!lays.length) {
@@ -2070,20 +2091,14 @@ function renderLayoversBox(leg){
   }
   const cards = lays.map(function(l, idx){
     const code = (l.airport || "").toUpperCase() || "?";
-    let city = (l.city || "").split(",")[0].trim();
-    // Se city veio como nome do aeroporto longo, tenta mapear pelo código
-    if (!city || city === code || city.length > 40) {
-      city = cityFromAirportCode(code) || city || code;
-    }
-    // Encurta nomes tipo "São Paulo–Guarulhos International Airport"
-    if (city.length > 28) city = city.slice(0, 26) + "…";
+    const city = shortCityName(l.city, code);
     const arrT = fmtHoraCurta(l.arrTime);
     const depT = fmtHoraCurta(l.depTime);
     let horario = "";
     if (arrT && depT) horario = "Chega " + arrT + " · sai " + depT;
     else if (arrT) horario = "Chegada " + arrT;
     else if (depT) horario = "Saída " + depT;
-    const wait = l.durationText || (l.durationMin != null ? (Math.floor(l.durationMin/60) + "h" + String(l.durationMin%60).padStart(2,"0") + "m") : "");
+    const wait = l.durationText || (l.durationMin != null ? (Math.floor(l.durationMin/60) + "h" + String(Math.round(l.durationMin%60)).padStart(2,"0") + "m") : "");
     return `<div class="layover-card">
       <div class="lo-icon">⏱</div>
       <div class="lo-main">
@@ -2183,28 +2198,43 @@ function renderTicket(r, isCheapest){
     ? '<span class="type-pill miles">✦ Em milhas</span>'
     : (r.offerType === "revenue" ? '<span class="type-pill revenue">Tarifa</span>' : "");
   const bagTxt = r.baggage ? ("🧳 " + r.baggage) : "Só bagagem de mão";
-  const isRT = r.tripType === "RT" || !!(r.outbound && r.inbound)
-    || (typeof tripType !== "undefined" && tripType === "RT")
-    || r.selectionPhase === "outbound" || r.selectionPhase === "return";
-  let legsHtml = "";
-  if (isRT) {
-    legsHtml = renderLeg(r.outbound, "IDA") + renderLeg(r.inbound, "VOLTA");
-  } else {
-    // Só ida: reutiliza renderLeg com o mesmo visual de paradas
-    const owLeg = {
-      dep: r.dep,
-      arr: r.arr,
-      duration: r.duration,
-      stops: r.stops || 0,
-      originCode: depCode,
-      destCode: arrCode,
-      originCity: originCity,
-      destCity: destCity,
-      layovers: r.layovers || [],
-      connectionText: r.connectionText || null,
-      segments: r.segments || []
+  // Só é ida-e-volta se REALMENTE tiver as duas pernas mapeadas.
+  // (Antes selectionPhase:"outbound" forçava isRT=true e sumia o card da só-ida.)
+  const hasOut = !!(r.outbound && (r.outbound.dep || r.outbound.originCode));
+  const hasIn  = !!(r.inbound  && (r.inbound.dep  || r.inbound.originCode));
+  const isRT = (hasOut && hasIn) || (r.tripType === "RT" && hasOut);
+  const isSelectingOutbound = !hasIn && (
+    r.selectionPhase === "outbound"
+    || (typeof rtSearchPhase !== "undefined" && rtSearchPhase === "outbound" && typeof tripType !== "undefined" && tripType === "RT")
+  );
+  const isSelectingReturn = hasIn || r.selectionPhase === "return"
+    || (typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return");
+
+  function buildFlatLeg(src) {
+    return {
+      dep: src.dep,
+      arr: src.arr,
+      duration: src.duration,
+      stops: src.stops || 0,
+      originCode: src.depAirport || src.originCode || depCode,
+      destCode: src.arrAirport || src.destCode || arrCode,
+      originCity: src.originCity || originCity,
+      destCity: src.destCity || destCity,
+      layovers: src.layovers || [],
+      connectionText: src.connectionText || null,
+      segments: src.segments || []
     };
-    legsHtml = renderLeg(owLeg, "");
+  }
+
+  let legsHtml = "";
+  if (hasOut && hasIn) {
+    legsHtml = renderLeg(r.outbound, "IDA") + renderLeg(r.inbound, "VOLTA");
+  } else if (hasOut) {
+    // Passo 1 do ida-e-volta: só a ida
+    legsHtml = renderLeg(r.outbound, "IDA");
+  } else {
+    // Formato plano do backend (maioria das buscas só-ida)
+    legsHtml = renderLeg(buildFlatLeg(r), "");
   }
   const feeTxt = r.fees ? `<div class="fee-line">Taxas inclusas: ${currency(r.fees)}</div>` : "";
   const waText = encodeURIComponent(
@@ -2214,11 +2244,11 @@ function renderTicket(r, isCheapest){
   // Resumo das escalas (texto curto no topo)
   let stopsHint = "";
   const lays = r.layovers || (r.outbound && r.outbound.layovers) || [];
-  if (isRT && r.inbound) {
+  if (hasOut && hasIn) {
     const oS = (r.outbound && r.outbound.stops) || 0;
-    const iS = r.inbound.stops || 0;
+    const iS = (r.inbound && r.inbound.stops) || 0;
     stopsHint = (oS === 0 ? "Ida direta" : oS + " esc. ida") + " · " + (iS === 0 ? "volta direta" : iS + " esc. volta");
-  } else if ((r.stops || 0) === 0) {
+  } else if ((r.stops || 0) === 0 && !lays.length) {
     stopsHint = "Voo direto";
   } else if (lays.length) {
     stopsHint = "Via " + lays.map(function(l){ return (l.airport || "").toUpperCase(); }).filter(Boolean).join(" · ");
@@ -2229,7 +2259,7 @@ function renderTicket(r, isCheapest){
   const bagLabel = r.baggage ? String(r.baggage) : "Bagagem de mão";
   const feeLabel = r.fees ? ("Taxas " + currency(r.fees)) : "";
   const durLabel = r.duration || (r.outbound && r.outbound.duration) || "";
-  const isDirect = (r.stops || 0) === 0 && !(r.inbound && r.inbound.stops);
+  const isDirect = (r.stops || 0) === 0 && !(lays && lays.length) && !(r.inbound && r.inbound.stops);
   const metaChips = `
     <div class="ticket-meta">
       ${typePill}
@@ -2240,14 +2270,14 @@ function renderTicket(r, isCheapest){
     </div>`;
 
   return `
-  <div class="ticket${isRT ? " rt" : ""}${isCheapest ? " is-best" : ""}">
+  <div class="ticket${(hasOut && hasIn) ? " rt" : ""}${isCheapest ? " is-best" : ""}">
     <div class="ticket-left">
       <div class="ticket-top">
         ${airlineChipHtml(r.airline)}
         <span class="airline-name">${r.airline.name}</span>
         ${isCheapest ? '<span class="best-chip">★ Melhor preço</span>' : ""}
-        ${isRT && (r.selectionPhase === "outbound" || (!r.inbound && rtSearchPhase === "outbound")) ? '<span class="rt-phase-pill">1 · Ida</span>' : ""}
-        ${isRT && (r.selectionPhase === "return" || rtSearchPhase === "return") ? '<span class="rt-phase-pill return">2 · Volta</span>' : ""}
+        ${(typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "outbound" && !hasIn) ? '<span class="rt-phase-pill">1 · Ida</span>' : ""}
+        ${(typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return") ? '<span class="rt-phase-pill return">2 · Volta</span>' : ""}
         <span class="ticket-stops-hint">${stopsHint}</span>
       </div>
       ${legsHtml}
@@ -2261,9 +2291,9 @@ function renderTicket(r, isCheapest){
       <div class="pay-hint">ou cartão em até 6x</div>
       ${feeTxt}
       <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${
-        (isRT && (r.selectionPhase === "outbound" || rtSearchPhase === "outbound") && !r.inbound)
+        (typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "outbound" && !hasIn)
           ? "Escolher ida →"
-          : (isRT && (r.selectionPhase === "return" || rtSearchPhase === "return")
+          : (typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return"
               ? "Escolher volta →"
               : "Selecionar →")
       }</button>
@@ -2569,7 +2599,8 @@ function mapOferta(o){
     : (o.stops || 0);
   const durationSec = outbound
     ? (outbound.durationSec + (inbound ? inbound.durationSec : 0))
-    : (typeof o.minDuration === "number" ? o.minDuration : 0);
+    : (typeof o.durationMin === "number" ? o.durationMin * 60
+      : (typeof o.minDuration === "number" ? o.minDuration : 0));
   const duration = o.minDurationText
     || (outbound ? (outbound.duration + (inbound ? " + " + inbound.duration : "")) : null)
     || o.duration
@@ -2615,7 +2646,7 @@ function mapOferta(o){
     layovers: o.layovers || (outbound && outbound.layovers) || [],
     segments: o.segments || (outbound && outbound.segments) || [],
     tripType: o.tripType || (inbound ? "RT" : "OW"),
-    selectionPhase: o.selectionPhase || (inbound ? "return" : "outbound"),
+    selectionPhase: o.selectionPhase || (inbound ? "return" : (outbound ? "outbound" : "ow")),
     departureToken: o.departureToken || o.departure_token || null,
     locator: String(o.offerId || o.id || "MARUJO").replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase() || "MARUJO",
     rawOfferId: o.offerId || o.id || null,
