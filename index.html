@@ -2361,16 +2361,7 @@ function renderTicket(r, isCheapest){
     : (taxaEmb != null ? (taxaEmb + (taxaExtraSP || 0)) : null);
   const taxaOrigem = r.taxaOrigem || r.depAirport || "";
   const totalComTaxa = (Number(r.ourValue) || 0) + (taxaTot > 0 ? taxaTot : 0);
-  let feeTxt = "";
-  if (taxaTot != null && taxaTot > 0) {
-    let detail = taxaOrigem ? ("origem " + taxaOrigem) : "origem";
-    if (taxaExtraSP > 0 && r.taxaExtraSPDetail) {
-      detail += " + " + r.taxaExtraSPDetail;
-    }
-    feeTxt = `<div class="fee-line fee-boarding">+ taxa de embarque ${currency(taxaTot)} <span class="fee-hint">(${detail})</span></div>`;
-  } else if (r.fees) {
-    feeTxt = `<div class="fee-line">Taxas: ${currency(r.fees)}</div>`;
-  }
+  // taxa detalhada omitida no card (evita duplicar com "Total c/ taxa")
   const waText = encodeURIComponent(
     `Olá! Quero emitir essa passagem:\n${originCity} (${depCode}) → ${destCity} (${arrCode})\n${r.airline.name} · ${currency(r.ourValue)}\n${r.dep || ""} / ${r.arr || ""}\nRef: ${r.locator}`
   );
@@ -2402,7 +2393,7 @@ function renderTicket(r, isCheapest){
       ${durLabel ? `<span class="meta-chip"><span class="meta-ico">⏱</span>${durLabel} total</span>` : ""}
       <span class="meta-chip ${isDirect ? "meta-direct" : "meta-stop"}"><span class="meta-ico">${isDirect ? "✦" : "↻"}</span>${stopsHint}</span>
       <span class="meta-chip"><span class="meta-ico">🧳</span>${bagLabel}</span>
-      ${feeLabel ? `<span class="meta-chip meta-fee"><span class="meta-ico">🧾</span>${feeLabel}</span>` : ""}
+
     </div>`;
 
   return `
@@ -2424,10 +2415,8 @@ function renderTicket(r, isCheapest){
       <div class="final-price display">${currency(r.ourValue)}</div>
       ${hasMarket && pct > 0 ? `<div class="save-line">✓ Economize ${pct}%</div>` : ""}
       <div class="pix-line">PIX ${currency(r.ourValue)}</div>
-      ${taxaTot > 0 ? `<div class="price-with-tax">+ taxa ${currency(taxaTot)}</div>
-      <div class="price-total-tax">Total c/ taxa ${currency(totalComTaxa)}</div>` : ""}
+      ${taxaTot > 0 ? `<div class="price-total-tax">Total c/ taxa ${currency(totalComTaxa)}</div>` : ""}
       <div class="pay-hint">ou cartão em até 6x</div>
-      ${feeTxt}
       <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-boarding-fees="${taxaTot > 0 ? taxaTot : 0}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${
         (typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "outbound" && !hasIn)
           ? "Escolher ida →"
@@ -2492,51 +2481,122 @@ const AIRPORTS = [
   { code:"BSB", city:"Brasília", name:"Presidente Juscelino Kubitschek", country:"Brasil", pop:1 },
   { code:"CNF", city:"Belo Horizonte", name:"Confins / Tancredo Neves", country:"Brasil", pop:1 },
   { code:"PLU", city:"Belo Horizonte", name:"Pampulha", country:"Brasil" },
-  { code:"SSA", city:"Salvador", name:"Salvador", country:"Brasil", pop:1 },
-  { code:"REC", city:"Recife", name:"Recife/Guararapes", country:"Brasil", pop:1 },
+  { code:"SSA", city:"Salvador", name:"Luis Eduardo Magalhães", country:"Brasil", pop:1 },
+  { code:"REC", city:"Recife", name:"Guararapes / Gilberto Freyre", country:"Brasil", pop:1 },
   { code:"FOR", city:"Fortaleza", name:"Pinto Martins", country:"Brasil", pop:1 },
   { code:"POA", city:"Porto Alegre", name:"Salgado Filho", country:"Brasil", pop:1 },
   { code:"CWB", city:"Curitiba", name:"Afonso Pena", country:"Brasil", pop:1 },
-  { code:"FLN", city:"Florianópolis", name:"Hercílio Luz", country:"Brasil" },
-  { code:"VIX", city:"Vitória", name:"Eurico de Aguiar Salles", country:"Brasil" },
-  { code:"BEL", city:"Belém", name:"Val de Cans", country:"Brasil" },
-  { code:"MAO", city:"Manaus", name:"Eduardo Gomes", country:"Brasil" },
-  { code:"GYN", city:"Goiânia", name:"Santa Genoveva", country:"Brasil" },
-  { code:"CGB", city:"Cuiabá", name:"Marechal Rondon", country:"Brasil" },
-  { code:"NAT", city:"Natal", name:"Governador Aluízio Alves", country:"Brasil" },
-  { code:"MCZ", city:"Maceió", name:"Zumbi dos Palmares", country:"Brasil" },
-  { code:"JPA", city:"João Pessoa", name:"Castro Pinto", country:"Brasil" },
-  { code:"AJU", city:"Aracaju", name:"Santa Maria", country:"Brasil" },
-  { code:"THE", city:"Teresina", name:"Senador Petrônio Portella", country:"Brasil" },
-  { code:"SLZ", city:"São Luís", name:"Marechal Cunha Machado", country:"Brasil" },
+  { code:"FLN", city:"Florianópolis", name:"Hercílio Luz", country:"Brasil", pop:1 },
+  { code:"VIX", city:"Vitória", name:"Eurico de Aguiar Salles", country:"Brasil", pop:1 },
+  { code:"GYN", city:"Goiânia", name:"Santa Genoveva", country:"Brasil", pop:1 },
+  { code:"CGB", city:"Cuiabá", name:"Marechal Rondon", country:"Brasil", pop:1 },
+  { code:"CGR", city:"Campo Grande", name:"Campo Grande", country:"Brasil", pop:1 },
+  { code:"MAO", city:"Manaus", name:"Eduardo Gomes", country:"Brasil", pop:1 },
+  { code:"BEL", city:"Belém", name:"Val de Cans / Júlio Cezar Ribeiro", country:"Brasil", pop:1 },
+  { code:"SLZ", city:"São Luís", name:"Marechal Cunha Machado", country:"Brasil", pop:1 },
+  { code:"NAT", city:"Natal", name:"Aluízio Alves / São Gonçalo do Amarante", country:"Brasil", pop:1 },
+  { code:"MCZ", city:"Maceió", name:"Zumbi dos Palmares", country:"Brasil", pop:1 },
+  { code:"AJU", city:"Aracaju", name:"Santa Maria", country:"Brasil", pop:1 },
+  { code:"JPA", city:"João Pessoa", name:"Presidente Castro Pinto", country:"Brasil", pop:1 },
+  { code:"THE", city:"Teresina", name:"Senador Petrônio Portella", country:"Brasil", pop:1 },
+  { code:"BPS", city:"Porto Seguro", name:"Porto Seguro", country:"Brasil", pop:1 },
   { code:"IOS", city:"Ilhéus", name:"Jorge Amado", country:"Brasil" },
+  { code:"IGU", city:"Foz do Iguaçu", name:"Cataratas", country:"Brasil", pop:1 },
+  { code:"JOI", city:"Joinville", name:"Lauro Carneiro de Loyola", country:"Brasil" },
+  { code:"NVT", city:"Navegantes", name:"Ministro Victor Konder", country:"Brasil", pop:1 },
+  { code:"LDB", city:"Londrina", name:"Governador José Richa", country:"Brasil" },
+  { code:"MGF", city:"Maringá", name:"Sílvio Name Júnior", country:"Brasil" },
+  { code:"UDI", city:"Uberlândia", name:"Ten. Cel. Aviador César Bombonato", country:"Brasil" },
+  { code:"RAO", city:"Ribeirão Preto", name:"Leite Lopes", country:"Brasil" },
+  { code:"SJP", city:"São José do Rio Preto", name:"Prof. Eribelto Manoel Reino", country:"Brasil" },
+  { code:"SJK", city:"São José dos Campos", name:"Professor Urbano Ernesto Stumpf", country:"Brasil" },
+  { code:"IZA", city:"Juiz de Fora", name:"Presidente Itamar Franco", country:"Brasil" },
+  { code:"MOC", city:"Montes Claros", name:"Mário Ribeiro", country:"Brasil" },
+  { code:"UBA", city:"Uberaba", name:"Mário de Almeida Franco", country:"Brasil" },
+  { code:"IPN", city:"Ipatinga", name:"Usiminas", country:"Brasil" },
+  { code:"VAG", city:"Varginha", name:"Maj. Brig. Trompowsky", country:"Brasil" },
+  { code:"CFB", city:"Cabo Frio", name:"Cabo Frio", country:"Brasil" },
+  { code:"PMW", city:"Palmas", name:"Brigadeiro Lysias Rodrigues", country:"Brasil" },
+  { code:"IMP", city:"Imperatriz", name:"Prefeito Renato Moreira", country:"Brasil" },
   { code:"PVH", city:"Porto Velho", name:"Governador Jorge Teixeira", country:"Brasil" },
   { code:"RBR", city:"Rio Branco", name:"Plácido de Castro", country:"Brasil" },
-  { code:"BPS", city:"Porto Seguro", name:"Porto Seguro", country:"Brasil" },
-  { code:"IGU", city:"Foz do Iguaçu", name:"Cataratas", country:"Brasil" },
-  { code:"JOI", city:"Joinville", name:"Lauro Carneiro de Loyola", country:"Brasil" },
-  { code:"LIS", city:"Lisboa", name:"Humberto Delgado", country:"Portugal", pop:1 },
-  { code:"OPO", city:"Porto", name:"Francisco Sá Carneiro", country:"Portugal", pop:1 },
-  { code:"MAD", city:"Madri", name:"Barajas", country:"Espanha" },
-  { code:"BCN", city:"Barcelona", name:"El Prat", country:"Espanha" },
-  { code:"CDG", city:"Paris", name:"Charles de Gaulle", country:"França", pop:1 },
-  { code:"FCO", city:"Roma", name:"Fiumicino", country:"Itália" },
-  { code:"LHR", city:"Londres", name:"Heathrow", country:"Reino Unido" },
-  { code:"FRA", city:"Frankfurt", name:"Frankfurt", country:"Alemanha" },
-  { code:"AMS", city:"Amsterdã", name:"Schiphol", country:"Holanda" },
-  { code:"MIA", city:"Miami", name:"Miami Intl.", country:"EUA", pop:1 },
-  { code:"MCO", city:"Orlando", name:"Orlando Intl.", country:"EUA", pop:1 },
-  { code:"JFK", city:"Nova York", name:"John F. Kennedy", country:"EUA" },
-  { code:"EWR", city:"Nova York", name:"Newark", country:"EUA" },
-  { code:"LAX", city:"Los Angeles", name:"Los Angeles Intl.", country:"EUA" },
-  { code:"EZE", city:"Buenos Aires", name:"Ministro Pistarini", country:"Argentina", pop:1 },
-  { code:"SCL", city:"Santiago", name:"Arturo Merino Benítez", country:"Chile" },
-  { code:"LIM", city:"Lima", name:"Jorge Chávez", country:"Peru" },
-  { code:"BOG", city:"Bogotá", name:"El Dorado", country:"Colômbia" },
-  { code:"CUN", city:"Cancún", name:"Cancún Intl.", country:"México", pop:1 },
-  { code:"PUJ", city:"Punta Cana", name:"Punta Cana Intl.", country:"Rep. Dominicana", pop:1 },
-  { code:"MEX", city:"Cidade do México", name:"Benito Juárez", country:"México" },
-  { code:"DXB", city:"Dubai", name:"Dubai Intl.", country:"Emirados Árabes" },
+  { code:"BVB", city:"Boa Vista", name:"Atlas Brasil Cantanhede", country:"Brasil" },
+  { code:"MCP", city:"Macapá", name:"Alberto Alcolumbre", country:"Brasil" },
+  { code:"STM", city:"Santarém", name:"Maestro Wilson Fonseca", country:"Brasil" },
+  { code:"PIN", city:"Parintins", name:"Júlio Belém", country:"Brasil" },
+  { code:"TBT", city:"Tabatinga", name:"Tabatinga", country:"Brasil" },
+  { code:"CZS", city:"Cruzeiro do Sul", name:"Cruzeiro do Sul", country:"Brasil" },
+  { code:"TFF", city:"Tefé", name:"Tefé", country:"Brasil" },
+  { code:"CIZ", city:"Coari", name:"Coari", country:"Brasil" },
+  { code:"HUW", city:"Humaitá", name:"Humaitá", country:"Brasil" },
+  { code:"LBR", city:"Lábrea", name:"Lábrea", country:"Brasil" },
+  { code:"FBA", city:"Fonte Boa", name:"Fonte Boa", country:"Brasil" },
+  { code:"SJL", city:"São Gabriel da Cachoeira", name:"São Gabriel da Cachoeira", country:"Brasil" },
+  { code:"ERN", city:"Eirunepé", name:"Amaury Feitosa Tomaz", country:"Brasil" },
+  { code:"JPR", city:"Ji-Paraná", name:"José Coleto", country:"Brasil" },
+  { code:"BVH", city:"Vilhena", name:"Brigadeiro Camarão", country:"Brasil" },
+  { code:"OAL", city:"Cacoal", name:"Capital do Café", country:"Brasil" },
+  { code:"OPS", city:"Sinop", name:"Presidente João Batista Figueiredo", country:"Brasil" },
+  { code:"AFL", city:"Alta Floresta", name:"Piloto Osvaldo Marques Dias", country:"Brasil" },
+  { code:"SMT", city:"Sorriso", name:"Adolino Bedin", country:"Brasil" },
+  { code:"ROO", city:"Rondonópolis", name:"Maestro Marinho Franco", country:"Brasil" },
+  { code:"AUX", city:"Araguaína", name:"Araguaína", country:"Brasil" },
+  { code:"CKS", city:"Parauapebas / Carajás", name:"Carajás", country:"Brasil" },
+  { code:"MAB", city:"Marabá", name:"João Correa da Rocha", country:"Brasil" },
+  { code:"ATM", city:"Altamira", name:"Altamira", country:"Brasil" },
+  { code:"ITB", city:"Itaituba", name:"Itaituba", country:"Brasil" },
+  { code:"TMT", city:"Trombetas", name:"Trombetas", country:"Brasil" },
+  { code:"TUR", city:"Tucuruí", name:"Tucuruí", country:"Brasil" },
+  { code:"FEN", city:"Fernando de Noronha", name:"Fernando de Noronha", country:"Brasil" },
+  { code:"CPV", city:"Campina Grande", name:"Presidente João Suassuna", country:"Brasil" },
+  { code:"JDO", city:"Juazeiro do Norte", name:"Orlando Bezerra de Menezes", country:"Brasil" },
+  { code:"PNZ", city:"Petrolina", name:"Senador Nilo Coelho", country:"Brasil" },
+  { code:"PHB", city:"Parnaíba", name:"Prefeito Dr. João Silva Filho", country:"Brasil" },
+  { code:"JJD", city:"Jericoacoara", name:"Jericoacoara", country:"Brasil" },
+  { code:"BRA", city:"Barreiras", name:"Barreiras", country:"Brasil" },
+  { code:"VDC", city:"Vitória da Conquista", name:"Glauber Rocha", country:"Brasil" },
+  { code:"TXF", city:"Teixeira de Freitas", name:"9 de Maio", country:"Brasil" },
+  { code:"UNA", city:"Una / Comandatuba", name:"Una-Comandatuba", country:"Brasil" },
+  { code:"CAC", city:"Cascavel", name:"Adalberto Mendes da Silva", country:"Brasil" },
+  { code:"XAP", city:"Chapecó", name:"Serafin Enoss Bertaso", country:"Brasil" },
+  { code:"CXJ", city:"Caxias do Sul", name:"Hugo Cantergiani", country:"Brasil" },
+  { code:"PFB", city:"Passo Fundo", name:"Lauro Kurtz", country:"Brasil" },
+  { code:"PET", city:"Pelotas", name:"João Simões Lopes Neto", country:"Brasil" },
+  { code:"RIA", city:"Santa Maria", name:"Santa Maria", country:"Brasil" },
+  { code:"URG", city:"Uruguaiana", name:"Ruben Berta", country:"Brasil" },
+  { code:"GEL", city:"Santo Ângelo", name:"Sepé Tiaraju", country:"Brasil" },
+  { code:"JJG", city:"Jaguaruna", name:"Humberto Ghizzo Bortoluzzi", country:"Brasil" },
+  { code:"PPB", city:"Presidente Prudente", name:"Presidente Prudente", country:"Brasil" },
+  { code:"ARU", city:"Araçatuba", name:"Dario Guarita", country:"Brasil" },
+  { code:"MII", city:"Marília", name:"Frank Miloye Milenkovich", country:"Brasil" },
+  { code:"JTC", city:"Bauru / Arealva", name:"Moussa Nakhl Tobias", country:"Brasil" },
+  { code:"BYO", city:"Bonito", name:"Bonito", country:"Brasil" },
+  { code:"DOU", city:"Dourados", name:"Francisco de Matos Pereira", country:"Brasil" },
+  { code:"CMG", city:"Corumbá", name:"Corumbá", country:"Brasil" },
+
+  // Internacional
+  { code:"AMS", city:"Amsterdã", name:"Schiphol", country:"Holanda" }
+  { code:"BCN", city:"Barcelona", name:"El Prat", country:"Espanha" }
+  { code:"BOG", city:"Bogotá", name:"El Dorado", country:"Colômbia" }
+  { code:"CDG", city:"Paris", name:"Charles de Gaulle", country:"França", pop:1 }
+  { code:"CUN", city:"Cancún", name:"Cancún Intl.", country:"México", pop:1 }
+  { code:"DXB", city:"Dubai", name:"Dubai Intl.", country:"Emirados Árabes" }
+  { code:"EWR", city:"Nova York", name:"Newark", country:"EUA" }
+  { code:"EZE", city:"Buenos Aires", name:"Ministro Pistarini", country:"Argentina", pop:1 }
+  { code:"FCO", city:"Roma", name:"Fiumicino", country:"Itália" }
+  { code:"FRA", city:"Frankfurt", name:"Frankfurt", country:"Alemanha" }
+  { code:"JFK", city:"Nova York", name:"John F. Kennedy", country:"EUA" }
+  { code:"LAX", city:"Los Angeles", name:"Los Angeles Intl.", country:"EUA" }
+  { code:"LHR", city:"Londres", name:"Heathrow", country:"Reino Unido" }
+  { code:"LIM", city:"Lima", name:"Jorge Chávez", country:"Peru" }
+  { code:"LIS", city:"Lisboa", name:"Humberto Delgado", country:"Portugal", pop:1 }
+  { code:"MAD", city:"Madri", name:"Barajas", country:"Espanha" }
+  { code:"MCO", city:"Orlando", name:"Orlando Intl.", country:"EUA", pop:1 }
+  { code:"MEX", city:"Cidade do México", name:"Benito Juárez", country:"México" }
+  { code:"MIA", city:"Miami", name:"Miami Intl.", country:"EUA", pop:1 }
+  { code:"OPO", city:"Porto", name:"Francisco Sá Carneiro", country:"Portugal", pop:1 }
+  { code:"PUJ", city:"Punta Cana", name:"Punta Cana Intl.", country:"Rep. Dominicana", pop:1 }
+  { code:"SCL", city:"Santiago", name:"Arturo Merino Benítez", country:"Chile" }
 ];
 const AIRPORT_BY_CODE = Object.fromEntries(AIRPORTS.map(a => [a.code, a]));
 
