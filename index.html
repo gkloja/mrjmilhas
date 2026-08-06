@@ -799,7 +799,12 @@
   .leg-row .leg-side.right{text-align:right;}
   .leg-row .leg-mid{min-width:0;text-align:center;}
   .leg-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--brass-dark);letter-spacing:.5px;width:36px;flex-shrink:0;}
-  .fee-line{font-size:11.5px;color:var(--slate);margin-top:2px;}
+  .fee-line{font-size:11.5px;color:var(--slate);margin-top:4px;line-height:1.35;}
+  .fee-line.fee-boarding{color:var(--navy-3);font-weight:600;}
+  .fee-line .fee-hint{font-weight:500;color:var(--slate-soft);font-size:10.5px;}
+  .ticket-right .final-price + .save-line + .pix-line,
+  .ticket-right .fee-boarding{margin-top:6px;}
+  .price-with-tax{font-size:11px;color:var(--slate);margin-top:2px;font-weight:500;}
   .ticket-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;}
   .results-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
   .ticket.rt .ticket-left{gap:10px;}
@@ -1904,6 +1909,60 @@ const TESTIMONIALS = [
 
 const AVATAR_COLORS = ["#3972DB", "#D9A23B", "#0E1930", "#C1432D", "#1E8F5F", "#7A4FC4", "#D8792A", "#2B8FA8"];
 function currency(v){ return v.toLocaleString("pt-BR", { style:"currency", currency:"BRL" }); }
+
+// =========================================================
+// Taxa de embarque doméstica por aeroporto (referência ~2026)
+// Fonte: sites oficiais / ANAC / levantamentos de mercado.
+// Valores mudam com portarias — usar como ESTIMATIVA no site.
+// =========================================================
+const TAXA_EMBARQUE_DOM = {
+  // Sudeste
+  GRU: 35.75, CGH: 62.14, VCP: 33.44, GIG: 35.91, SDU: 62.62,
+  CNF: 33.56, PLU: 33.56, VIX: 51.66,
+  // Centro-Oeste
+  BSB: 34.55, CGB: 29.25, CGR: 38.39, GYN: 50.42,
+  // Sul
+  POA: 59.46, CWB: 46.72, FLN: 53.96, NVT: 46.72, JOI: 46.72,
+  // Nordeste
+  REC: 60.54, SSA: 52.72, FOR: 56.88, NAT: 46.20, MCZ: 51.44,
+  AJU: 52.04, JPA: 54.09, THE: 50.65, SLZ: 49.73, BPS: 51.44,
+  // Norte
+  MAO: 55.17, BEL: 54.45, PVH: 56.78, RBR: 56.78, BVB: 56.78,
+  MCP: 51.92, STM: 54.45, CZS: 55.17, TBT: 55.17, PIN: 55.17,
+  // Outros comuns
+  IGU: 46.72, LDB: 46.72, UDI: 33.56, RAO: 33.56, PPB: 33.56,
+  JDO: 54.09, CPQ: 33.44, SJK: 33.44, QSC: 33.44
+};
+const TAXA_EMBARQUE_DEFAULT = 48.00; // média aproximada BR
+const TAXA_CONEXAO_DEFAULT = 15.00;
+
+/** Taxa de embarque estimada do aeroporto de origem (doméstico). */
+function getTaxaEmbarque(code) {
+  const c = String(code || "").toUpperCase().trim();
+  if (!c) return TAXA_EMBARQUE_DEFAULT;
+  if (TAXA_EMBARQUE_DOM[c] != null) return TAXA_EMBARQUE_DOM[c];
+  return TAXA_EMBARQUE_DEFAULT;
+}
+
+/**
+ * Estima taxas aeroportuárias do itinerário:
+ * - embarque no aeroporto de partida
+ * - + tarifa de conexão aproximada por escala (se houver)
+ */
+function estimarTaxasAeroporto(depCode, stops, layovers) {
+  const emb = getTaxaEmbarque(depCode);
+  const nStops = Math.max(0, Number(stops) || 0, Array.isArray(layovers) ? layovers.length : 0);
+  // Conexão: valor aproximado; se soubermos o aeroporto da escala, poderíamos afinar depois
+  const conexao = nStops > 0 ? Math.round(TAXA_CONEXAO_DEFAULT * nStops * 100) / 100 : 0;
+  const total = Math.round((emb + conexao) * 100) / 100;
+  return {
+    embarque: Math.round(emb * 100) / 100,
+    conexao,
+    total,
+    origem: String(depCode || "").toUpperCase() || "—"
+  };
+}
+
 // Preço Marujo's = milhas × CPM da companhia
 // Latam 0,028 | Gol 0,0185 | Azul 0,018  (R$ por milha)
 const MILHAS_CPM = {
@@ -2236,7 +2295,18 @@ function renderTicket(r, isCheapest){
     // Formato plano do backend (maioria das buscas só-ida)
     legsHtml = renderLeg(buildFlatLeg(r), "");
   }
-  const feeTxt = r.fees ? `<div class="fee-line">Taxas inclusas: ${currency(r.fees)}</div>` : "";
+  const taxaEmb = r.taxaEmbarque != null ? Number(r.taxaEmbarque) : (r.boardingFees != null ? Number(r.boardingFees) : null);
+  const taxaTot = r.boardingFees != null ? Number(r.boardingFees) : taxaEmb;
+  const taxaOrigem = r.taxaOrigem || r.depAirport || "";
+  let feeTxt = "";
+  if (taxaTot != null && taxaTot > 0) {
+    const conexNote = (r.taxaConexao && r.taxaConexao > 0)
+      ? ` · incl. conexão ~${currency(r.taxaConexao)}`
+      : "";
+    feeTxt = `<div class="fee-line fee-boarding">+ taxa de embarque ~${currency(taxaTot)} <span class="fee-hint">(${taxaOrigem || "origem"}${conexNote})</span></div>`;
+  } else if (r.fees) {
+    feeTxt = `<div class="fee-line">Taxas: ${currency(r.fees)}</div>`;
+  }
   const waText = encodeURIComponent(
     `Olá! Quero emitir essa passagem:\n${originCity} (${depCode}) → ${destCity} (${arrCode})\n${r.airline.name} · ${currency(r.ourValue)}\n${r.dep || ""} / ${r.arr || ""}\nRef: ${r.locator}`
   );
@@ -2257,7 +2327,9 @@ function renderTicket(r, isCheapest){
   }
 
   const bagLabel = r.baggage ? String(r.baggage) : "Bagagem de mão";
-  const feeLabel = r.fees ? ("Taxas " + currency(r.fees)) : "";
+  const feeLabel = (taxaTot != null && taxaTot > 0)
+    ? ("+ embarque ~" + currency(taxaTot))
+    : (r.fees ? ("Taxas " + currency(r.fees)) : "");
   const durLabel = r.duration || (r.outbound && r.outbound.duration) || "";
   const isDirect = (r.stops || 0) === 0 && !(lays && lays.length) && !(r.inbound && r.inbound.stops);
   const metaChips = `
@@ -2288,6 +2360,7 @@ function renderTicket(r, isCheapest){
       <div class="final-price display">${currency(r.ourValue)}</div>
       ${hasMarket && pct > 0 ? `<div class="save-line">✓ Economize ${pct}%</div>` : ""}
       <div class="pix-line">PIX ${currency(r.ourValue)}</div>
+      ${taxaTot > 0 ? `<div class="price-with-tax">+ taxas aeroporto ~${currency(taxaTot)}</div>` : ""}
       <div class="pay-hint">ou cartão em até 6x</div>
       ${feeTxt}
       <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${
@@ -2578,6 +2651,13 @@ function mapOferta(o){
   // Backend já aplica CPM → totalPrice vem pronto (discountApplied). Senão calcula aqui.
   const total = o.discountApplied ? bruto : precoMarujo(bruto, airlineKey, o.miles ? { milhas: o.miles } : {});
   const fees = o.fees != null ? Math.round(Number(o.fees)) : null;
+  // Taxa de embarque estimada pelo aeroporto de partida (se backend não mandar)
+  const _depForTax = o.depAirport || (o.outbound && (o.outbound.depAirport || o.outbound.departure)) || "";
+  const _stopsForTax = o.stops != null ? o.stops : (Array.isArray(o.layovers) ? o.layovers.length : 0);
+  const _taxEst = estimarTaxasAeroporto(_depForTax, _stopsForTax, o.layovers);
+  const boardingFees = o.boardingFees != null
+    ? Math.round(Number(o.boardingFees))
+    : _taxEst.total;
 
   // Formato MaxMilhas combo (outbound/inbound) OU formato plano do backend
   let outbound = null, inbound = null;
@@ -2627,7 +2707,10 @@ function mapOferta(o){
     discountPct: o.discountPct != null ? o.discountPct : discountPctFor(market, total),
     fees,
     serviceCharge: o.serviceCharge != null ? Math.round(Number(o.serviceCharge)) : null,
-    boardingFees: o.boardingFees != null ? Math.round(Number(o.boardingFees)) : null,
+    boardingFees: boardingFees,
+    taxaEmbarque: _taxEst.embarque,
+    taxaConexao: _taxEst.conexao,
+    taxaOrigem: _taxEst.origem,
     stops,
     duration,
     durationSec,
