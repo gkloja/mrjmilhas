@@ -982,7 +982,9 @@
   .pax-trip{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px;}
   .pax-trip .pt-route{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;}
   .pax-trip .pt-meta{font-size:12.5px;color:#C2D0EC;margin-top:6px;line-height:1.45;}
-  .pax-trip .pt-price{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--brass-soft);margin-top:8px;font-weight:600;}
+  .pax-trip .pt-tax{font-size:12.5px;color:var(--brass-soft);margin-top:6px;font-weight:600;}
+  .pt-price-total{font-size:15px;font-weight:800;color:#fff;margin-top:4px;}
+  .pt-price{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--brass-soft);margin-top:8px;font-weight:600;}
   .pax-block{border:1px solid var(--card-line);border-radius:16px;margin-bottom:14px;background:#FFFEFA;overflow:hidden;}
   .pax-block-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;background:var(--paper);border-bottom:1px solid var(--card-line);}
   .pax-block-head h4{margin:0;font-size:13px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase;color:var(--brass-dark);}
@@ -1949,16 +1951,49 @@ function getTaxaEmbarque(code) {
  * - embarque no aeroporto de partida
  * - + tarifa de conexão aproximada por escala (se houver)
  */
-function estimarTaxasAeroporto(depCode, stops, layovers) {
+function estimarTaxasAeroporto(depCode, stops, layovers, segments) {
+  // 1) Taxa de embarque do aeroporto de ORIGEM (sempre)
   const emb = getTaxaEmbarque(depCode);
-  const nStops = Math.max(0, Number(stops) || 0, Array.isArray(layovers) ? layovers.length : 0);
-  // Conexão: valor aproximado; se soubermos o aeroporto da escala, poderíamos afinar depois
-  const conexao = nStops > 0 ? Math.round(TAXA_CONEXAO_DEFAULT * nStops * 100) / 100 : 0;
-  const total = Math.round((emb + conexao) * 100) / 100;
+
+  // 2) Escala NORMAL no mesmo aeroporto → NÃO cobra taxa extra
+  // 3) Troca de aeroporto em São Paulo (GRU / CGH / VCP) → cobra embarque no 2º aeroporto
+  const SP = { GRU: 1, CGH: 1, VCP: 1 };
+  let extraSP = 0;
+  let extraSPDetail = "";
+  const segs = Array.isArray(segments) ? segments : [];
+  const codes = [];
+  if (depCode) codes.push(String(depCode).toUpperCase());
+  segs.forEach(function (s) {
+    const a = (s.depAirport || s.departure_airport || s.from || "").toString().toUpperCase();
+    const b = (s.arrAirport || s.arrival_airport || s.to || "").toString().toUpperCase();
+    if (a) codes.push(a);
+    if (b) codes.push(b);
+  });
+  if (Array.isArray(layovers)) {
+    layovers.forEach(function (l) {
+      const c = (l.airport || "").toString().toUpperCase();
+      if (c) codes.push(c);
+    });
+  }
+  // Detecta sequência com dois aeroportos SP diferentes (troca terrestre)
+  const spSeen = [];
+  codes.forEach(function (c) {
+    if (SP[c] && spSeen.indexOf(c) < 0) spSeen.push(c);
+  });
+  if (spSeen.length >= 2) {
+    // Cobra a taxa do segundo aeroporto SP (onde reembarca)
+    const segundo = spSeen[1];
+    extraSP = getTaxaEmbarque(segundo);
+    extraSPDetail = "troca " + spSeen[0] + "→" + segundo;
+  }
+
+  const total = Math.round((emb + extraSP) * 100) / 100;
   return {
     embarque: Math.round(emb * 100) / 100,
-    conexao,
-    total,
+    conexao: 0, // escala normal não gera taxa extra
+    extraSP: Math.round(extraSP * 100) / 100,
+    extraSPDetail: extraSPDetail,
+    total: total,
     origem: String(depCode || "").toUpperCase() || "—"
   };
 }
@@ -2295,15 +2330,19 @@ function renderTicket(r, isCheapest){
     // Formato plano do backend (maioria das buscas só-ida)
     legsHtml = renderLeg(buildFlatLeg(r), "");
   }
-  const taxaEmb = r.taxaEmbarque != null ? Number(r.taxaEmbarque) : (r.boardingFees != null ? Number(r.boardingFees) : null);
-  const taxaTot = r.boardingFees != null ? Number(r.boardingFees) : taxaEmb;
+  const taxaEmb = r.taxaEmbarque != null ? Number(r.taxaEmbarque) : null;
+  const taxaExtraSP = r.taxaExtraSP != null ? Number(r.taxaExtraSP) : 0;
+  const taxaTot = r.boardingFees != null ? Number(r.boardingFees)
+    : (taxaEmb != null ? (taxaEmb + (taxaExtraSP || 0)) : null);
   const taxaOrigem = r.taxaOrigem || r.depAirport || "";
+  const totalComTaxa = (Number(r.ourValue) || 0) + (taxaTot > 0 ? taxaTot : 0);
   let feeTxt = "";
   if (taxaTot != null && taxaTot > 0) {
-    const conexNote = (r.taxaConexao && r.taxaConexao > 0)
-      ? ` · incl. conexão ~${currency(r.taxaConexao)}`
-      : "";
-    feeTxt = `<div class="fee-line fee-boarding">+ taxa de embarque ~${currency(taxaTot)} <span class="fee-hint">(${taxaOrigem || "origem"}${conexNote})</span></div>`;
+    let detail = taxaOrigem ? ("origem " + taxaOrigem) : "origem";
+    if (taxaExtraSP > 0 && r.taxaExtraSPDetail) {
+      detail += " + " + r.taxaExtraSPDetail;
+    }
+    feeTxt = `<div class="fee-line fee-boarding">+ taxa de embarque ${currency(taxaTot)} <span class="fee-hint">(${detail})</span></div>`;
   } else if (r.fees) {
     feeTxt = `<div class="fee-line">Taxas: ${currency(r.fees)}</div>`;
   }
@@ -2328,7 +2367,7 @@ function renderTicket(r, isCheapest){
 
   const bagLabel = r.baggage ? String(r.baggage) : "Bagagem de mão";
   const feeLabel = (taxaTot != null && taxaTot > 0)
-    ? ("+ embarque ~" + currency(taxaTot))
+    ? ("+ taxa " + currency(taxaTot))
     : (r.fees ? ("Taxas " + currency(r.fees)) : "");
   const durLabel = r.duration || (r.outbound && r.outbound.duration) || "";
   const isDirect = (r.stops || 0) === 0 && !(lays && lays.length) && !(r.inbound && r.inbound.stops);
@@ -2360,10 +2399,11 @@ function renderTicket(r, isCheapest){
       <div class="final-price display">${currency(r.ourValue)}</div>
       ${hasMarket && pct > 0 ? `<div class="save-line">✓ Economize ${pct}%</div>` : ""}
       <div class="pix-line">PIX ${currency(r.ourValue)}</div>
-      ${taxaTot > 0 ? `<div class="price-with-tax">+ taxas aeroporto ~${currency(taxaTot)}</div>` : ""}
+      ${taxaTot > 0 ? `<div class="price-with-tax">+ taxa ${currency(taxaTot)}</div>
+      <div class="price-total-tax">Total c/ taxa ${currency(totalComTaxa)}</div>` : ""}
       <div class="pay-hint">ou cartão em até 6x</div>
       ${feeTxt}
-      <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${
+      <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-boarding-fees="${taxaTot > 0 ? taxaTot : 0}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${
         (typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "outbound" && !hasIn)
           ? "Escolher ida →"
           : (typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return"
@@ -2654,7 +2694,7 @@ function mapOferta(o){
   // Taxa de embarque estimada pelo aeroporto de partida (se backend não mandar)
   const _depForTax = o.depAirport || (o.outbound && (o.outbound.depAirport || o.outbound.departure)) || "";
   const _stopsForTax = o.stops != null ? o.stops : (Array.isArray(o.layovers) ? o.layovers.length : 0);
-  const _taxEst = estimarTaxasAeroporto(_depForTax, _stopsForTax, o.layovers);
+  const _taxEst = estimarTaxasAeroporto(_depForTax, _stopsForTax, o.layovers, o.segments);
   const boardingFees = o.boardingFees != null
     ? Math.round(Number(o.boardingFees))
     : _taxEst.total;
@@ -2709,7 +2749,9 @@ function mapOferta(o){
     serviceCharge: o.serviceCharge != null ? Math.round(Number(o.serviceCharge)) : null,
     boardingFees: boardingFees,
     taxaEmbarque: _taxEst.embarque,
-    taxaConexao: _taxEst.conexao,
+    taxaConexao: _taxEst.conexao || 0,
+    taxaExtraSP: _taxEst.extraSP || 0,
+    taxaExtraSPDetail: _taxEst.extraSPDetail || "",
     taxaOrigem: _taxEst.origem,
     stops,
     duration,
@@ -4337,12 +4379,20 @@ function mmUpdatePaxTripSummary(flight, n) {
       </div>
     </div>` : "";
 
+  const taxaUnit = Number(flight.boardingFees || flight.taxaEmbarque || 0) || 0;
+  const unitComTaxa = unitPrice + taxaUnit;
+  const totalComTaxa = unitComTaxa * n;
+  pendingFlight.taxaUnit = taxaUnit;
+  pendingFlight.priceComTaxa = unitComTaxa;
+
   document.getElementById("pax-trip-summary").innerHTML = `
     <div class="pt-route">${flight.route || ""}</div>
     <div class="pt-meta">${flight.airline || "Companhia"}${flight.dep || flight.arr ? " · " + (flight.dep || "—") + " → " + (flight.arr || "—") : ""}
       ${dataIda ? "<br>Ida " + dataIda : ""}${!isOW && retDate ? " · Volta " + retDate : ""}
       <br>${n} passageiro${n>1?"s":""} · ${tripTypeLabel}${flight.locator ? " · Ref " + flight.locator : ""}</div>
-    <div class="pt-price">PIX ${currency(unitPrice)} · por adulto${n>1 ? " · total ref. " + currency(totalRef) : ""}</div>
+    <div class="pt-price">PIX ${currency(unitPrice)} · por adulto</div>
+    ${taxaUnit > 0 ? `<div class="pt-tax">+ taxa de embarque ${currency(taxaUnit)} <span style="opacity:.85">(inclusa no total)</span></div>
+    <div class="pt-price-total">Total ${currency(unitComTaxa)}${n>1 ? " × " + n + " = " + currency(totalComTaxa) : ""} · taxas inclusas</div>` : (n>1 ? `<div class="pt-price-total">Total ref. ${currency(totalRef)}</div>` : "")}
     ${paxChooser}
   `;
 
@@ -4362,13 +4412,26 @@ function mmUpdatePaxTripSummary(flight, n) {
         const u = mmEffectiveUser();
         mmUpdatePaxTripSummary(pendingFlight, next);
         mmRenderPaxForms(next, u);
-        renderPaxPayOptions(Number(pendingFlight.price) || 0);
+        renderPaxPayOptions(Number(pendingFlight.priceComTaxa != null ? pendingFlight.priceComTaxa : pendingFlight.price) || 0);
       });
     });
   }
 }
 
 async function openPaxModal(flight){
+  // Garante taxa de embarque no objeto do voo (e total com taxa)
+  const _depTax = flight.originCode || flight.depAirport || (typeof selectedAirport !== "undefined" && selectedAirport.origin && selectedAirport.origin.code) || "";
+  if (flight.boardingFees == null || flight.boardingFees === "") {
+    const est = estimarTaxasAeroporto(_depTax, flight.stops, flight.layovers, flight.segments);
+    flight.boardingFees = est.total;
+    flight.taxaEmbarque = est.embarque;
+    flight.taxaExtraSP = est.extraSP;
+    flight.taxaExtraSPDetail = est.extraSPDetail;
+    flight.taxaOrigem = est.origem;
+  }
+  flight.taxaUnit = Number(flight.boardingFees) || 0;
+  flight.priceComTaxa = (Number(flight.price) || 0) + flight.taxaUnit;
+
   pendingFlight = flight;
   const user = mmEffectiveUser();
   const isFlash = !!flight.flash;
@@ -4376,7 +4439,7 @@ async function openPaxModal(flight){
     ? 1
     : Math.max(1, parseInt(document.getElementById("f-pax")?.value || "1", 10) || 1);
   const n = __mmPaxCount;
-  renderPaxPayOptions(flight.price);
+  renderPaxPayOptions(flight.priceComTaxa);
 
   let saved = [];
   if (user.email) {
@@ -4563,7 +4626,16 @@ async function submitPaxAndWhatsApp(){
   }
   if (pendingFlight.locator) msg += `• *Ref. busca:* ${pendingFlight.locator}\n`;
   const pag = getSelectedPagamento();
-  msg += `• *Valor ref.:* R$ ${Number(pendingFlight.price||0).toLocaleString("pt-BR")}\n`;
+  const _taxaWa = Number(pendingFlight.taxaUnit || pendingFlight.boardingFees || 0) || 0;
+  const _baseWa = Number(pendingFlight.price||0) || 0;
+  const _totWa = _baseWa + _taxaWa;
+  msg += `• *Tarifa:* R$ ${_baseWa.toLocaleString("pt-BR")}\n`;
+  if (_taxaWa > 0) {
+    msg += `• *Taxa de embarque:* R$ ${_taxaWa.toLocaleString("pt-BR")} _(inclusa)_\n`;
+    msg += `• *Total c/ taxa:* R$ ${_totWa.toLocaleString("pt-BR")}\n`;
+  } else {
+    msg += `• *Valor ref.:* R$ ${_baseWa.toLocaleString("pt-BR")}\n`;
+  }
   msg += `• *Pagamento:* ${pag.label}\n`;
   if (pag.parcelas > 1) {
     msg += `• *Parcelas:* ${pag.parcelas}x de R$ ${pag.parcelaValor.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}\n`;
@@ -4612,6 +4684,8 @@ async function submitPaxAndWhatsApp(){
         route: pendingFlight.route || rotaLabel,
         airline: pendingFlight.airline,
         price: Number(pendingFlight.price) || 0,
+        taxaEmbarque: Number(pendingFlight.taxaUnit || pendingFlight.boardingFees || 0) || 0,
+        priceTotal: Number(pendingFlight.priceComTaxa != null ? pendingFlight.priceComTaxa : ((Number(pendingFlight.price)||0) + (Number(pendingFlight.taxaUnit||0)||0))) || 0,
         dep: pendingFlight.dep,
         arr: pendingFlight.arr,
         date: dataIdaFinal,
@@ -4759,7 +4833,10 @@ document.addEventListener("click", (e) => {
       originCode: selectedAirport.origin.code,
       destCode: selectedAirport.destination.code,
       flash: false,
-      tripType: (typeof tripType !== "undefined" ? tripType : "OW")
+      tripType: (typeof tripType !== "undefined" ? tripType : "OW"),
+      boardingFees: offer && offer.boardingFees != null ? offer.boardingFees : (Number(select.dataset.boardingFees) || 0),
+      taxaEmbarque: offer && offer.taxaEmbarque != null ? offer.taxaEmbarque : 0,
+      taxaExtraSP: offer && offer.taxaExtraSP != null ? offer.taxaExtraSP : 0
     });
     return;
   }
