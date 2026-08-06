@@ -21,6 +21,24 @@
 <link rel="canonical" href="https://marujosmilhas.com.br/">
 <title>Passagens Aéreas com Milhas | Até 50% mais barato — Marujo's Milhas</title>
 
+<!-- Cloudflare Turnstile (captcha na busca) — render explícito -->
+<script>
+  window.__mmCaptchaToken = "";
+  window.mmOnTurnstileSuccess = function (token) {
+    window.__mmCaptchaToken = token || "";
+    console.log("[Turnstile] ok, token len=", (token || "").length);
+  };
+  window.mmOnTurnstileExpired = function () {
+    window.__mmCaptchaToken = "";
+    console.warn("[Turnstile] expirado/erro — resolva de novo");
+  };
+  window.mmOnTurnstileError = function () {
+    window.__mmCaptchaToken = "";
+    console.warn("[Turnstile] falha ao carregar widget");
+  };
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+
 <!-- favicon -->
 <link rel="icon" type="image/jpeg" href="https://dl.dropboxusercontent.com/scl/fi/qseevce34se66s867pqcv/1785431732563_tmp.jpg?rlkey=rabna4gdxhawdqgdgg6r4w6hx&dl=0">
 <!-- Open Graph / redes sociais -->
@@ -218,6 +236,9 @@
   .field input, .field select{width:100%;border:1px solid var(--card-line);border-radius:10px;padding:10px;font-size:14px;color:var(--ink);background:var(--paper);outline:none;font-family:inherit;}
   .field input:focus, .field select:focus{outline:3px solid var(--brass-soft);outline-offset:1px;border-color:var(--brass);}
   .swap-btn{background:var(--paper);border:1px solid var(--card-line);border-radius:10px;width:38px;height:38px;margin-bottom:2px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .search-captcha{overflow:visible !important;position:relative;z-index:6;}
+  .search-card{overflow:visible;}
+  .search-card-body{overflow:visible;}
   .search-submit{margin-top:16px;width:100%;background:var(--navy);color:#fff;border:none;border-radius:12px;padding:16px 0;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
   .search-submit:hover{background:#0a1428;}
   .search-perks{display:flex;flex-wrap:wrap;gap:14px 24px;justify-content:center;padding:16px 0 2px;font-size:12px;color:var(--slate);font-weight:500;border-top:1px dashed var(--card-line);margin-top:16px;}
@@ -1660,6 +1681,10 @@
             </select>
           </div>
         </div>
+        <div class="search-captcha" style="display:flex;justify-content:center;align-items:center;margin:14px 0 8px;min-height:70px;overflow:visible;position:relative;z-index:5;">
+          <div id="search-turnstile"></div>
+        </div>
+        <p id="search-captcha-hint" style="display:none;text-align:center;font-size:12px;color:#C1432D;margin:0 0 8px;">Não foi possível carregar o captcha. Atualize a página ou desative bloqueador de anúncios.</p>
         <button class="search-submit" id="search-btn">Buscar voos <svg class="ss-plane" viewBox="0 0 24 24" fill="currentColor"><path d="M2 16 22 8l-7 14-2-7-7-2z"/></svg></button>
         <div class="search-trust-strip">
           <div class="search-trust-item"><span class="sti-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>As melhores companhias</div>
@@ -2778,6 +2803,78 @@ function mapOferta(o){
   };
 }
 
+
+// ---- Cloudflare Turnstile (proteção da busca) ----
+var __mmTurnstileWidgetId = null;
+var MM_TURNSTILE_SITEKEY = "0x4AAAAAAEHpGaZd9DwMRzs7";
+
+function mmGetCaptchaToken() {
+  if (window.__mmCaptchaToken) return window.__mmCaptchaToken;
+  var el = document.querySelector("#search-turnstile textarea, #search-turnstile input[name='cf-turnstile-response'], [name='cf-turnstile-response']");
+  return (el && el.value) ? el.value : "";
+}
+
+function mmResetCaptcha() {
+  window.__mmCaptchaToken = "";
+  try {
+    if (window.turnstile && __mmTurnstileWidgetId != null) {
+      window.turnstile.reset(__mmTurnstileWidgetId);
+    }
+  } catch (e) {
+    console.warn("[Turnstile] reset", e);
+  }
+}
+
+function mmRenderTurnstile() {
+  var host = document.getElementById("search-turnstile");
+  var hint = document.getElementById("search-captcha-hint");
+  if (!host) return;
+  if (!window.turnstile) {
+    if (hint) hint.style.display = "block";
+    console.warn("[Turnstile] API ainda não carregou");
+    return;
+  }
+  try {
+    // evita render duplicado
+    if (__mmTurnstileWidgetId != null) {
+      try { window.turnstile.remove(__mmTurnstileWidgetId); } catch (_) {}
+      __mmTurnstileWidgetId = null;
+      host.innerHTML = "";
+    }
+    __mmTurnstileWidgetId = window.turnstile.render(host, {
+      sitekey: MM_TURNSTILE_SITEKEY,
+      theme: "light",
+      callback: function (token) { window.mmOnTurnstileSuccess(token); },
+      "expired-callback": function () { window.mmOnTurnstileExpired(); },
+      "error-callback": function () { window.mmOnTurnstileError(); }
+    });
+    if (hint) hint.style.display = "none";
+    console.log("[Turnstile] widget renderizado id=", __mmTurnstileWidgetId);
+  } catch (e) {
+    console.error("[Turnstile] render falhou", e);
+    if (hint) hint.style.display = "block";
+  }
+}
+
+(function mmBootTurnstile() {
+  function tryRender() {
+    if (window.turnstile && document.getElementById("search-turnstile")) {
+      mmRenderTurnstile();
+      return true;
+    }
+    return false;
+  }
+  if (tryRender()) return;
+  // espera o script carregar
+  var n = 0;
+  var iv = setInterval(function () {
+    n++;
+    if (tryRender() || n > 40) clearInterval(iv);
+  }, 250);
+  document.addEventListener("DOMContentLoaded", function () { tryRender(); });
+  window.addEventListener("load", function () { setTimeout(tryRender, 300); });
+})();
+
 async function runSearch(){
   const origin = selectedAirport.origin.code;
   const destination = selectedAirport.destination.code;
@@ -2808,10 +2905,17 @@ async function runSearch(){
       return;
     }
 
+    const captchaToken = mmGetCaptchaToken();
+    if (!captchaToken) {
+      alert("Confirme o captcha (não sou um robô) antes de buscar.");
+      document.getElementById("search-card").scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
     const resposta = await fetch("https://marujos-milhas-api.gabrielsoarescabral15.workers.dev/proxy?url=" + encodeURIComponent("http://br2.bronxyshost.com:4009/api/buscar-passagens"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ from: origin, to: destination, departureDate, returnDate: returnDate || undefined, numAdults })
+      body: JSON.stringify({ from: origin, to: destination, departureDate, returnDate: returnDate || undefined, numAdults, captchaToken })
     });
     const dados = await resposta.json();
 
@@ -2855,6 +2959,7 @@ async function runSearch(){
     document.getElementById("route-count").textContent = "Erro na busca";
     document.getElementById("tickets-container").innerHTML = '<div class="airport-empty">Erro ao buscar passagens. Tente novamente em instantes.</div>';
   } finally {
+    mmResetCaptcha();
     btn.innerHTML = textoOriginal;
     btn.disabled = false;
   }
