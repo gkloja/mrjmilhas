@@ -2079,10 +2079,11 @@ const MILHAS_CPM = {
 // REF = R$ de mercado por milha (converter Google → milhas). Deve ser > CPM.
 // GOL 0,020 · Azul 0,020 · LATAM 0,032  → sempre fica mais barato que o Google
 const REFERENCIA_RS_POR_MILHA = {
-  gol: 0.020, g3: 0.020,
-  latam: 0.032, la: 0.032, jj: 0.032,
-  azul: 0.020, ad: 0.020,
-  default: 0.022
+  // Mais próximo do CPM → preço riscado não fica absurdo vs. o valor com milhas
+  gol: 0.0215, g3: 0.0215,   // ~14% vs CPM 0,0185
+  latam: 0.031, la: 0.031, jj: 0.031, // ~10% vs CPM 0,028
+  azul: 0.021, ad: 0.021,    // ~14% vs CPM 0,018
+  default: 0.024
 };
 
 function airlineCpmKey(airline) {
@@ -2474,8 +2475,9 @@ function renderTicket(r, isCheapest){
       ${metaChips}
     </div>
     <div class="ticket-right">
-      ${hasMarket ? `<div class="market-price">${currency(r.marketValue)}</div>` : `<div class="pay-hint">Tarifa por adulto</div>`}
+      ${hasMarket ? `<div class="market-price">${currency(r.marketValue)} <span style="font-size:10px;font-weight:600;text-decoration:none;color:var(--slate-soft);">/ adulto</span></div>` : `<div class="pay-hint">Tarifa por adulto</div>`}
       <div class="final-price display">${currency(r.ourValue)}</div>
+      <div class="pay-hint" style="margin:0 0 2px;font-size:10.5px;">por adulto</div>
       ${hasMarket && pct > 0 ? `<div class="save-line">✓ Economize ${pct}%</div>` : ""}
       <div class="pix-line">PIX ${currency(taxaTot > 0 ? totalComTaxa : r.ourValue)}${taxaTot > 0 ? " c/ taxa" : ""}</div>
       ${taxaBreakdownHtml || ""}
@@ -2833,11 +2835,29 @@ function mapOferta(o){
   const airline = AIRLINE_BY_SLUG[airlineSlug] || AIRLINES.find(a => a.name.toLowerCase() === airlineSlug) || AIRLINES[0];
   const offerType = (o.type || o.offerType || "miles").toLowerCase();
   const bruto = Math.round(Number(o.totalPrice) || 0);
-  // Se o backend já mandou marketPrice, usa; senão a tarifa bruta vira o "de" e nosso preço leva o CPM
-  const market = o.marketPrice != null ? Math.round(Number(o.marketPrice)) : (bruto > 0 ? bruto : null);
   const airlineKey = airlineSlug || airlineRaw || (airline && airline.name) || "";
   // Backend já aplica CPM → totalPrice vem pronto (discountApplied). Senão calcula aqui.
-  const total = o.discountApplied ? bruto : precoMarujo(bruto, airlineKey, o.miles ? { milhas: o.miles } : {});
+  let total = o.discountApplied ? bruto : precoMarujo(bruto, airlineKey, o.miles ? { milhas: o.miles } : {});
+  // Se o backend já mandou marketPrice, usa; senão a tarifa bruta vira o "de"
+  let market = o.marketPrice != null ? Math.round(Number(o.marketPrice)) : (bruto > 0 ? bruto : null);
+  // Normaliza SEMPRE para preço POR ADULTO (API pode devolver total do grupo)
+  const adultsInSearch = Math.max(1, (typeof lastSearchParams !== "undefined" && lastSearchParams && lastSearchParams.numAdults)
+    ? Number(lastSearchParams.numAdults) || 1
+    : (typeof document !== "undefined" && document.getElementById("f-pax")
+      ? (parseInt(document.getElementById("f-pax").value, 10) || 1)
+      : 1));
+  if (adultsInSearch > 1) {
+    total = Math.round(total / adultsInSearch);
+    if (market != null) market = Math.round(market / adultsInSearch);
+  }
+  // Valor riscado ("de") mais próximo do preço Marujo — economia realista (~8–18%)
+  if (market != null && total > 0) {
+    const maxGap = 1.18; // no máximo ~15% de desconto aparente
+    const minGap = 1.08; // no mínimo ~7% para ainda parecer oferta
+    if (market > total * maxGap) market = Math.round(total * maxGap);
+    if (market < total * minGap) market = Math.round(total * minGap);
+    if (market <= total) market = Math.round(total * minGap);
+  }
   const fees = o.fees != null ? Math.round(Number(o.fees)) : null;
   // Taxa de embarque estimada pelo aeroporto de partida (se backend não mandar)
   const _depForTax = o.depAirport || (o.outbound && (o.outbound.depAirport || o.outbound.departure)) || "";
@@ -4518,17 +4538,20 @@ function calcPixParcelas(total, n) {
     juros: totalComJuros - total
   };
 }
-function renderPaxPayOptions(price) {
+function renderPaxPayOptions(price, paxCount) {
   const box = document.getElementById("pax-pay-options");
   if (!box) return;
-  const total = Number(price) || 0;
-  const opts = [{ n: 1, label: "PIX à vista", sub: "Sem juros · melhor preço", metodo: "pix" }];
+  const total = Number(price) || 0; // total do grupo (já com taxa × passageiros)
+  const pax = Math.max(1, Number(paxCount) || (__mmPaxCount || 1));
+  const perAdult = pax > 1 ? total / pax : total;
+  const paxHint = pax > 1 ? (` · ${pax} adultos`) : " · por adulto";
+  const opts = [{ n: 1, label: "PIX à vista", sub: "Sem juros · melhor preço" + paxHint, metodo: "pix" }];
   for (let n = 2; n <= 6; n++) {
     const c = calcPixParcelas(total, n);
     opts.push({
       n,
       label: `Cartão em ${n}x`,
-      sub: `com juros · total ${currency(c.totalComJuros)}`,
+      sub: `com juros · total ${currency(c.totalComJuros)}` + paxHint,
       parcela: c.parcela,
       metodo: "cartao"
     });
@@ -4538,7 +4561,7 @@ function renderPaxPayOptions(price) {
       <input type="radio" name="pax-pagamento" value="${o.n}" data-metodo="${o.metodo}" ${i===0?"checked":""}>
       <div class="po-main">
         <div class="po-title">${o.label}</div>
-        <div class="po-sub">${o.sub}</div>
+        <div class="po-sub">${o.sub}${pax > 1 && o.n === 1 ? ` · ${currency(perAdult)}/adulto` : ""}</div>
       </div>
       <div class="po-val">${o.n===1 ? currency(total) : (currency(o.parcela) + "/mês")}</div>
     </label>`).join("");
@@ -4546,7 +4569,11 @@ function renderPaxPayOptions(price) {
 function getSelectedPagamento() {
   const el = document.querySelector('input[name="pax-pagamento"]:checked');
   const n = el ? parseInt(el.value, 10) : 1;
-  const price = pendingFlight ? Number(pendingFlight.price) || 0 : 0;
+  const pax = Math.max(1, __mmPaxCount || 1);
+  const unit = pendingFlight
+    ? (Number(pendingFlight.priceComTaxa != null ? pendingFlight.priceComTaxa : pendingFlight.price) || 0)
+    : 0;
+  const price = unit * pax; // total do grupo
   const c = calcPixParcelas(price, n);
   return {
     parcelas: n,
@@ -4555,7 +4582,9 @@ function getSelectedPagamento() {
     parcelaValor: c.parcela,
     totalComJuros: c.totalComJuros,
     juros: c.juros,
-    aVista: price
+    aVista: price,
+    porAdulto: unit,
+    passageiros: pax
   };
 }
 
@@ -4619,11 +4648,12 @@ function mmUpdatePaxTripSummary(flight, n) {
       ${dataIda ? "<br>Ida " + dataIda : ""}${!isOW && retDate ? " · Volta " + retDate : ""}
       <br>${n} passageiro${n>1?"s":""} · ${tripTypeLabel}${flight.locator ? " · Ref " + flight.locator : ""}</div>
     <div class="pt-receipt">
-      <div class="pr-row"><span>Tarifa (emissão com milhas)</span><b>${currency(unitPrice)}</b></div>
-      ${taxaUnit > 0 ? `<div class="pr-row pr-tax"><span>Taxa de embarque${(flight.taxaOrigem || flight.originCode) ? " · " + (flight.taxaOrigem || flight.originCode) : ""}</span><b>+ ${currency(taxaUnit)}</b></div>` : ""}
+      <div class="pr-row"><span>Tarifa por adulto</span><b>${currency(unitPrice)}</b></div>
+      ${taxaUnit > 0 ? `<div class="pr-row pr-tax"><span>Taxa embarque / adulto${(flight.taxaOrigem || flight.originCode) ? " · " + (flight.taxaOrigem || flight.originCode) : ""}</span><b>+ ${currency(taxaUnit)}</b></div>` : ""}
       <div class="pr-div"></div>
-      <div class="pr-row pr-total"><span>Total por adulto</span><b>${currency(unitComTaxa)}</b></div>
-      ${n > 1 ? `<div class="pr-row" style="margin-top:6px;"><span>${n} passageiros</span><b>${currency(totalComTaxa)}</b></div>` : ""}
+      <div class="pr-row"><span>Subtotal por adulto</span><b>${currency(unitComTaxa)}</b></div>
+      ${n > 1 ? `<div class="pr-row" style="margin-top:4px;"><span>× ${n} adultos</span><b>${currency(unitComTaxa)} × ${n}</b></div>
+      <div class="pr-row pr-total"><span>Total do grupo</span><b>${currency(totalComTaxa)}</b></div>` : `<div class="pr-row pr-total"><span>Total por adulto</span><b>${currency(unitComTaxa)}</b></div>`}
       <div class="pr-note">${taxaUnit > 0 ? "Taxa aeroportuária estimada — valor final confirmado na emissão · " : ""}PIX à vista ou cartão em até 6x</div>
     </div>
     ${paxChooser}
@@ -4645,7 +4675,9 @@ function mmUpdatePaxTripSummary(flight, n) {
         const u = mmEffectiveUser();
         mmUpdatePaxTripSummary(pendingFlight, next);
         mmRenderPaxForms(next, u);
-        renderPaxPayOptions(Number(pendingFlight.priceComTaxa != null ? pendingFlight.priceComTaxa : pendingFlight.price) || 0);
+        const _paxN = __mmPaxCount || 1;
+        const _unit = Number(pendingFlight.priceComTaxa != null ? pendingFlight.priceComTaxa : pendingFlight.price) || 0;
+        renderPaxPayOptions(_unit * _paxN, _paxN);
       });
     });
   }
@@ -4673,7 +4705,7 @@ async function openPaxModal(flight){
     ? 1
     : Math.max(1, parseInt(document.getElementById("f-pax")?.value || "1", 10) || 1);
   const n = __mmPaxCount;
-  renderPaxPayOptions(flight.priceComTaxa);
+  renderPaxPayOptions((Number(flight.priceComTaxa) || Number(flight.price) || 0) * n, n);
 
   let saved = [];
   if (user.email) {
