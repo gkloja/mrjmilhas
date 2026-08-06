@@ -826,6 +826,49 @@
   .ticket-right .final-price + .save-line + .pix-line,
   .ticket-right .fee-boarding{margin-top:6px;}
   .price-with-tax{font-size:11px;color:var(--slate);margin-top:2px;font-weight:500;}
+  /* ---- breakdown tarifa + taxa de embarque ---- */
+  .price-breakdown{
+    margin-top:8px;padding:9px 10px;border-radius:10px;
+    background:linear-gradient(160deg,#FFFBF2,#F5EFE0);
+    border:1px solid #E5D7B0;
+  }
+  .price-breakdown .pb-row{
+    display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+    font-size:11px;line-height:1.35;color:var(--slate);
+  }
+  .price-breakdown .pb-row + .pb-row{margin-top:4px;}
+  .price-breakdown .pb-row b{
+    font-weight:700;color:var(--ink);font-family:'IBM Plex Mono',monospace;
+    font-size:11px;white-space:nowrap;
+  }
+  .price-breakdown .pb-row.pb-tax span{color:var(--brass-dark);font-weight:600;}
+  .price-breakdown .pb-row.pb-tax b{color:var(--brass-dark);}
+  .price-breakdown .pb-divider{height:0;border-top:1px dashed #D9CBA8;margin:7px 0 6px;}
+  .price-breakdown .pb-row.pb-total{font-size:12px;font-weight:800;color:var(--navy);}
+  .price-breakdown .pb-row.pb-total b{
+    font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;
+    color:var(--navy);letter-spacing:-.2px;
+  }
+  .price-breakdown .pb-note{margin-top:6px;font-size:9.5px;color:var(--slate-soft);line-height:1.35;}
+  .price-total-tax{display:none;}
+  .pt-receipt{
+    margin-top:12px;padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.08);border:1px solid rgba(217,162,59,0.35);
+  }
+  .pt-receipt .pr-row{
+    display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    font-size:12.5px;color:#C2D0EC;line-height:1.4;
+  }
+  .pt-receipt .pr-row + .pr-row{margin-top:5px;}
+  .pt-receipt .pr-row b{font-family:'IBM Plex Mono',monospace;font-weight:700;color:#fff;white-space:nowrap;}
+  .pt-receipt .pr-row.pr-tax span{color:var(--brass-soft);}
+  .pt-receipt .pr-row.pr-tax b{color:var(--brass-soft);}
+  .pt-receipt .pr-div{height:0;border-top:1px dashed rgba(217,162,59,0.35);margin:8px 0;}
+  .pt-receipt .pr-row.pr-total{font-size:13.5px;font-weight:700;color:#fff;}
+  .pt-receipt .pr-row.pr-total b{
+    font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;color:var(--brass);
+  }
+  .pt-receipt .pr-note{margin-top:8px;font-size:10.5px;color:#93AAD1;line-height:1.4;}
   .ticket-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;}
   .results-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
   .ticket.rt .ticket-left{gap:10px;}
@@ -2359,9 +2402,29 @@ function renderTicket(r, isCheapest){
   const taxaExtraSP = r.taxaExtraSP != null ? Number(r.taxaExtraSP) : 0;
   const taxaTot = r.boardingFees != null ? Number(r.boardingFees)
     : (taxaEmb != null ? (taxaEmb + (taxaExtraSP || 0)) : null);
-  const taxaOrigem = r.taxaOrigem || r.depAirport || "";
+  const taxaOrigem = r.taxaOrigem || r.depAirport || depCode || "";
+  const taxaExtraDetail = r.taxaExtraSPDetail || "";
   const totalComTaxa = (Number(r.ourValue) || 0) + (taxaTot > 0 ? taxaTot : 0);
-  // taxa detalhada omitida no card (evita duplicar com "Total c/ taxa")
+  let taxaBreakdownHtml = "";
+  if (taxaTot != null && taxaTot > 0) {
+    const taxLines = [];
+    if (taxaEmb != null && taxaEmb > 0) {
+      taxLines.push(`<div class="pb-row pb-tax"><span>Taxa embarque${taxaOrigem ? " · " + taxaOrigem : ""}</span><b>+ ${currency(taxaEmb)}</b></div>`);
+    }
+    if (taxaExtraSP > 0) {
+      taxLines.push(`<div class="pb-row pb-tax"><span>Taxa extra SP${taxaExtraDetail ? " · " + taxaExtraDetail : ""}</span><b>+ ${currency(taxaExtraSP)}</b></div>`);
+    }
+    if (!taxLines.length) {
+      taxLines.push(`<div class="pb-row pb-tax"><span>Taxa de embarque</span><b>+ ${currency(taxaTot)}</b></div>`);
+    }
+    taxaBreakdownHtml = `<div class="price-breakdown">
+      <div class="pb-row"><span>Tarifa (milhas)</span><b>${currency(r.ourValue)}</b></div>
+      ${taxLines.join("")}
+      <div class="pb-divider"></div>
+      <div class="pb-row pb-total"><span>Total por adulto</span><b>${currency(totalComTaxa)}</b></div>
+      <div class="pb-note">Taxa aeroportuária estimada · confirmada na emissão</div>
+    </div>`;
+  }
   const waText = encodeURIComponent(
     `Olá! Quero emitir essa passagem:\n${originCity} (${depCode}) → ${destCity} (${arrCode})\n${r.airline.name} · ${currency(r.ourValue)}\n${r.dep || ""} / ${r.arr || ""}\nRef: ${r.locator}`
   );
@@ -2411,12 +2474,12 @@ function renderTicket(r, isCheapest){
       ${metaChips}
     </div>
     <div class="ticket-right">
-      ${hasMarket ? `<div class="market-price">${currency(r.marketValue)}</div>` : `<div class="pay-hint">Por adulto</div>`}
+      ${hasMarket ? `<div class="market-price">${currency(r.marketValue)}</div>` : `<div class="pay-hint">Tarifa por adulto</div>`}
       <div class="final-price display">${currency(r.ourValue)}</div>
       ${hasMarket && pct > 0 ? `<div class="save-line">✓ Economize ${pct}%</div>` : ""}
-      <div class="pix-line">PIX ${currency(r.ourValue)}</div>
-      ${taxaTot > 0 ? `<div class="price-total-tax">Total c/ taxa ${currency(totalComTaxa)}</div>` : ""}
-      <div class="pay-hint">ou cartão em até 6x</div>
+      <div class="pix-line">PIX ${currency(taxaTot > 0 ? totalComTaxa : r.ourValue)}${taxaTot > 0 ? " c/ taxa" : ""}</div>
+      ${taxaBreakdownHtml || ""}
+      <div class="pay-hint"${taxaBreakdownHtml ? ' style="margin-top:6px;"' : ""}>PIX à vista · cartão em até 6x</div>
       <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-boarding-fees="${taxaTot > 0 ? taxaTot : 0}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${
         (typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "outbound" && !hasIn)
           ? "Escolher ida →"
@@ -4555,9 +4618,14 @@ function mmUpdatePaxTripSummary(flight, n) {
     <div class="pt-meta">${flight.airline || "Companhia"}${flight.dep || flight.arr ? " · " + (flight.dep || "—") + " → " + (flight.arr || "—") : ""}
       ${dataIda ? "<br>Ida " + dataIda : ""}${!isOW && retDate ? " · Volta " + retDate : ""}
       <br>${n} passageiro${n>1?"s":""} · ${tripTypeLabel}${flight.locator ? " · Ref " + flight.locator : ""}</div>
-    <div class="pt-price">PIX ${currency(unitPrice)} · por adulto</div>
-    ${taxaUnit > 0 ? `<div class="pt-tax">+ taxa de embarque ${currency(taxaUnit)} <span style="opacity:.85">(inclusa no total)</span></div>
-    <div class="pt-price-total">Total ${currency(unitComTaxa)}${n>1 ? " × " + n + " = " + currency(totalComTaxa) : ""} · taxas inclusas</div>` : (n>1 ? `<div class="pt-price-total">Total ref. ${currency(totalRef)}</div>` : "")}
+    <div class="pt-receipt">
+      <div class="pr-row"><span>Tarifa (emissão com milhas)</span><b>${currency(unitPrice)}</b></div>
+      ${taxaUnit > 0 ? `<div class="pr-row pr-tax"><span>Taxa de embarque${(flight.taxaOrigem || flight.originCode) ? " · " + (flight.taxaOrigem || flight.originCode) : ""}</span><b>+ ${currency(taxaUnit)}</b></div>` : ""}
+      <div class="pr-div"></div>
+      <div class="pr-row pr-total"><span>Total por adulto</span><b>${currency(unitComTaxa)}</b></div>
+      ${n > 1 ? `<div class="pr-row" style="margin-top:6px;"><span>${n} passageiros</span><b>${currency(totalComTaxa)}</b></div>` : ""}
+      <div class="pr-note">${taxaUnit > 0 ? "Taxa aeroportuária estimada — valor final confirmado na emissão · " : ""}PIX à vista ou cartão em até 6x</div>
+    </div>
     ${paxChooser}
   `;
 
@@ -4596,6 +4664,7 @@ async function openPaxModal(flight){
   }
   flight.taxaUnit = Number(flight.boardingFees) || 0;
   flight.priceComTaxa = (Number(flight.price) || 0) + flight.taxaUnit;
+  if (!flight.taxaOrigem) flight.taxaOrigem = _depTax || flight.originCode || "";
 
   pendingFlight = flight;
   const user = mmEffectiveUser();
