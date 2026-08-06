@@ -2696,7 +2696,7 @@ function mapOferta(o){
   const _stopsForTax = o.stops != null ? o.stops : (Array.isArray(o.layovers) ? o.layovers.length : 0);
   const _taxEst = estimarTaxasAeroporto(_depForTax, _stopsForTax, o.layovers, o.segments);
   const boardingFees = o.boardingFees != null
-    ? Math.round(Number(o.boardingFees))
+    ? Math.round(Number(o.boardingFees) * 100) / 100
     : _taxEst.total;
 
   // Formato MaxMilhas combo (outbound/inbound) OU formato plano do backend
