@@ -2808,7 +2808,7 @@ async function runSearch(){
       return;
     }
 
-    const resposta = await fetch("https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009/proxy?url=http://br2.bronxyshost.com:4009/api/buscar-passagens", {
+    const resposta = await fetch("https://marujos-milhas-api.gabrielsoarescabral15.workers.dev/proxy?url=" + encodeURIComponent("http://br2.bronxyshost.com:4009/api/buscar-passagens"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ from: origin, to: destination, departureDate, returnDate: returnDate || undefined, numAdults })
@@ -2946,7 +2946,7 @@ async function loadReturnFlights(outboundOffer){
   updateRtStepBar();
 
   try {
-    const resposta = await fetch("https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009/proxy?url=" +
+    const resposta = await fetch("https://marujos-milhas-api.gabrielsoarescabral15.workers.dev/proxy?url=" +
       encodeURIComponent("http://br2.bronxyshost.com:4009/api/buscar-volta"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -3167,7 +3167,7 @@ atualizarTickerOfertas([]); // placeholder até carregar as ofertas
 })();
 
 // ---------- ofertas relâmpago + dias baratos (SerpApi deals com cache no backend) ----------
-const API_PROXY = "https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009/proxy?url=";
+const API_PROXY = "https://marujos-milhas-api.gabrielsoarescabral15.workers.dev/proxy?url=";
 const API_BASE = "http://br2.bronxyshost.com:4009";
 
 function fmtPrecoOferta(valor, moeda) {
@@ -4124,7 +4124,7 @@ function mmRenderTrips(){
 
 
 // ---- Exige login + modal de passageiros ----
-const API_MILHAS_HOST = "https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009";
+const API_MILHAS_HOST = "https://marujos-milhas-api.gabrielsoarescabral15.workers.dev";
 const API_MILHAS_BASE = API_MILHAS_HOST + "/proxy?url=";
 const API_MILHAS_PAX = API_MILHAS_BASE + encodeURIComponent("http://br2.bronxyshost.com:4009/api/milhas/usuarios/passageiros");
 const API_MILHAS_EVT = API_MILHAS_BASE + encodeURIComponent("http://br2.bronxyshost.com:4009/api/milhas/usuarios/evento");
@@ -5017,7 +5017,7 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
 
-const API_MILHAS_USER = "https://orange-hill-2e61.gbscabral15.workers.dev/br2.bronxyshost.com:4009/proxy?url=" +
+const API_MILHAS_USER = "https://marujos-milhas-api.gabrielsoarescabral15.workers.dev/proxy?url=" +
   encodeURIComponent("http://br2.bronxyshost.com:4009/api/milhas/usuarios/google");
 
 async function mmSyncUserToBackend(profile) {
