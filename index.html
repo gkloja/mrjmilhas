@@ -269,9 +269,15 @@
   /* ---------- results ---------- */
   #results-section{max-width:1000px;margin:-84px auto 0;padding:0 24px 10px;position:relative;z-index:3;display:none;}
   #results-section.show{display:block;}
-  .results-bar{background:var(--navy);border-radius:16px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
-  .results-bar .route{color:#fff;font-size:18px;font-weight:600;}
-  .results-bar .count{color:#93AAD1;font-size:13px;margin-left:10px;}
+  .results-bar{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);
+    border-radius:16px;padding:16px 22px;display:flex;align-items:center;
+    justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;
+    border:1px solid rgba(217,162,59,0.2);
+    box-shadow:0 10px 28px rgba(14,25,48,0.18);
+  }
+  .results-bar .route{color:#fff;font-size:17px;font-weight:700;letter-spacing:-.2px;}
+  .results-bar .count{color:#A8BDD9;font-size:13px;margin-left:10px;font-weight:500;}
   .load-more-wrap{display:none;flex-direction:column;align-items:center;padding:8px 0 24px;gap:8px;}
   .load-more-wrap.show{display:flex;}
   .load-more-btn{
@@ -304,103 +310,168 @@
   .sort-btn{background:transparent;color:#CBD8EC;border:1px solid #2C4468;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;}
   .sort-btn.active{background:var(--brass);color:var(--navy);border-color:var(--brass);}
 
+  /* ========== RESULT TICKETS — boarding-pass premium ========== */
   .ticket{
-    position:relative;background:#fff;border-radius:16px;
+    position:relative;background:#fff;border-radius:18px;
     border:1px solid var(--card-line);
-    box-shadow:0 4px 18px rgba(20,30,55,0.07);
-    display:grid;grid-template-columns:minmax(0,1fr) 178px;
-    margin-bottom:14px;overflow:hidden;
-    transition:box-shadow .18s ease, border-color .18s ease, transform .15s ease;
+    box-shadow:0 6px 22px rgba(20,30,55,0.07);
+    display:grid;grid-template-columns:minmax(0,1fr) 200px;
+    margin-bottom:16px;overflow:visible;
+    transition:box-shadow .2s ease, border-color .2s ease, transform .18s ease;
   }
-  .ticket:hover{box-shadow:0 12px 32px rgba(20,30,55,0.12);border-color:#d0c6a8;transform:translateY(-1px);}
-  .ticket.is-best{border-color:var(--brass);box-shadow:0 6px 24px rgba(217,162,59,0.22);}
+  .ticket:hover{
+    box-shadow:0 14px 36px rgba(20,30,55,0.12);
+    border-color:#d4c9a8;
+    transform:translateY(-2px);
+  }
+  .ticket.is-best{
+    border-color:rgba(217,162,59,0.65);
+    box-shadow:0 8px 28px rgba(217,162,59,0.18);
+  }
   .ticket.is-best::before{
-    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--brass);
+    content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;
+    border-radius:0 3px 3px 0;background:linear-gradient(180deg,var(--brass),var(--brass-dark));
   }
-  .ticket-notch,.ticket-divider{display:none;}
-  .ticket-left{padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;}
+  /* perfuração estilo bilhete */
+  .ticket-divider{
+    display:block;position:absolute;top:12px;bottom:12px;right:200px;width:0;
+    border-left:1.5px dashed #D9CFAF;z-index:2;pointer-events:none;
+  }
+  .ticket-notch{
+    display:block;position:absolute;right:192px;width:16px;height:16px;
+    border-radius:50%;background:var(--paper);border:1px solid var(--card-line);z-index:3;
+  }
+  .ticket-notch.top{top:-8px;}
+  .ticket-notch.bottom{bottom:-8px;}
+  .ticket-left{
+    padding:16px 20px 14px;display:flex;flex-direction:column;gap:12px;min-width:0;
+  }
   .ticket-right{
-    padding:14px 14px 12px;display:flex;flex-direction:column;justify-content:center;align-items:stretch;
-    gap:2px;min-width:0;background:#FAF8F2;border-left:1px solid var(--card-line);
+    padding:16px 16px 14px;display:flex;flex-direction:column;justify-content:center;align-items:stretch;
+    gap:0;min-width:0;
+    background:linear-gradient(165deg,#FFFcf5 0%,#F7F1E3 100%);
+    border-left:none;border-radius:0 18px 18px 0;
   }
-  .ticket-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:28px;}
-  .ticket-top .airline-name{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.2;}
-  .ticket-top .ticket-stops-hint{font-size:11px;color:var(--slate-soft);margin-left:auto;font-weight:500;white-space:nowrap;}
+  .ticket-top{
+    display:flex;align-items:center;gap:10px;flex-wrap:nowrap;min-height:32px;
+  }
+  .ticket-top .airline-name{
+    font-size:14px;font-weight:700;color:var(--ink);line-height:1.2;
+    letter-spacing:-.1px;
+  }
+  .ticket-top .ticket-stops-hint{
+    font-size:11px;color:var(--slate-soft);margin-left:auto;font-weight:600;
+    white-space:nowrap;font-family:'IBM Plex Mono',monospace;letter-spacing:.2px;
+  }
   .best-chip{
-    display:inline-flex;align-items:center;gap:3px;
-    background:var(--brass);color:var(--navy);font-size:9.5px;font-weight:800;
-    padding:3px 8px;border-radius:999px;letter-spacing:.2px;
-    font-family:'IBM Plex Mono',monospace;flex-shrink:0;
+    display:inline-flex;align-items:center;gap:4px;
+    background:linear-gradient(135deg,var(--brass),#E8B84A);color:var(--navy);
+    font-size:9.5px;font-weight:800;padding:4px 9px;border-radius:999px;
+    letter-spacing:.3px;font-family:'IBM Plex Mono',monospace;flex-shrink:0;
+    box-shadow:0 2px 8px rgba(217,162,59,0.35);
   }
-  .ticket .final-price{font-size:20px;font-weight:800;color:var(--ink);line-height:1.15;letter-spacing:-.3px;margin:2px 0;}
-  .ticket .market-price{font-size:12px;color:var(--red);text-decoration:line-through;font-weight:600;}
-  .ticket .save-line{font-size:11.5px;color:var(--green);font-weight:700;margin-top:1px;}
-  .ticket .pix-line{font-size:11.5px;color:var(--green);font-weight:600;margin-top:2px;}
-  .ticket .pay-hint{font-size:10.5px;color:var(--slate-soft);margin-top:1px;}
-  .ticket-right .select-btn{margin-top:10px;padding:10px 0;font-size:13px;border-radius:10px;}
+  .ticket .final-price{
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-size:26px;font-weight:800;color:var(--navy);line-height:1.05;
+    letter-spacing:-.6px;margin:2px 0 0;
+  }
+  .ticket .market-price{
+    font-size:12px;color:#B85A4A;text-decoration:line-through;font-weight:600;
+    font-family:'IBM Plex Mono',monospace;opacity:.9;
+  }
+  .ticket .save-line{
+    display:inline-flex;align-items:center;gap:4px;align-self:flex-start;
+    font-size:11px;color:var(--green);font-weight:700;margin-top:6px;
+    background:#E8F7EF;border:1px solid #B7E4C7;border-radius:999px;padding:3px 9px;
+  }
+  .ticket .pix-line{
+    font-size:12px;color:var(--green);font-weight:700;margin-top:8px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .ticket .pay-hint{font-size:10.5px;color:var(--slate-soft);margin-top:3px;font-weight:500;}
+  .ticket-right .select-btn{
+    margin-top:12px;padding:12px 0;font-size:13.5px;border-radius:11px;
+    background:var(--navy);letter-spacing:.2px;
+    box-shadow:0 6px 16px rgba(14,25,48,0.18);
+  }
+  .ticket-right .select-btn:hover{background:#152447;}
   .ticket-meta{
-    display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;padding-top:10px;
-    border-top:1px dashed var(--card-line);
+    display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+    margin-top:2px;padding-top:12px;
+    border-top:1px solid rgba(228,225,211,0.9);
   }
   .meta-chip{
     display:inline-flex;align-items:center;gap:5px;
     font-size:11px;font-weight:600;color:var(--ink);
-    background:var(--paper);border:1px solid var(--card-line);
+    background:#F7F4EA;border:1px solid #E8E2D0;
     border-radius:999px;padding:5px 10px;line-height:1.2;max-width:100%;
   }
   .meta-chip .meta-ico{font-size:11px;line-height:1;opacity:.85;}
   .meta-chip.meta-direct{background:#E8F7EF;border-color:#B7E4C7;color:var(--green);}
   .meta-chip.meta-stop{background:#FFF6E5;border-color:#E8D4A8;color:var(--brass-dark);}
   .meta-chip.meta-fee{color:var(--slate);}
-  .meta-chip.meta-ref{font-size:10px;color:var(--slate-soft);font-weight:600;letter-spacing:.3px;}
+  .meta-chip.meta-ref{
+    font-size:10px;color:var(--slate-soft);font-weight:600;letter-spacing:.3px;
+    font-family:'IBM Plex Mono',monospace;
+  }
 
-  /* ---- timeline profissional (escalas) ---- */
-  .leg-block{padding:10px 0 6px;}
-  .leg-block + .leg-block{border-top:1px dashed var(--card-line);margin-top:4px;}
+  /* ---- timeline / pernas ---- */
+  .leg-block{padding:4px 0 2px;}
+  .leg-block + .leg-block{
+    border-top:1px dashed #E4DCC8;margin-top:10px;padding-top:12px;
+  }
   .leg-block .leg-tag{
-    display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
-    color:var(--blue);background:rgba(57,114,219,0.1);padding:3px 8px;border-radius:6px;margin-bottom:8px;
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:9.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;
+    color:var(--blue);background:rgba(57,114,219,0.1);
+    padding:3px 9px;border-radius:6px;margin-bottom:10px;
     font-family:'IBM Plex Mono',monospace;
   }
   .leg-block .leg-tag.volta{color:var(--green);background:rgba(30,143,95,0.1);}
   .leg-row{
-    display:grid;grid-template-columns:minmax(72px,auto) minmax(0,1fr) minmax(72px,auto);
-    gap:8px 12px;align-items:start;width:100%;min-width:0;
+    display:grid;grid-template-columns:minmax(78px,auto) minmax(0,1fr) minmax(78px,auto);
+    gap:8px 14px;align-items:start;width:100%;min-width:0;
   }
-  .leg-time{font-size:20px;font-weight:800;line-height:1.1;color:var(--ink);font-family:'IBM Plex Mono',monospace;letter-spacing:-.5px;}
-  .leg-city{font-size:12px;color:var(--slate);margin-top:3px;line-height:1.35;}
-  .leg-city b{color:var(--ink);font-weight:800;font-size:12.5px;}
-  .leg-airport-name{font-size:11px;color:var(--slate-soft);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px;}
+  .leg-time{
+    font-size:22px;font-weight:800;line-height:1.05;color:var(--navy);
+    font-family:'IBM Plex Mono',monospace;letter-spacing:-.8px;
+  }
+  .leg-city{font-size:12.5px;color:var(--slate);margin-top:4px;line-height:1.35;}
+  .leg-city b{color:var(--ink);font-weight:800;font-size:13px;}
+  .leg-airport-name{
+    font-size:11px;color:var(--slate-soft);margin-top:2px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px;
+  }
   .leg-side.right .leg-airport-name{margin-left:auto;}
   .leg-mid{text-align:center;min-width:0;padding-top:2px;}
   .leg-dur{
     display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;
-    font-size:11.5px;font-weight:700;color:var(--navy);background:var(--paper);
-    border:1px solid var(--card-line);border-radius:999px;padding:3px 10px;margin-bottom:6px;
+    font-size:11px;font-weight:700;color:var(--navy);background:#F7F4EA;
+    border:1px solid #E4DCC8;border-radius:999px;padding:4px 11px;margin-bottom:8px;
+    font-family:'IBM Plex Mono',monospace;
   }
   .leg-dur .ld-sep{color:var(--slate-soft);font-weight:500;}
   .leg-path{position:relative;width:100%;padding:2px 0 0;}
-  .leg-path-track{position:relative;height:14px;display:flex;align-items:center;margin:0 4px;}
+  .leg-path-track{position:relative;height:16px;display:flex;align-items:center;margin:0 6px;}
   .leg-path-track::before{
-    content:"";position:absolute;left:6px;right:6px;top:50%;height:0;
-    border-top:2px solid #D4CBB0;transform:translateY(-50%);
+    content:"";position:absolute;left:8px;right:8px;top:50%;height:0;
+    border-top:2px solid #C9BFA0;transform:translateY(-50%);
   }
   .leg-path-end{
-    position:absolute;top:50%;width:8px;height:8px;border-radius:50%;
-    background:var(--navy);transform:translateY(-50%);z-index:1;box-shadow:0 0 0 2px #fff;
+    position:absolute;top:50%;width:9px;height:9px;border-radius:50%;
+    background:var(--navy);transform:translateY(-50%);z-index:1;box-shadow:0 0 0 2.5px #fff;
   }
   .leg-path-end.left{left:0;}
   .leg-path-end.right{right:0;left:auto;}
   .leg-path-dot{
-    position:absolute;top:50%;width:10px;height:10px;border-radius:50%;
+    position:absolute;top:50%;width:11px;height:11px;border-radius:50%;
     background:var(--brass);border:2px solid #fff;box-shadow:0 0 0 1.5px var(--brass-dark);
     transform:translate(-50%,-50%);z-index:2;
   }
   .leg-path-plane{
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    font-size:11px;z-index:2;background:#fff;padding:0 3px;line-height:1;color:var(--brass-dark);
+    font-size:12px;z-index:2;background:#fff;padding:0 4px;line-height:1;color:var(--brass-dark);
   }
-  /* cards de escala — destaque profissional */
   .layovers-box{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
   .layover-card{
     display:grid;grid-template-columns:auto 1fr auto;gap:8px 10px;align-items:center;
@@ -444,9 +515,6 @@
     display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;font-family:'IBM Plex Mono',monospace;
     color:#fff;background:var(--navy-3);border-radius:4px;padding:2px 6px;vertical-align:middle;
   }
-  .ticket-left{padding:16px 18px;gap:8px;}
-  .ticket .final-price{font-size:22px;}
-  .ticket-right{padding:16px 14px;}
   .seg-list{display:flex;flex-direction:column;gap:4px;margin-top:8px;padding-left:2px;}
   .seg-row{
     display:grid;grid-template-columns:auto 1fr auto;gap:6px 8px;align-items:center;
@@ -456,9 +524,46 @@
   .seg-row .seg-route{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .seg-row .seg-dur{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--slate-soft);}
 
-  @media (min-width:881px){
-    .ticket{grid-template-columns:minmax(0,1fr) 180px;}
+  /* price column polish */
+  .ticket-right .price-stack{display:flex;flex-direction:column;align-items:flex-start;gap:0;}
+  .ticket-right .price-label{
+    font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+    color:var(--slate-soft);font-family:'IBM Plex Mono',monospace;margin-bottom:2px;
   }
+  .price-breakdown{
+    margin-top:10px;padding:10px 11px;border-radius:12px;width:100%;
+    background:rgba(255,255,255,0.65);
+    border:1px solid #E8DDB8;
+  }
+  .price-breakdown .pb-row{
+    display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+    font-size:11px;line-height:1.35;color:var(--slate);
+  }
+  .price-breakdown .pb-row + .pb-row{margin-top:4px;}
+  .price-breakdown .pb-row b{
+    font-weight:700;color:var(--ink);font-family:'IBM Plex Mono',monospace;
+    font-size:11px;white-space:nowrap;
+  }
+  .price-breakdown .pb-row.pb-tax span{color:var(--brass-dark);font-weight:600;}
+  .price-breakdown .pb-row.pb-tax b{color:var(--brass-dark);}
+  .price-breakdown .pb-divider{height:0;border-top:1px dashed #D9CBA8;margin:7px 0 6px;}
+  .price-breakdown .pb-row.pb-total{font-size:12px;font-weight:800;color:var(--navy);}
+  .price-breakdown .pb-row.pb-total b{
+    font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;
+    color:var(--navy);letter-spacing:-.2px;
+  }
+  .price-breakdown .pb-note{margin-top:6px;font-size:9.5px;color:var(--slate-soft);line-height:1.35;}
+  .price-total-tax{display:none;}
+
+  .airline-chip{width:36px;height:36px;border-radius:10px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;overflow:hidden;background:#fff;border:1px solid var(--card-line);flex-shrink:0;box-shadow:0 2px 6px rgba(20,30,55,0.06);}
+  .airline-chip img{width:100%;height:100%;object-fit:contain;display:block;padding:4px;}
+  .airline-chip.fallback{color:#fff;border:none;}
+  .select-btn{
+    margin-top:8px;background:var(--navy);color:#fff;border:none;border-radius:11px;
+    padding:11px 0;font-size:13.5px;font-weight:700;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:6px;width:100%;box-sizing:border-box;
+  }
+  .select-btn:hover{background:#0a1428;}
 
   .airline-chip{width:34px;height:34px;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;overflow:hidden;background:#fff;border:1px solid var(--card-line);flex-shrink:0;}
   .airline-chip img{width:100%;height:100%;object-fit:contain;display:block;padding:3px;}
@@ -683,17 +788,28 @@
       overflow:hidden;
       width:100%;
       max-width:100%;
+      border-radius:16px;
     }
     .ticket-divider{display:none;}
     .ticket-notch{display:none;}
-    .ticket-left{padding:16px 14px 12px;}
+    .ticket-left{padding:14px 14px 10px;gap:10px;}
     .ticket-right{
       min-width:0 !important;
       width:100%;
-      padding:12px 14px 16px;
-      border-top:1px dashed var(--card-line);
+      padding:14px 14px 16px;
+      border-top:1px dashed #E0D6B8;
+      border-radius:0 0 16px 16px;
       align-items:stretch;
+      display:grid !important;
+      grid-template-columns:1fr auto;
+      gap:4px 14px;
+      align-items:center;
     }
+    .ticket-right .price-stack{grid-column:1;}
+    .ticket-right .price-breakdown{grid-column:1 / -1;}
+    .ticket-right .pay-hint{grid-column:1 / -1;}
+    .ticket-right .select-btn{grid-column:1 / -1;margin-top:8px;}
+    .ticket .final-price{font-size:22px;}
     .footer-grid{grid-template-columns:1fr 1fr;gap:26px;}
   }
   @media (max-width:520px){
@@ -702,17 +818,23 @@
     .results-bar{padding:12px 14px;border-radius:14px;}
     .results-bar .route{font-size:15px;}
     .results-bar .count{font-size:12px;margin-left:6px;}
-    /* Bilhete: evita estourar para o lado */
-    .ticket{grid-template-columns:1fr !important;}
+    /* Bilhete mobile compacto */
+    .ticket{grid-template-columns:1fr !important;overflow:hidden;}
+    .ticket-notch,.ticket-divider{display:none !important;}
     .ticket-left{padding:12px 12px 8px;gap:8px;min-width:0;}
     .ticket-right{
-      padding:12px 12px 12px;min-width:0 !important;max-width:none !important;width:100%;
-      border-left:none !important;border-top:1px solid var(--card-line);
-      background:#FAF8F2;
-      display:grid !important;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;
+      padding:12px 12px 14px;min-width:0 !important;max-width:none !important;width:100%;
+      border-left:none !important;border-top:1px dashed #E0D6B8;
+      background:linear-gradient(165deg,#FFFcf5,#F7F1E3);
+      display:flex !important;flex-direction:column;align-items:stretch;gap:0;
+      border-radius:0 0 16px 16px;
     }
-    .ticket-right .select-btn{grid-column:1 / -1;margin-top:6px;}
-    .ticket .final-price{font-size:18px;margin:0;}
+    .ticket-right .price-stack{width:100%;}
+    .ticket-right .price-breakdown{width:100%;}
+    .ticket-right .select-btn{width:100%;margin-top:10px;}
+    .ticket .final-price{font-size:22px;margin:0;}
+    .ticket-top{flex-wrap:wrap;gap:6px 8px;}
+    .ticket-top .ticket-stops-hint{margin-left:0;width:100%;}
     .leg-row{grid-template-columns:64px minmax(0,1fr) 64px !important;gap:4px 6px;}
     .leg-time{font-size:17px !important;}
     .leg-city{font-size:10px !important;}
@@ -826,31 +948,6 @@
   .ticket-right .final-price + .save-line + .pix-line,
   .ticket-right .fee-boarding{margin-top:6px;}
   .price-with-tax{font-size:11px;color:var(--slate);margin-top:2px;font-weight:500;}
-  /* ---- breakdown tarifa + taxa de embarque ---- */
-  .price-breakdown{
-    margin-top:8px;padding:9px 10px;border-radius:10px;
-    background:linear-gradient(160deg,#FFFBF2,#F5EFE0);
-    border:1px solid #E5D7B0;
-  }
-  .price-breakdown .pb-row{
-    display:flex;justify-content:space-between;align-items:baseline;gap:8px;
-    font-size:11px;line-height:1.35;color:var(--slate);
-  }
-  .price-breakdown .pb-row + .pb-row{margin-top:4px;}
-  .price-breakdown .pb-row b{
-    font-weight:700;color:var(--ink);font-family:'IBM Plex Mono',monospace;
-    font-size:11px;white-space:nowrap;
-  }
-  .price-breakdown .pb-row.pb-tax span{color:var(--brass-dark);font-weight:600;}
-  .price-breakdown .pb-row.pb-tax b{color:var(--brass-dark);}
-  .price-breakdown .pb-divider{height:0;border-top:1px dashed #D9CBA8;margin:7px 0 6px;}
-  .price-breakdown .pb-row.pb-total{font-size:12px;font-weight:800;color:var(--navy);}
-  .price-breakdown .pb-row.pb-total b{
-    font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;
-    color:var(--navy);letter-spacing:-.2px;
-  }
-  .price-breakdown .pb-note{margin-top:6px;font-size:9.5px;color:var(--slate-soft);line-height:1.35;}
-  .price-total-tax{display:none;}
   .pt-receipt{
     margin-top:12px;padding:12px 14px;border-radius:12px;
     background:rgba(255,255,255,0.08);border:1px solid rgba(217,162,59,0.35);
@@ -2454,14 +2551,24 @@ function renderTicket(r, isCheapest){
   const metaChips = `
     <div class="ticket-meta">
       ${typePill}
-      ${durLabel ? `<span class="meta-chip"><span class="meta-ico">⏱</span>${durLabel} total</span>` : ""}
+      ${durLabel ? `<span class="meta-chip"><span class="meta-ico">⏱</span>${durLabel}</span>` : ""}
       <span class="meta-chip ${isDirect ? "meta-direct" : "meta-stop"}"><span class="meta-ico">${isDirect ? "✦" : "↻"}</span>${stopsHint}</span>
       <span class="meta-chip"><span class="meta-ico">🧳</span>${bagLabel}</span>
-
+      ${r.locator ? `<span class="meta-chip meta-ref">REF ${r.locator}</span>` : ""}
     </div>`;
 
+  const selectLabel =
+    (typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "outbound" && !hasIn)
+      ? "Escolher ida →"
+      : (typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return"
+          ? "Escolher volta →"
+          : "Selecionar →");
+
   return `
-  <div class="ticket${(hasOut && hasIn) ? " rt" : ""}${isCheapest ? " is-best" : ""}">
+  <article class="ticket${(hasOut && hasIn) ? " rt" : ""}${isCheapest ? " is-best" : ""}">
+    <span class="ticket-notch top" aria-hidden="true"></span>
+    <span class="ticket-notch bottom" aria-hidden="true"></span>
+    <span class="ticket-divider" aria-hidden="true"></span>
     <div class="ticket-left">
       <div class="ticket-top">
         ${airlineChipHtml(r.airline)}
@@ -2475,22 +2582,18 @@ function renderTicket(r, isCheapest){
       ${metaChips}
     </div>
     <div class="ticket-right">
-      ${hasMarket ? `<div class="market-price">${currency(r.marketValue)} <span style="font-size:10px;font-weight:600;text-decoration:none;color:var(--slate-soft);">/ adulto</span></div>` : `<div class="pay-hint">Tarifa por adulto</div>`}
-      <div class="final-price display">${currency(r.ourValue)}</div>
-      <div class="pay-hint" style="margin:0 0 2px;font-size:10.5px;">por adulto</div>
-      ${hasMarket && pct > 0 ? `<div class="save-line">✓ Economize ${pct}%</div>` : ""}
-      <div class="pix-line">PIX ${currency(taxaTot > 0 ? totalComTaxa : r.ourValue)}${taxaTot > 0 ? " c/ taxa" : ""}</div>
+      <div class="price-stack">
+        <div class="price-label">Por adulto</div>
+        ${hasMarket ? `<div class="market-price">${currency(r.marketValue)}</div>` : ""}
+        <div class="final-price display">${currency(r.ourValue)}</div>
+        ${hasMarket && pct > 0 ? `<div class="save-line">✓ −${pct}% vs. mercado</div>` : ""}
+        <div class="pix-line">PIX ${currency(taxaTot > 0 ? totalComTaxa : r.ourValue)}${taxaTot > 0 ? " c/ taxa" : ""}</div>
+      </div>
       ${taxaBreakdownHtml || ""}
-      <div class="pay-hint"${taxaBreakdownHtml ? ' style="margin-top:6px;"' : ""}>PIX à vista · cartão em até 6x</div>
-      <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-boarding-fees="${taxaTot > 0 ? taxaTot : 0}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${
-        (typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "outbound" && !hasIn)
-          ? "Escolher ida →"
-          : (typeof tripType !== "undefined" && tripType === "RT" && typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return"
-              ? "Escolher volta →"
-              : "Selecionar →")
-      }</button>
+      <div class="pay-hint">à vista no PIX · cartão em até 6x</div>
+      <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-boarding-fees="${taxaTot > 0 ? taxaTot : 0}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${selectLabel}</button>
     </div>
-  </div>`;
+  </article>`;
 }
 
 
