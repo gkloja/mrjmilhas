@@ -4747,7 +4747,11 @@ function mmUpdatePaxTripSummary(flight, n) {
       <div class="pr-row"><span>Tarifa volta / adulto</span><b>${currency(Number(flight.priceReturn)||0)}</b></div>
       <div class="pr-row"><span>Tarifa ida+volta / adulto</span><b>${currency(unitPrice)}</b></div>
       ` : `<div class="pr-row"><span>Tarifa por adulto</span><b>${currency(unitPrice)}</b></div>`}
-      ${taxaUnit > 0 ? `<div class="pr-row pr-tax"><span>Taxa embarque / adulto${(flight.taxaOrigem || flight.originCode) ? " · " + (flight.taxaOrigem || flight.originCode) : ""}</span><b>+ ${currency(taxaUnit)}</b></div>` : ""}
+      ${(flight.taxaIda != null && flight.taxaVolta != null && Number(flight.taxaVolta) > 0) ? `
+      <div class="pr-row pr-tax"><span>Taxa embarque ida${flight.taxaOrigemIda ? " · " + flight.taxaOrigemIda : ""}</span><b>+ ${currency(Number(flight.taxaIda)||0)}</b></div>
+      <div class="pr-row pr-tax"><span>Taxa embarque volta${flight.taxaOrigemVolta ? " · " + flight.taxaOrigemVolta : ""}</span><b>+ ${currency(Number(flight.taxaVolta)||0)}</b></div>
+      <div class="pr-row pr-tax"><span>Taxas ida+volta / adulto</span><b>+ ${currency(taxaUnit)}</b></div>
+      ` : (taxaUnit > 0 ? `<div class="pr-row pr-tax"><span>Taxa embarque / adulto${(flight.taxaOrigem || flight.originCode) ? " · " + (flight.taxaOrigem || flight.originCode) : ""}</span><b>+ ${currency(taxaUnit)}</b></div>` : "")}
       <div class="pr-div"></div>
       <div class="pr-row"><span>Subtotal por adulto</span><b>${currency(unitComTaxa)}</b></div>
       ${n > 1 ? `<div class="pr-row" style="margin-top:4px;"><span>× ${n} adultos</span><b>${currency(unitComTaxa)} × ${n}</b></div>
@@ -4782,19 +4786,55 @@ function mmUpdatePaxTripSummary(flight, n) {
 }
 
 async function openPaxModal(flight){
-  // Garante taxa de embarque no objeto do voo (e total com taxa)
-  const _depTax = flight.originCode || flight.depAirport || (typeof selectedAirport !== "undefined" && selectedAirport.origin && selectedAirport.origin.code) || "";
-  if (flight.boardingFees == null || flight.boardingFees === "") {
-    const est = estimarTaxasAeroporto(_depTax, flight.stops, flight.layovers, flight.segments);
-    flight.boardingFees = est.total;
-    flight.taxaEmbarque = est.embarque;
-    flight.taxaExtraSP = est.extraSP;
-    flight.taxaExtraSPDetail = est.extraSPDetail;
-    flight.taxaOrigem = est.origem;
+  // Taxas de embarque: em ida+volta são DUAS (saída da ida + saída da volta).
+  // Ex.: MAO→RIO cobra taxa MAO na ida e taxa RIO/GIG/SDU na volta.
+  const isRTFlight = flight.tripType === "RT" || (flight.priceOutbound != null && flight.priceReturn != null)
+    || (flight.outbound && flight.inbound);
+  const _depTaxIda = (flight.outbound && (flight.outbound.originCode || flight.outbound.depAirport || flight.outbound.departure))
+    || flight.originCode || flight.depAirport
+    || (typeof selectedAirport !== "undefined" && selectedAirport.origin && selectedAirport.origin.code)
+    || "";
+  const _depTaxVolta = (flight.inbound && (flight.inbound.originCode || flight.inbound.depAirport || flight.inbound.departure))
+    || (isRTFlight && typeof selectedAirport !== "undefined" && selectedAirport.destination && selectedAirport.destination.code)
+    || "";
+
+  const estIda = estimarTaxasAeroporto(
+    _depTaxIda,
+    (flight.outbound && flight.outbound.stops != null) ? flight.outbound.stops : flight.stops,
+    (flight.outbound && flight.outbound.layovers) || flight.layovers,
+    (flight.outbound && flight.outbound.segments) || flight.segments
+  );
+  let taxaIda = Number(flight.taxaIda != null ? flight.taxaIda : (flight.outbound && flight.outbound.boardingFees != null ? flight.outbound.boardingFees : estIda.total)) || 0;
+  let taxaVolta = 0;
+  let estVolta = { total: 0, embarque: 0, origem: "", extraSP: 0, extraSPDetail: "" };
+  if (isRTFlight && _depTaxVolta) {
+    estVolta = estimarTaxasAeroporto(
+      _depTaxVolta,
+      (flight.inbound && flight.inbound.stops != null) ? flight.inbound.stops : 0,
+      (flight.inbound && flight.inbound.layovers) || [],
+      (flight.inbound && flight.inbound.segments) || []
+    );
+    taxaVolta = Number(flight.taxaVolta != null ? flight.taxaVolta : estVolta.total) || 0;
+  } else if (!isRTFlight) {
+    // Só ida: uma taxa
+    if (flight.boardingFees != null && flight.boardingFees !== "") {
+      taxaIda = Number(flight.boardingFees) || taxaIda;
+    }
   }
+
+  flight.taxaIda = taxaIda;
+  flight.taxaVolta = taxaVolta;
+  flight.taxaOrigemIda = estIda.origem || String(_depTaxIda || "").toUpperCase();
+  flight.taxaOrigemVolta = estVolta.origem || String(_depTaxVolta || "").toUpperCase();
+  flight.boardingFees = Math.round((taxaIda + taxaVolta) * 100) / 100;
+  flight.taxaEmbarque = flight.boardingFees;
+  flight.taxaExtraSP = (estIda.extraSP || 0) + (estVolta.extraSP || 0);
+  flight.taxaExtraSPDetail = [estIda.extraSPDetail, estVolta.extraSPDetail].filter(Boolean).join(" · ");
+  flight.taxaOrigem = isRTFlight
+    ? [flight.taxaOrigemIda, flight.taxaOrigemVolta].filter(Boolean).join(" + ")
+    : (estIda.origem || _depTaxIda || "");
   flight.taxaUnit = Number(flight.boardingFees) || 0;
   flight.priceComTaxa = (Number(flight.price) || 0) + flight.taxaUnit;
-  if (!flight.taxaOrigem) flight.taxaOrigem = _depTax || flight.originCode || "";
 
   pendingFlight = flight;
   const user = mmEffectiveUser();
@@ -5001,7 +5041,13 @@ async function submitPaxAndWhatsApp(){
     msg += `• *Tarifa:* R$ ${_baseWa.toLocaleString("pt-BR")}\n`;
   }
   if (_taxaWa > 0) {
-    msg += `• *Taxa de embarque:* R$ ${_taxaWa.toLocaleString("pt-BR")} _(inclusa)_\n`;
+    if (pendingFlight.taxaIda != null && pendingFlight.taxaVolta != null && Number(pendingFlight.taxaVolta) > 0) {
+      msg += `• *Taxa embarque ida${pendingFlight.taxaOrigemIda ? " (" + pendingFlight.taxaOrigemIda + ")" : ""}:* R$ ${Number(pendingFlight.taxaIda||0).toLocaleString("pt-BR")}\n`;
+      msg += `• *Taxa embarque volta${pendingFlight.taxaOrigemVolta ? " (" + pendingFlight.taxaOrigemVolta + ")" : ""}:* R$ ${Number(pendingFlight.taxaVolta||0).toLocaleString("pt-BR")}\n`;
+      msg += `• *Taxas ida+volta:* R$ ${_taxaWa.toLocaleString("pt-BR")} _(inclusas)_\n`;
+    } else {
+      msg += `• *Taxa de embarque:* R$ ${_taxaWa.toLocaleString("pt-BR")} _(inclusa)_\n`;
+    }
     msg += `• *Total c/ taxa:* R$ ${_totWa.toLocaleString("pt-BR")}\n`;
   } else if (!(pendingFlight.priceOutbound != null && pendingFlight.priceReturn != null)) {
     msg += `• *Valor ref.:* R$ ${_baseWa.toLocaleString("pt-BR")}\n`;
@@ -5170,6 +5216,17 @@ document.addEventListener("click", (e) => {
       const priceOutbound = Number(select.dataset.priceOutbound || ida.ourValue || ida.price || 0) || 0;
       const priceReturn = Number(select.dataset.priceReturn || (offer && offer.priceReturn) || (offer && offer.ourValue) || 0) || 0;
       const priceTotal = Number(select.dataset.price || (priceOutbound + priceReturn)) || (priceOutbound + priceReturn);
+      const outObj = ida.outbound || ida || {};
+      const inObj = (offer && (offer.inbound || offer)) || null;
+      // Garante códigos de aeroporto nos trechos (taxa ida = origem ida; taxa volta = origem volta)
+      if (outObj && !outObj.originCode) {
+        outObj.originCode = outObj.depAirport || selectedAirport.origin.code;
+        outObj.destCode = outObj.arrAirport || selectedAirport.destination.code;
+      }
+      if (inObj && !inObj.originCode) {
+        inObj.originCode = inObj.depAirport || selectedAirport.destination.code;
+        inObj.destCode = inObj.arrAirport || selectedAirport.origin.code;
+      }
       openPaxModal({
         route: select.dataset.route || "",
         airline: select.dataset.airline || (offer && offer.airline && offer.airline.name) || "",
@@ -5187,8 +5244,8 @@ document.addEventListener("click", (e) => {
         destCode: selectedAirport.destination.code,
         flash: false,
         tripType: "RT",
-        outbound: ida.outbound || ida,
-        inbound: (offer && (offer.inbound || offer)) || null
+        outbound: outObj,
+        inbound: inObj
       });
       return;
     }
