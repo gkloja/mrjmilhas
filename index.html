@@ -3262,29 +3262,9 @@ async function loadReturnFlights(outboundOffer){
     alert("Dados da busca incompletos. Faça a busca novamente.");
     return;
   }
-  const token = outboundOffer.departureToken;
-  if (!token) {
-    // Sem token: segue só com a ida (parcial)
-    openPaxModal({
-      route: (outboundOffer.originCity || "") + " → " + (outboundOffer.destCity || ""),
-      airline: outboundOffer.airline && outboundOffer.airline.name,
-      price: outboundOffer.ourValue,
-      dep: outboundOffer.dep,
-      arr: outboundOffer.arr,
-      locator: outboundOffer.locator,
-      stops: outboundOffer.stops,
-      duration: outboundOffer.duration,
-      originLabel: (selectedAirport.origin.city || "") + " (" + selectedAirport.origin.code + ")",
-      destLabel: (selectedAirport.destination.city || "") + " (" + selectedAirport.destination.code + ")",
-      originCode: selectedAirport.origin.code,
-      destCode: selectedAirport.destination.code,
-      flash: false,
-      tripType: "RT",
-      outbound: outboundOffer.outbound || null,
-      inbound: null
-    });
-    return;
-  }
+  // Token do Google (departure_token) não é mais obrigatório:
+  // a volta é buscada como só-ida no sentido inverso (preço só da volta).
+  const token = outboundOffer.departureToken || null;
 
   const container = document.getElementById("tickets-container");
   const countEl = document.getElementById("route-count");
@@ -3302,7 +3282,7 @@ async function loadReturnFlights(outboundOffer){
         to: lastSearchParams.to,
         departureDate: lastSearchParams.departureDate,
         returnDate: lastSearchParams.returnDate,
-        departureToken: token,
+        departureToken: token || undefined,
         numAdults: lastSearchParams.numAdults || 1
       })
     });
