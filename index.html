@@ -2578,15 +2578,16 @@ function renderTicket(r, isCheapest){
     </div>
     <div class="ticket-right">
       <div class="price-stack">
-        <div class="price-label">Por adulto</div>
+        <div class="price-label">${(typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return") ? "Só a volta · por adulto" : ((typeof rtSearchPhase !== "undefined" && rtSearchPhase === "outbound" && typeof tripType !== "undefined" && tripType === "RT") ? "Só a ida · por adulto" : "Por adulto")}</div>
         ${hasMarket ? `<div class="market-price">${currency(r.marketValue)}</div>` : ""}
         <div class="final-price display">${currency(r.ourValue)}</div>
+        ${(typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return" && r.priceOutbound != null && r.priceTotal != null) ? `<div class="save-line" style="background:#EAF1FE;border-color:#B8C9E8;color:var(--blue);">Ida ${currency(r.priceOutbound)} + volta = ${currency(r.priceTotal)}</div>` : ""}
         ${hasMarket && pct > 0 ? `<div class="save-line">✓ −${pct}% vs. mercado</div>` : ""}
         <div class="pix-line">PIX ${currency(taxaTot > 0 ? totalComTaxa : r.ourValue)}${taxaTot > 0 ? " c/ taxa" : ""}</div>
       </div>
       ${taxaBreakdownHtml || ""}
       <div class="pay-hint">à vista no PIX · cartão em até 6x</div>
-      <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${r.ourValue}" data-boarding-fees="${taxaTot > 0 ? taxaTot : 0}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${selectLabel}</button>
+      <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${(typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return" && r.priceTotal != null) ? r.priceTotal : r.ourValue}" data-price-outbound="${r.priceOutbound != null ? r.priceOutbound : ""}" data-price-return="${r.priceReturn != null ? r.priceReturn : ((typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return") ? r.ourValue : "")}" data-boarding-fees="${taxaTot > 0 ? taxaTot : 0}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${selectLabel}</button>
     </div>
   </article>`;
 }
@@ -3313,12 +3314,25 @@ async function loadReturnFlights(outboundOffer){
       if (container) container.innerHTML = '<div class="airport-empty">Não achamos voos de volta para esta ida. Tente outra ida. ✈️</div>';
       return;
     }
-    // Anexa dados da ida em cada opção de volta para o modal
+    // Anexa dados da ida em cada opção de volta para o modal.
+    // Backend agora devolve preço SÓ da volta (type=2 sentido inverso).
+    // No card mostramos a volta; no fechamento somamos ida + volta.
     currentResults = lista.map(function(o){
       const mapped = mapOferta(o);
       mapped.selectionPhase = "return";
       mapped.tripType = "RT";
-      // preço da API já é total ida+volta
+      const priceReturn = Number(mapped.ourValue) || 0;
+      const priceOutbound = Number(
+        (rtOutboundSelected && (rtOutboundSelected.ourValue != null ? rtOutboundSelected.ourValue : rtOutboundSelected.price)) || 0
+      ) || 0;
+      mapped.priceReturn = priceReturn;
+      mapped.priceOutbound = priceOutbound;
+      mapped.priceTotal = priceOutbound + priceReturn;
+      // ourValue no card da fase volta = só a volta (não o total)
+      mapped.ourValue = priceReturn;
+      if (mapped.marketValue != null && priceOutbound > 0) {
+        // market da volta: se API mandou market do trecho, mantém; senão deixa
+      }
       if (rtOutboundSelected) {
         mapped.outbound = rtOutboundSelected.outbound || {
           originCode: rtOutboundSelected.depAirport || selectedAirport.origin.code,
@@ -3329,8 +3343,10 @@ async function loadReturnFlights(outboundOffer){
           stops: rtOutboundSelected.stops,
           layovers: rtOutboundSelected.layovers,
           originCity: rtOutboundSelected.originCity,
-          destCity: rtOutboundSelected.destCity
+          destCity: rtOutboundSelected.destCity,
+          price: priceOutbound
         };
+        mapped.outbound.price = priceOutbound;
         // Se a volta veio só como inbound, monta pernas para renderLeg
         if (!mapped.inbound && (o.inbound || mapped)) {
           mapped.inbound = mapLeg(o.inbound) || {
@@ -4746,7 +4762,11 @@ function mmUpdatePaxTripSummary(flight, n) {
       ${dataIda ? "<br>Ida " + dataIda : ""}${!isOW && retDate ? " · Volta " + retDate : ""}
       <br>${n} passageiro${n>1?"s":""} · ${tripTypeLabel}${flight.locator ? " · Ref " + flight.locator : ""}</div>
     <div class="pt-receipt">
-      <div class="pr-row"><span>Tarifa por adulto</span><b>${currency(unitPrice)}</b></div>
+      ${(flight.priceOutbound != null && flight.priceReturn != null) ? `
+      <div class="pr-row"><span>Tarifa ida / adulto</span><b>${currency(Number(flight.priceOutbound)||0)}</b></div>
+      <div class="pr-row"><span>Tarifa volta / adulto</span><b>${currency(Number(flight.priceReturn)||0)}</b></div>
+      <div class="pr-row"><span>Tarifa ida+volta / adulto</span><b>${currency(unitPrice)}</b></div>
+      ` : `<div class="pr-row"><span>Tarifa por adulto</span><b>${currency(unitPrice)}</b></div>`}
       ${taxaUnit > 0 ? `<div class="pr-row pr-tax"><span>Taxa embarque / adulto${(flight.taxaOrigem || flight.originCode) ? " · " + (flight.taxaOrigem || flight.originCode) : ""}</span><b>+ ${currency(taxaUnit)}</b></div>` : ""}
       <div class="pr-div"></div>
       <div class="pr-row"><span>Subtotal por adulto</span><b>${currency(unitComTaxa)}</b></div>
@@ -4993,11 +5013,17 @@ async function submitPaxAndWhatsApp(){
   const _taxaWa = Number(pendingFlight.taxaUnit || pendingFlight.boardingFees || 0) || 0;
   const _baseWa = Number(pendingFlight.price||0) || 0;
   const _totWa = _baseWa + _taxaWa;
-  msg += `• *Tarifa:* R$ ${_baseWa.toLocaleString("pt-BR")}\n`;
+  if (pendingFlight.priceOutbound != null && pendingFlight.priceReturn != null) {
+    msg += `• *Tarifa ida:* R$ ${Number(pendingFlight.priceOutbound||0).toLocaleString("pt-BR")}\n`;
+    msg += `• *Tarifa volta:* R$ ${Number(pendingFlight.priceReturn||0).toLocaleString("pt-BR")}\n`;
+    msg += `• *Tarifa ida+volta:* R$ ${_baseWa.toLocaleString("pt-BR")}\n`;
+  } else {
+    msg += `• *Tarifa:* R$ ${_baseWa.toLocaleString("pt-BR")}\n`;
+  }
   if (_taxaWa > 0) {
     msg += `• *Taxa de embarque:* R$ ${_taxaWa.toLocaleString("pt-BR")} _(inclusa)_\n`;
     msg += `• *Total c/ taxa:* R$ ${_totWa.toLocaleString("pt-BR")}\n`;
-  } else {
+  } else if (!(pendingFlight.priceOutbound != null && pendingFlight.priceReturn != null)) {
     msg += `• *Valor ref.:* R$ ${_baseWa.toLocaleString("pt-BR")}\n`;
   }
   msg += `• *Pagamento:* ${pag.label}\n`;
@@ -5158,13 +5184,18 @@ document.addEventListener("click", (e) => {
       return;
     }
 
-    // Ida e volta passo 2: escolheu a VOLTA → modal com ida+volta
+    // Ida e volta passo 2: escolheu a VOLTA → modal com ida+volta (soma no final)
     if (isRT && rtSearchPhase === "return") {
       const ida = rtOutboundSelected || {};
+      const priceOutbound = Number(select.dataset.priceOutbound || ida.ourValue || ida.price || 0) || 0;
+      const priceReturn = Number(select.dataset.priceReturn || (offer && offer.priceReturn) || (offer && offer.ourValue) || 0) || 0;
+      const priceTotal = Number(select.dataset.price || (priceOutbound + priceReturn)) || (priceOutbound + priceReturn);
       openPaxModal({
         route: select.dataset.route || "",
         airline: select.dataset.airline || (offer && offer.airline && offer.airline.name) || "",
-        price: select.dataset.price || "0",
+        price: priceTotal,
+        priceOutbound: priceOutbound,
+        priceReturn: priceReturn,
         dep: ida.dep || select.dataset.dep || "",
         arr: (offer && offer.arr) || select.dataset.arr || "",
         locator: select.dataset.locator || "",
