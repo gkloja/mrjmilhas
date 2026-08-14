@@ -3324,9 +3324,13 @@ async function loadReturnFlights(outboundOffer){
           layovers: rtOutboundSelected.layovers,
           originCity: rtOutboundSelected.originCity,
           destCity: rtOutboundSelected.destCity,
-          price: priceOutbound
+          price: priceOutbound,
+          airline: (rtOutboundSelected.airline && (rtOutboundSelected.airline.name || rtOutboundSelected.airline)) || rtOutboundSelected.airlineSlug || ""
         };
         mapped.outbound.price = priceOutbound;
+        if (!mapped.outbound.airline) {
+          mapped.outbound.airline = (rtOutboundSelected.airline && (rtOutboundSelected.airline.name || rtOutboundSelected.airline)) || rtOutboundSelected.airlineSlug || "";
+        }
         // Se a volta veio só como inbound, monta pernas para renderLeg
         if (!mapped.inbound && (o.inbound || mapped)) {
           mapped.inbound = mapLeg(o.inbound) || {
@@ -3338,8 +3342,12 @@ async function loadReturnFlights(outboundOffer){
             destCode: mapped.arrAirport || selectedAirport.origin.code,
             originCity: mapped.originCity,
             destCity: mapped.destCity,
-            layovers: mapped.layovers
+            layovers: mapped.layovers,
+            airline: (mapped.airline && (mapped.airline.name || mapped.airline)) || mapped.airlineSlug || o.airline || ""
           };
+        }
+        if (mapped.inbound && !mapped.inbound.airline) {
+          mapped.inbound.airline = (mapped.airline && (mapped.airline.name || mapped.airline)) || mapped.airlineSlug || o.airline || "";
         }
       }
       return mapped;
@@ -4998,37 +5006,125 @@ async function submitPaxAndWhatsApp(){
   const retDate = document.getElementById("f-return")?.value || "";
   const isFlash = !!pendingFlight.flash;
   const isOW = pendingFlight.tripType === "OW" || isFlash || (typeof tripType !== "undefined" && tripType === "OW");
-  // Aeroportos do voo escolhido (oferta relâmpago OU resultado da busca) — nunca misturar com a busca se for flash
-  const rotaLabel = pendingFlight.route
-    || [pendingFlight.originLabel, pendingFlight.destLabel].filter(Boolean).join(" → ")
-    || (selectedAirport.origin.city + " → " + selectedAirport.destination.city);
+
+  // ---- helpers da mensagem WA ----
+  function mmCityOnly(label, fallbackCity) {
+    const s = String(label || "").trim();
+    if (!s) return fallbackCity || "—";
+    // "Manaus (MAO)" / "Manaus · MAO" → "Manaus"
+    const m = s.match(/^([^(\·]+)/);
+    return (m ? m[1] : s).replace(/\s+/g, " ").trim() || fallbackCity || "—";
+  }
+  function mmFmtDataBR(v) {
+    if (!v) return "—";
+    const s = String(v).trim();
+    // YYYY-MM-DD
+    let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return m[3] + "/" + m[2] + "/" + m[1];
+    // DD/MM/YYYY já ok
+    if (/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)) return s;
+    return s;
+  }
+  function mmStopsLabel(n) {
+    if (n === undefined || n === null || n === "") return "—";
+    const s = Number(n);
+    if (!isFinite(s) || s <= 0) return "Direto";
+    return s === 1 ? "1 parada" : (s + " paradas");
+  }
+  function mmAirlineName(x) {
+    if (!x) return "—";
+    if (typeof x === "string") {
+      const t = x.trim();
+      if (!t) return "—";
+      if (/^latam/i.test(t)) return "LATAM";
+      if (/^gol/i.test(t)) return "GOL";
+      if (/^azul/i.test(t)) return "Azul";
+      return t;
+    }
+    if (x.name) return mmAirlineName(x.name);
+    if (x.airline) return mmAirlineName(x.airline);
+    return "—";
+  }
+  function mmHora(v) {
+    if (!v || v === "--:--" || v === "--") return "—";
+    if (typeof fmtHora === "function") {
+      const h = fmtHora(v);
+      return (h && h !== "--:--") ? h : "—";
+    }
+    const m = String(v).match(/(\d{1,2}):(\d{2})/);
+    return m ? (String(m[1]).padStart(2,"0") + ":" + m[2]) : String(v);
+  }
+
+  // Trecho SEMPRE origem → destino da busca (nunca invertido)
+  const cidadeOrigem = isFlash
+    ? mmCityOnly(pendingFlight.originLabel, pendingFlight.originLabel)
+    : mmCityOnly(pendingFlight.originLabel, (selectedAirport && selectedAirport.origin && selectedAirport.origin.city) || "");
+  const cidadeDestino = isFlash
+    ? mmCityOnly(pendingFlight.destLabel, pendingFlight.destLabel)
+    : mmCityOnly(pendingFlight.destLabel, (selectedAirport && selectedAirport.destination && selectedAirport.destination.city) || "");
+  const trechoLabel = (cidadeOrigem || "—") + " x " + (cidadeDestino || "—");
+
   const aeroportosLabel = isFlash
-    ? (pendingFlight.route || [pendingFlight.originLabel, pendingFlight.destLabel].filter(Boolean).join(" → ") || "—")
+    ? (pendingFlight.route || [pendingFlight.originLabel, pendingFlight.destLabel].filter(Boolean).join(" → ") || trechoLabel)
     : (
-        pendingFlight.originLabel && pendingFlight.destLabel
-          ? (pendingFlight.originLabel + " → " + pendingFlight.destLabel)
-          : (selectedAirport.origin.city + " (" + selectedAirport.origin.code + ") → " + selectedAirport.destination.city + " (" + selectedAirport.destination.code + ")")
+        (selectedAirport.origin.city || "") + " (" + selectedAirport.origin.code + ") → " +
+        (selectedAirport.destination.city || "") + " (" + selectedAirport.destination.code + ")"
       );
+
+  // Dados de ida / volta a partir de outbound/inbound (RT) ou plano (OW)
+  const outLeg = pendingFlight.outbound || null;
+  const inLeg = pendingFlight.inbound || null;
+  const dataIdaFinal = isFlash ? (pendingFlight.date || "") : (depDate || pendingFlight.date || "");
+  const dataVoltaFinal = (!isOW && !isFlash) ? (retDate || "") : "";
+
+  const idaCia = mmAirlineName(
+    (outLeg && (outLeg.airline || outLeg.airlineName)) ||
+    pendingFlight.airlineOutbound ||
+    pendingFlight.airline
+  );
+  const idaDep = mmHora((outLeg && outLeg.dep) || pendingFlight.dep);
+  // Em só-ida, pendingFlight.arr é a chegada da ida; em RT, arr do topo costuma ser da volta — usar outLeg
+  const idaArr = mmHora((outLeg && outLeg.arr) || ((isOW || isFlash) ? pendingFlight.arr : null));
+  const idaStops = mmStopsLabel(
+    (outLeg && outLeg.stops != null) ? outLeg.stops
+      : ((isOW || isFlash) ? pendingFlight.stops : (pendingFlight.stopsOutbound != null ? pendingFlight.stopsOutbound : 0))
+  );
+
+  const voltaCia = mmAirlineName(
+    (inLeg && (inLeg.airline || inLeg.airlineName)) ||
+    pendingFlight.airlineInbound ||
+    (!isOW && !isFlash ? pendingFlight.airline : null)
+  );
+  const voltaDep = mmHora(inLeg && inLeg.dep);
+  const voltaArr = mmHora(inLeg && inLeg.arr);
+  const voltaStops = mmStopsLabel(inLeg && inLeg.stops != null ? inLeg.stops : (pendingFlight.stopsInbound != null ? pendingFlight.stopsInbound : null));
+
   let msg = "";
   msg += "✈️ *PEDIDO DE EMISSÃO — Marujo's Milhas*\n";
   msg += "━━━━━━━━━━━━━━━━━━━━\n\n";
 
   msg += "📍 *TRECHO*\n";
   if (isFlash) msg += "• *Tipo de oferta:* Relâmpago\n";
-  msg += `• *Rota:* ${rotaLabel}\n`;
-  msg += `• *Companhia:* ${pendingFlight.airline || "—"}\n`;
-  if (pendingFlight.dep || pendingFlight.arr) {
-    msg += `• *Horário:* ${pendingFlight.dep || "—"} → ${pendingFlight.arr || "—"}\n`;
+  msg += "• *Trecho:* " + trechoLabel + "\n";
+  msg += "• *Tipo:* " + (isOW ? "Só ida" : "Ida e volta") + "\n\n";
+
+  // ---- IDA ----
+  msg += "🛫 *IDA*\n";
+  msg += "• *Companhia:* " + idaCia + "\n";
+  msg += "• *Data ida:* " + mmFmtDataBR(dataIdaFinal) + "\n";
+  msg += "• *Horário:* " + idaDep + " - " + idaArr + "\n";
+  msg += "• *Paradas:* " + idaStops + "\n";
+
+  // ---- VOLTA (só se ida e volta) ----
+  if (!isOW && !isFlash) {
+    msg += "\n🛬 *VOLTA*\n";
+    msg += "• *Companhia:* " + voltaCia + "\n";
+    msg += "• *Data volta:* " + mmFmtDataBR(dataVoltaFinal) + "\n";
+    msg += "• *Horário:* " + voltaDep + " - " + voltaArr + "\n";
+    msg += "• *Paradas:* " + voltaStops + "\n";
   }
-  const dataIdaFinal = isFlash ? (pendingFlight.date || "") : (depDate || pendingFlight.date || "");
-  if (dataIdaFinal) msg += `• *Data ida:* ${dataIdaFinal}\n`;
-  if (!isOW && !isFlash && retDate) msg += `• *Data volta:* ${retDate}\n`;
-  msg += `• *Tipo:* ${isOW ? "Só ida" : "Ida e volta"}\n`;
-  if (pendingFlight.duration) msg += `• *Duração:* ${pendingFlight.duration}\n`;
-  if (pendingFlight.stops !== undefined && pendingFlight.stops !== "") {
-    msg += `• *Paradas:* ${Number(pendingFlight.stops) === 0 ? "Direto" : pendingFlight.stops}\n`;
-  }
-  if (pendingFlight.locator) msg += `• *Ref. busca:* ${pendingFlight.locator}\n`;
+  msg += "\n";
+
   const pag = getSelectedPagamento();
   const _taxaWa = Number(pendingFlight.taxaUnit || pendingFlight.boardingFees || 0) || 0;
   const _baseWa = Number(pendingFlight.price||0) || 0;
@@ -5049,8 +5145,6 @@ async function submitPaxAndWhatsApp(){
       msg += `• *Taxa de embarque:* R$ ${_taxaWa.toLocaleString("pt-BR")} _(inclusa)_\n`;
     }
     msg += `• *Total c/ taxa:* R$ ${_totWa.toLocaleString("pt-BR")}\n`;
-  } else if (!(pendingFlight.priceOutbound != null && pendingFlight.priceReturn != null)) {
-    msg += `• *Valor ref.:* R$ ${_baseWa.toLocaleString("pt-BR")}\n`;
   }
   msg += `• *Pagamento:* ${pag.label}\n`;
   if (pag.parcelas > 1) {
@@ -5227,16 +5321,40 @@ document.addEventListener("click", (e) => {
         inObj.originCode = inObj.depAirport || selectedAirport.destination.code;
         inObj.destCode = inObj.arrAirport || selectedAirport.origin.code;
       }
+      // Normaliza pernas com dep/arr/stops/airline para a mensagem do WhatsApp
+      const outNorm = Object.assign({}, outObj || {});
+      if (!outNorm.dep) outNorm.dep = ida.dep || select.dataset.dep || "";
+      if (!outNorm.arr) outNorm.arr = ida.arr || (ida.outbound && ida.outbound.arr) || "";
+      if (outNorm.stops == null) outNorm.stops = ida.stops != null ? ida.stops : (ida.outbound && ida.outbound.stops);
+      if (!outNorm.airline) {
+        outNorm.airline = (ida.airline && (ida.airline.name || ida.airline)) || ida.airlineSlug || "";
+      }
+      const inNorm = Object.assign({}, (inObj && typeof inObj === "object") ? inObj : {});
+      // Se inObj veio como oferta "plana" da volta (sem .dep no nested), usa campos do topo da oferta
+      if (!inNorm.dep && offer) inNorm.dep = offer.dep || (offer.outbound && offer.outbound.dep) || "";
+      if (!inNorm.arr && offer) inNorm.arr = offer.arr || (offer.outbound && offer.outbound.arr) || "";
+      if (inNorm.stops == null && offer) inNorm.stops = offer.stops != null ? offer.stops : (offer.outbound && offer.outbound.stops);
+      if (!inNorm.airline && offer) {
+        inNorm.airline = (offer.airline && (offer.airline.name || offer.airline)) || offer.airlineSlug || select.dataset.airline || "";
+      }
+      // Garante codes no sentido correto da volta (destino → origem)
+      if (!inNorm.originCode) inNorm.originCode = selectedAirport.destination.code;
+      if (!inNorm.destCode) inNorm.destCode = selectedAirport.origin.code;
+
       openPaxModal({
-        route: select.dataset.route || "",
+        route: (selectedAirport.origin.city || "") + " x " + (selectedAirport.destination.city || ""),
         airline: select.dataset.airline || (offer && offer.airline && offer.airline.name) || "",
+        airlineOutbound: outNorm.airline || "",
+        airlineInbound: inNorm.airline || "",
         price: priceTotal,
         priceOutbound: priceOutbound,
         priceReturn: priceReturn,
-        dep: ida.dep || select.dataset.dep || "",
-        arr: (offer && offer.arr) || select.dataset.arr || "",
+        dep: outNorm.dep || "",
+        arr: outNorm.arr || "",
         locator: select.dataset.locator || "",
-        stops: select.dataset.stops || "",
+        stops: outNorm.stops,
+        stopsOutbound: outNorm.stops,
+        stopsInbound: inNorm.stops,
         duration: select.dataset.duration || "",
         originLabel: (selectedAirport.origin.city || "") + " (" + selectedAirport.origin.code + ")",
         destLabel: (selectedAirport.destination.city || "") + " (" + selectedAirport.destination.code + ")",
@@ -5244,21 +5362,21 @@ document.addEventListener("click", (e) => {
         destCode: selectedAirport.destination.code,
         flash: false,
         tripType: "RT",
-        outbound: outObj,
-        inbound: inObj
+        outbound: outNorm,
+        inbound: inNorm
       });
       return;
     }
 
     // Só ida (ou fallback)
     openPaxModal({
-      route: select.dataset.route || "",
-      airline: select.dataset.airline || "",
+      route: (selectedAirport.origin.city || "") + " x " + (selectedAirport.destination.city || ""),
+      airline: select.dataset.airline || (offer && offer.airline && offer.airline.name) || "",
       price: select.dataset.price || "0",
-      dep: select.dataset.dep || "",
-      arr: select.dataset.arr || "",
+      dep: select.dataset.dep || (offer && offer.dep) || "",
+      arr: select.dataset.arr || (offer && offer.arr) || "",
       locator: select.dataset.locator || "",
-      stops: select.dataset.stops || "",
+      stops: select.dataset.stops != null ? select.dataset.stops : (offer && offer.stops),
       duration: select.dataset.duration || "",
       originLabel: (selectedAirport.origin.city || "") + " (" + selectedAirport.origin.code + ")",
       destLabel: (selectedAirport.destination.city || "") + " (" + selectedAirport.destination.code + ")",
@@ -5266,6 +5384,12 @@ document.addEventListener("click", (e) => {
       destCode: selectedAirport.destination.code,
       flash: false,
       tripType: (typeof tripType !== "undefined" ? tripType : "OW"),
+      outbound: offer && offer.outbound ? offer.outbound : {
+        dep: select.dataset.dep || (offer && offer.dep) || "",
+        arr: select.dataset.arr || (offer && offer.arr) || "",
+        stops: select.dataset.stops != null ? select.dataset.stops : (offer && offer.stops),
+        airline: select.dataset.airline || (offer && offer.airline && offer.airline.name) || ""
+      },
       boardingFees: offer && offer.boardingFees != null ? offer.boardingFees : (Number(select.dataset.boardingFees) || 0),
       taxaEmbarque: offer && offer.taxaEmbarque != null ? offer.taxaEmbarque : 0,
       taxaExtraSP: offer && offer.taxaExtraSP != null ? offer.taxaExtraSP : 0
