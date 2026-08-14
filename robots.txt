@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Bloqueia utilitários internos (se existirem no futuro)
+Disallow: /offline.html
+
+Sitemap: https://www.marujosmilhas.com.br/sitemap.xml
