@@ -1,0 +1,14 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.marujosmilhas",
+      "sha256_cert_fingerprints": [
+        "4D:43:86:D8:77:0E:B5:40:5C:27:2C:92:D4:48:24:D4:74:93:EA:61:D9:15:F7:44:F7:5D:AE:7E:EE:77:16:9D",
+        "40:54:7D:F5:16:F3:25:AD:E7:D8:BB:82:E5:C6:2E:FB:B9:12:48:90:29:89:7D:E7:1C:E0:F8:7A:04:BD:35:06",
+        "02:1B:D7:8F:B4:7B:EC:87:89:31:22:A4:1C:05:7F:6C:04:60:EA:87:B8:4B:B6:66:3E:CB:8F:80:96:E8:AB:46"
+      ]
+    }
+  }
+]
