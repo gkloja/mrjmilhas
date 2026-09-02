@@ -215,24 +215,28 @@
       linear-gradient(180deg, var(--blue) 0%, var(--navy-2) 50%, var(--navy-3) 100%);
     padding:60px 0 152px;position:relative;overflow:hidden;
   }
-  /* Vídeo de nuvens em loop — fundo cinematográfico */
+  /* Vídeo de nuvens — otimizado p/ 60fps (sem filter CSS no <video>) */
   .hero-video{
     position:absolute;inset:0;width:100%;height:100%;
     object-fit:cover;object-position:center 40%;
     z-index:0;pointer-events:none;
-    /* mais claro para as nuvens aparecerem */
-    filter:saturate(0.9) brightness(1.05) contrast(1.02);
-    transform:scale(1.04);
+    /* camada própria na GPU — sem filter/opacity animada no vídeo */
+    transform:translate3d(0,0,0);
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    contain:strict;
+    content-visibility:auto;
   }
   .hero-video-overlay{
     position:absolute;inset:0;z-index:1;pointer-events:none;
+    /* leve azulamento da marca sem processar o vídeo */
     background:
       linear-gradient(180deg,
-        rgba(14,25,48,0.28) 0%,
-        rgba(22,39,74,0.32) 45%,
-        rgba(14,25,48,0.58) 100%),
-      radial-gradient(ellipse 80% 60% at 70% 20%, rgba(57,114,219,0.14), transparent 55%),
-      radial-gradient(ellipse 50% 40% at 10% 80%, rgba(217,162,59,0.08), transparent 50%);
+        rgba(14,25,48,0.32) 0%,
+        rgba(22,39,74,0.36) 45%,
+        rgba(14,25,48,0.62) 100%),
+      radial-gradient(ellipse 80% 60% at 70% 20%, rgba(57,114,219,0.12), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 10% 80%, rgba(217,162,59,0.07), transparent 50%);
   }
   .hero::before{
     content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
@@ -241,7 +245,7 @@
   }
   .hero-inner{max-width:560px;text-align:left;position:relative;z-index:2;}
   @media (max-width:900px){ .hero-inner{max-width:100%;text-align:center;margin:0 auto;} }
-  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,162,59,0.12);border:1px solid rgba(217,162,59,0.4);border-radius:999px;padding:6px 16px;margin-bottom:22px;backdrop-filter:blur(6px);}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,162,59,0.12);border:1px solid rgba(217,162,59,0.4);border-radius:999px;padding:6px 16px;margin-bottom:22px;}
   .eyebrow span{color:var(--brass-soft);font-size:11px;letter-spacing:.8px;font-family:'IBM Plex Mono',monospace;}
   .hero h1{color:#fff;font-size:clamp(32px,5vw,53px);font-weight:700;line-height:1.08;margin:0;letter-spacing:-.5px;
     text-shadow:0 2px 24px rgba(0,0,0,0.35);}
@@ -254,7 +258,7 @@
   .trail-svg .route-dash{
     fill:none;stroke:#D9A23B;stroke-width:2;stroke-linecap:round;
     stroke-dasharray:10 12;opacity:0.75;
-    animation:route-dash-move 18s linear infinite;
+    animation:route-dash-move 28s linear infinite;
   }
   .trail-svg .route-dash.secondary{
     stroke:#F0D9A8;stroke-width:1.4;opacity:0.35;stroke-dasharray:4 14;
@@ -263,7 +267,7 @@
   .trail-svg .route-solid{
     fill:none;stroke:rgba(217,162,59,0.18);stroke-width:6;stroke-linecap:round;
   }
-  .trail-svg .airport-dot{fill:#D9A23B;filter:drop-shadow(0 0 4px rgba(217,162,59,0.7));}
+  .trail-svg .airport-dot{fill:#D9A23B;}
   .trail-svg .airport-ring{
     fill:none;stroke:#D9A23B;stroke-width:1.2;opacity:0.55;
     animation:airport-ping 2.8s ease-out infinite;
@@ -1337,7 +1341,7 @@
   .ap-empty .ap-empty-icon{font-size:30px;margin-bottom:10px;}
 
   /* ---------- hero: reforço de prova social + glow ---------- */
-  .hero-glow{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:2;}
+  .hero-glow{position:absolute;border-radius:50%;filter:blur(40px);pointer-events:none;z-index:2;opacity:0.7;}
   .hero-glow.g1{width:420px;height:420px;background:radial-gradient(circle,rgba(217,162,59,0.22),transparent 70%);top:-140px;right:-100px;}
   .hero-glow.g2{width:340px;height:340px;background:radial-gradient(circle,rgba(57,114,219,0.28),transparent 70%);bottom:-120px;left:-80px;}
   .hero-social{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);border-radius:999px;padding:7px 16px 7px 8px;margin-top:18px;}
@@ -1827,9 +1831,12 @@
     muted
     loop
     playsinline
-    preload="metadata"
+    webkit-playsinline
+    preload="auto"
     aria-hidden="true"
     disablepictureinpicture
+    disableremoteplayback
+    controlslist="nodownload nofullscreen noremoteplayback"
   >
     <source src="/158384-816637349_small.mp4" type="video/mp4">
   </video>
@@ -1851,7 +1858,7 @@
 
     <!-- Rota principal (arco alto) -->
     <path class="route-solid" d="M 60 130 C 280 20, 520 20, 700 95 S 980 155, 1140 55"/>
-    <path id="route-path" class="route-dash route-glow" d="M 60 130 C 280 20, 520 20, 700 95 S 980 155, 1140 55"/>
+    <path id="route-path" class="route-dash" d="M 60 130 C 280 20, 520 20, 700 95 S 980 155, 1140 55"/>
 
     <!-- Rota secundária (retorno mais baixo) -->
     <path class="route-solid" d="M 1140 55 C 980 130, 760 160, 520 110 S 220 70, 60 130" opacity="0.5"/>
@@ -1870,7 +1877,7 @@
     </g>
 
     <!-- Avião ida (silhueta realista vista de cima / 3/4) -->
-    <g class="plane-icon" filter="url(#planeGlow)">
+    <g class="plane-icon">
       <!-- sombra sutil -->
       <ellipse class="plane-shadow" cx="1" cy="7" rx="14" ry="3.5"/>
       <!-- asas -->
@@ -5752,37 +5759,61 @@ document.addEventListener("click", (e) => {
   }
 })();
 
-// Hero video: pausa quando fora da tela (economiza bateria/CPU)
+// Hero video: leve, estável, sem jank
 (function () {
   var v = document.querySelector(".hero-video");
   if (!v) return;
+
+  // Dados economizados / movimento reduzido → sem vídeo
   try {
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      v.removeAttribute("autoplay");
-      v.pause();
+      v.remove();
+      return;
+    }
+    if (navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ""))) {
+      v.remove();
       return;
     }
   } catch (_) {}
+
+  try {
+    v.muted = true;
+    v.defaultMuted = true;
+    v.playsInline = true;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
+    v.playbackRate = 1;
+  } catch (_) {}
+
+  var hero = v.closest(".hero") || v;
+  var visible = true;
+
+  function tryPlay() {
+    if (!visible) return;
+    var p = v.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+
+  // Play assim que houver dados suficientes
+  if (v.readyState >= 2) tryPlay();
+  else v.addEventListener("loadeddata", tryPlay, { once: true });
+
+  // Pause só quando o hero sai quase todo da tela (evita play/pause no scroll)
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          var p = v.play();
-          if (p && p.catch) p.catch(function () {});
-        } else {
-          try { v.pause(); } catch (_) {}
-        }
-      });
-    }, { threshold: 0.12 });
-    io.observe(v);
+      var e = entries[0];
+      if (!e) return;
+      visible = e.isIntersecting;
+      if (visible) tryPlay();
+      else { try { v.pause(); } catch (_) {} }
+    }, { threshold: 0.15, rootMargin: "40px 0px" });
+    io.observe(hero);
+  } else {
+    tryPlay();
   }
-  // garante autoplay em iOS/Safari após gesture residual
-  document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "visible" && !v.paused) {
-      var p = v.play();
-      if (p && p.catch) p.catch(function () {});
-    }
-  });
+
+  // Não usa timeupdate (dispara dezenas de vezes/s e causa lag)
+  // O atributo loop do HTML já reinicia de forma nativa e mais suave
 })();
 
 mmRenderHeader();
