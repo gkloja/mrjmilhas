@@ -209,21 +209,56 @@
   }
 
   /* ---------- hero ---------- */
-  .hero{background:
+  .hero{
+    background:
       radial-gradient(ellipse 900px 500px at 15% -10%, rgba(217,162,59,0.16), transparent 60%),
       linear-gradient(180deg, var(--blue) 0%, var(--navy-2) 50%, var(--navy-3) 100%);
-    padding:60px 0 152px;position:relative;overflow:hidden;}
-  .hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px);background-size:26px 26px;opacity:.5;pointer-events:none;}
+    padding:60px 0 152px;position:relative;overflow:hidden;
+  }
+  /* Vídeo de nuvens em loop — fundo cinematográfico */
+  .hero-video{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;object-position:center 40%;
+    z-index:0;pointer-events:none;
+    /* leve vinheta de cor da marca + suavidade */
+    filter:saturate(0.75) brightness(0.72) contrast(1.05);
+    transform:scale(1.04); /* evita bordas no crop */
+  }
+  .hero-video-overlay{
+    position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:
+      linear-gradient(180deg,
+        rgba(14,25,48,0.55) 0%,
+        rgba(22,39,74,0.62) 42%,
+        rgba(14,25,48,0.88) 100%),
+      radial-gradient(ellipse 80% 60% at 70% 20%, rgba(57,114,219,0.22), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 10% 80%, rgba(217,162,59,0.12), transparent 50%);
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background-image:radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px);
+    background-size:26px 26px;opacity:.35;
+  }
   .hero-inner{max-width:560px;text-align:left;position:relative;z-index:2;}
   @media (max-width:900px){ .hero-inner{max-width:100%;text-align:center;margin:0 auto;} }
-  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,162,59,0.12);border:1px solid rgba(217,162,59,0.4);border-radius:999px;padding:6px 16px;margin-bottom:22px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(217,162,59,0.12);border:1px solid rgba(217,162,59,0.4);border-radius:999px;padding:6px 16px;margin-bottom:22px;backdrop-filter:blur(6px);}
   .eyebrow span{color:var(--brass-soft);font-size:11px;letter-spacing:.8px;font-family:'IBM Plex Mono',monospace;}
-  .hero h1{color:#fff;font-size:clamp(32px,5vw,53px);font-weight:700;line-height:1.08;margin:0;letter-spacing:-.5px;}
+  .hero h1{color:#fff;font-size:clamp(32px,5vw,53px);font-weight:700;line-height:1.08;margin:0;letter-spacing:-.5px;
+    text-shadow:0 2px 24px rgba(0,0,0,0.35);}
   .hero h1 em{font-style:normal;color:var(--brass);}
-  .hero p{color:#C2D0EC;font-size:17px;margin:20px auto 0;line-height:1.65;max-width:520px;}
+  .hero p{color:#C2D0EC;font-size:17px;margin:20px auto 0;line-height:1.65;max-width:520px;
+    text-shadow:0 1px 12px rgba(0,0,0,0.25);}
 
-  .trail-svg{position:absolute;top:26px;left:0;width:100%;height:150px;opacity:.7;z-index:1;}
+  .trail-svg{position:absolute;top:26px;left:0;width:100%;height:150px;opacity:.7;z-index:2;}
   .trail-svg .plane-icon{fill:var(--brass);}
+
+  /* Acessibilidade: sem animação / dados economizados */
+  @media (prefers-reduced-motion: reduce){
+    .hero-video{display:none !important;}
+  }
+  @media (max-width:640px){
+    .hero-video{opacity:0.95;}
+  }
 
   /* ---------- search card, styled as a boarding pass ---------- */
   .search-card{max-width:1000px;margin:44px auto 0;background:#fff;border-radius:20px;box-shadow:0 30px 70px rgba(6,12,26,0.4);position:relative;z-index:3;overflow:hidden;}
@@ -392,7 +427,7 @@
     font-size:12px;color:var(--green);font-weight:700;margin-top:8px;
     font-family:'IBM Plex Mono',monospace;
   }
-  .ticket .pay-hint{font-size:10.5px;color:var(--slate-soft);margin-top:3px;font-weight:500;}
+  .ticket .pay-hint{font-size:10px;color:var(--slate-soft);margin-top:6px;font-weight:500;line-height:1.4;text-align:left;max-width:100%;}
   .ticket-right .select-btn{
     margin-top:12px;padding:12px 0;font-size:13.5px;border-radius:11px;
     background:var(--navy);letter-spacing:.2px;
@@ -1265,7 +1300,7 @@
   .ap-empty .ap-empty-icon{font-size:30px;margin-bottom:10px;}
 
   /* ---------- hero: reforço de prova social + glow ---------- */
-  .hero-glow{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:0;}
+  .hero-glow{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:2;}
   .hero-glow.g1{width:420px;height:420px;background:radial-gradient(circle,rgba(217,162,59,0.22),transparent 70%);top:-140px;right:-100px;}
   .hero-glow.g2{width:340px;height:340px;background:radial-gradient(circle,rgba(57,114,219,0.28),transparent 70%);bottom:-120px;left:-80px;}
   .hero-social{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);border-radius:999px;padding:7px 16px 7px 8px;margin-top:18px;}
@@ -1590,7 +1625,7 @@
       <button type="button" class="wc-go" id="wa-confirm-go">Abrir WhatsApp e enviar pedido</button>
       <button type="button" class="wc-back" id="wa-confirm-back">Revisar meus dados</button>
     </div>
-    <p class="wc-note">Não feche a conversa antes de enviar a mensagem. Sem o envio, o pedido não chega até nós.</p>
+    <p class="wc-note">Os valores exatos e as taxas são consolidados diretamente com as companhias aéreas no momento da emissão. Caso ocorra qualquer variação de preço ou indisponibilidade de tarifa durante o processamento do seu pedido, nossa equipe entrará em contato antes de concluir a cobrança.<br><br>Não feche a conversa antes de enviar a mensagem. Sem o envio, o pedido não chega até nós.</p>
   </div>
 </div>
 
@@ -1610,12 +1645,12 @@
       <div class="pax-pay" id="pax-pay-box">
         <h4>Forma de pagamento</h4>
         <div id="pax-pay-options"></div>
-        <p style="font-size:11.5px;color:var(--slate);margin:10px 0 0;line-height:1.4;">PIX é só à vista. Parcelamento (2x a 6x) é no cartão de crédito, com juros. Valores finais confirmados no WhatsApp.</p>
+        <p style="font-size:11.5px;color:var(--slate);margin:10px 0 0;line-height:1.45;">Os valores exatos e as taxas são consolidados diretamente com as companhias aéreas no momento da emissão. Caso ocorra qualquer variação de preço ou indisponibilidade de tarifa durante o processamento do seu pedido, nossa equipe entrará em contato antes de concluir a cobrança. PIX à vista ou cartão em até 6x (com juros no parcelamento).</p>
       </div>
     </div>
     <div class="pax-foot">
       <button type="button" class="btn-wa" id="pax-submit">Continuar para o WhatsApp →</button>
-      <p class="hint">No próximo passo você confirma e envia o pedido pronto no WhatsApp. PIX à vista ou cartão em até 6x.</p>
+      <p class="hint">No próximo passo você confirma e envia o pedido no WhatsApp. Os valores e taxas finais são consolidados na emissão; se houver variação, avisamos antes de cobrar.</p>
     </div>
   </div>
 </div>
@@ -1703,6 +1738,20 @@
 </div>
 
 <section class="hero">
+  <!-- Fundo animado: nuvens em loop (cinematográfico) -->
+  <video
+    class="hero-video"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    aria-hidden="true"
+    disablepictureinpicture
+  >
+    <source src="/158384-816637349_small.mp4" type="video/mp4">
+  </video>
+  <div class="hero-video-overlay" aria-hidden="true"></div>
   <div class="hero-glow g1"></div>
   <div class="hero-glow g2"></div>
   <svg class="trail-svg" viewBox="0 0 1200 150" preserveAspectRatio="none" aria-hidden="true">
@@ -2590,7 +2639,7 @@ function renderTicket(r, isCheapest){
         <div class="pix-line">PIX ${currency(taxaTot > 0 ? totalComTaxa : r.ourValue)}${taxaTot > 0 ? " c/ taxa" : ""}</div>
       </div>
       ${taxaBreakdownHtml || ""}
-      <div class="pay-hint">à vista no PIX · cartão em até 6x</div>
+      <div class="pay-hint">Os preços, disponibilidade de assentos e condições exibidos são informativos e sujeitos a alterações em tempo real pelas companhias aéreas sem aviso prévio. A garantia do valor e a reserva do bilhete ocorrem apenas após a confirmação final do pagamento e a emissão do e-ticket. Em caso de divergência de valores ou erros sistêmicos de tarifação, o valor correto será informado antes da finalização do pedido.</div>
       <button type="button" class="select-btn" data-offer-id="${r.id}" data-route="${originCity} (${depCode}) → ${destCity} (${arrCode})" data-airline="${r.airline.name}" data-price="${(typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return" && r.priceTotal != null) ? r.priceTotal : r.ourValue}" data-price-outbound="${r.priceOutbound != null ? r.priceOutbound : ""}" data-price-return="${r.priceReturn != null ? r.priceReturn : ((typeof rtSearchPhase !== "undefined" && rtSearchPhase === "return") ? r.ourValue : "")}" data-boarding-fees="${taxaTot > 0 ? taxaTot : 0}" data-dep="${r.dep || ""}" data-arr="${r.arr || ""}" data-locator="${r.locator}" data-stops="${r.stops}" data-duration="${r.duration || ''}">${selectLabel}</button>
     </div>
   </article>`;
@@ -4768,7 +4817,7 @@ function mmUpdatePaxTripSummary(flight, n) {
       <div class="pr-row"><span>Subtotal por adulto</span><b>${currency(unitComTaxa)}</b></div>
       ${n > 1 ? `<div class="pr-row" style="margin-top:4px;"><span>× ${n} adultos</span><b>${currency(unitComTaxa)} × ${n}</b></div>
       <div class="pr-row pr-total"><span>Total do grupo</span><b>${currency(totalComTaxa)}</b></div>` : `<div class="pr-row pr-total"><span>Total por adulto</span><b>${currency(unitComTaxa)}</b></div>`}
-      <div class="pr-note">${taxaUnit > 0 ? "Taxa aeroportuária estimada — valor final confirmado na emissão · " : ""}PIX à vista ou cartão em até 6x</div>
+      <div class="pr-note">${taxaUnit > 0 ? "Taxa aeroportuária estimada — " : ""}Os valores exatos e as taxas são consolidados com as companhias no momento da emissão. Em caso de variação de preço ou indisponibilidade, nossa equipe entra em contato antes de concluir a cobrança.</div>
     </div>
     ${paxChooser}
   `;
@@ -5537,6 +5586,39 @@ document.addEventListener("click", (e) => {
         .catch(function (err) { console.warn("[PWA] SW falhou", err); });
     });
   }
+})();
+
+// Hero video: pausa quando fora da tela (economiza bateria/CPU)
+(function () {
+  var v = document.querySelector(".hero-video");
+  if (!v) return;
+  try {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      v.removeAttribute("autoplay");
+      v.pause();
+      return;
+    }
+  } catch (_) {}
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        } else {
+          try { v.pause(); } catch (_) {}
+        }
+      });
+    }, { threshold: 0.12 });
+    io.observe(v);
+  }
+  // garante autoplay em iOS/Safari após gesture residual
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && !v.paused) {
+      var p = v.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+  });
 })();
 
 mmRenderHeader();
