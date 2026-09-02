@@ -4988,7 +4988,7 @@ function mmUpdatePaxTripSummary(flight, n) {
       <div class="pr-row"><span>Subtotal por adulto</span><b>${currency(unitComTaxa)}</b></div>
       ${n > 1 ? `<div class="pr-row" style="margin-top:4px;"><span>× ${n} adultos</span><b>${currency(unitComTaxa)} × ${n}</b></div>
       <div class="pr-row pr-total"><span>Total do grupo</span><b>${currency(totalComTaxa)}</b></div>` : `<div class="pr-row pr-total"><span>Total por adulto</span><b>${currency(unitComTaxa)}</b></div>`}
-      <div class="pr-note">${taxaUnit > 0 ? "Taxa aeroportuária estimada — " : ""}Os valores exatos e as taxas são consolidados com as companhias no momento da emissão. Em caso de variação de preço ou indisponibilidade, nossa equipe entra em contato antes de concluir a cobrança.</div>
+      <div class="pr-note">Os valores exatos e as taxas são consolidados com as companhias no momento da emissão. Em caso de variação de preço ou indisponibilidade, nossa equipe entra em contato antes de concluir a cobrança.</div>
     </div>
     ${paxChooser}
   `;
